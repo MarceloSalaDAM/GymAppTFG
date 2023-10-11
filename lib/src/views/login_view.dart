@@ -1,12 +1,11 @@
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../custom/InputText.dart';
 
-class LoginViewExamen extends StatelessWidget {
+class LoginViewApp extends StatelessWidget {
   //Vista para el logeo a la aplicacion
-  LoginViewExamen({Key? key}) : super(key: key);
+  LoginViewApp({Key? key}) : super(key: key);
 
   /*Con esta funcion conseguimos que se logee el usuario
   SI coincide con un usuario ya creado en el firebase*/
@@ -44,72 +43,50 @@ class LoginViewExamen extends StatelessWidget {
     EL BOTON NO LO HE METIDO EN UNA CARPETA CUSTOM PORQUE SOLO LO VOY A UTILIZAR EN ESTA VENTANA,
     POR LO TANTO LO HE CREADO AQUI MISMO*/
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("LOGIN VIEW EXAMEN"),
-        //esta barra de código es para quitar el icono de la flecha arriba a la izquierda de mi aplicacion
-        automaticallyImplyLeading: false,
-        backgroundColor: Colors.black,
-      ),
       body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              iUser,
-              iPass,
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  MaterialButton(
-                    padding: EdgeInsets.all(8.0),
-                    textColor: Colors.black,
-                    splashColor: Colors.greenAccent,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(),
-                        image: DecorationImage(
+        child: Container(
+            color: Colors.grey,
+            padding: EdgeInsets.fromLTRB(100, 100, 100, 100),
+            width: 400,
+            child: Column(
+              children: [
+                iUser,
+                iPass,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    MaterialButton(
+                      padding: EdgeInsets.all(8.0),
+                      textColor: Colors.black,
+                      splashColor: Colors.teal,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(),
+                          /*image: DecorationImage(
                             image: AssetImage('assets/cr7.png'),
-                            fit: BoxFit.scaleDown),
+                            fit: BoxFit.scaleDown),*/
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text("ENTRAR"),
+                        ),
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text("ACEPTAR"),
-                      ),
+                      // ),
+                      onPressed: () {
+                        btnAceptarPressed(
+                            iUser.getText(), iPass.getText(), context);
+                        print("SESION INICIADA CON----------->>> " +
+                            " " +
+                            iUser.getText() +
+                            " " +
+                            iPass.getText());
+                      },
                     ),
-                    // ),
-                    onPressed: () {
-                      btnAceptarPressed(iUser.getText(), iPass.getText(), context);
-                      print("SESION INICIADA CON----------->>> " +
-                          " " +
-                          iUser.getText() +
-                          " " +
-                          iPass.getText());
-                    },
-                  ),
-                  MaterialButton(
-                    padding: EdgeInsets.all(8.0),
-                    textColor: Colors.black,
-                    splashColor: Colors.greenAccent,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(),
-                        image: DecorationImage(
-                            image: AssetImage('assets/cr7.png'),
-                            fit: BoxFit.scaleDown),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text("REGISTRAR"),
-                      ),
-                    ),
-                    // ),
-                    onPressed: () {
-                      Navigator.of(context).popAndPushNamed('/Registro');
-                    },
-                  ),
-                ],
-              )
-            ],
-          )),
+                  ],
+                )
+              ],
+            )),
+      ),
       backgroundColor: Colors.white,
     );
   }
