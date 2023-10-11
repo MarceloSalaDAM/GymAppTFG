@@ -45,9 +45,29 @@ class LoginViewApp extends StatelessWidget {
     return Scaffold(
       body: Center(
         child: Container(
-            color: Colors.grey,
-            padding: EdgeInsets.fromLTRB(100, 100, 100, 100),
-            width: 400,
+            margin: EdgeInsets.fromLTRB(50, 160, 50, 0),
+            padding: EdgeInsets.fromLTRB(20, 100, 20, 50),
+            width: 300,
+            height: 400,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.greenAccent, Colors.lightGreenAccent],
+                // Colores del gradiente
+                begin: Alignment.topCenter,
+                // Punto de inicio del gradiente
+                end: Alignment.bottomCenter, // Punto de fin del gradiente
+              ),
+              border: Border.all(),
+              borderRadius: BorderRadius.circular(20.0),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey, // Color de la sombra
+                  blurRadius: 5.0, // Radio de desenfoque de la sombra
+                  offset: Offset(
+                      0, 3), // Desplazamiento de la sombra (eje X, eje Y)
+                ),
+              ],
+            ),
             child: Column(
               children: [
                 iUser,
@@ -87,7 +107,8 @@ class LoginViewApp extends StatelessWidget {
               ],
             )),
       ),
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.white70
+      ,
     );
   }
 }
