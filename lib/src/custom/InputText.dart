@@ -27,12 +27,15 @@ class IPExamen extends StatelessWidget {
           color: Colors.white,
         ),
         enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(
-              color: Colors.black), // Cambia el color del borde a rojo
+          borderSide: BorderSide(color: Colors.black),
+
+          borderRadius:
+              BorderRadius.circular(7.0), // Cambia el color del borde a rojo
         ),
         focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(
-              color: Colors.black), // Cambia el color del borde a rojo
+          borderSide: BorderSide(color: Colors.black),
+          borderRadius:
+              BorderRadius.circular(7.0), // Cambia el color del borde a rojo
         ),
       ),
     );

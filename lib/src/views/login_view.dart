@@ -72,7 +72,7 @@ class LoginViewApp extends StatelessWidget {
                   end: Alignment.bottomCenter, // Punto de fin del gradiente
                 ),
                 border: Border.all(),
-                borderRadius: BorderRadius.circular(20.0),
+                borderRadius: BorderRadius.circular(25.0),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black, // Color de la sombra
@@ -102,12 +102,34 @@ class LoginViewApp extends StatelessWidget {
                   SizedBox(height: 30),
                   // Agrega un espacio entre los campos de texto y el botón
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       MaterialButton(
                         color: Colors.black,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15.0), // Cambia el radio de las esquinas a 10.0
+                          borderRadius: BorderRadius.circular(
+                              7.0), // Cambia el radio de las esquinas a 10.0
+                        ),
+                        padding: EdgeInsets.all(8.0),
+                        textColor: Colors.white,
+                        splashColor: Colors.white,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text("REGISTRO"),
+                          ),
+                        ),
+                        // ),
+                        onPressed: () {},
+                      ),
+                      MaterialButton(
+                        color: Colors.black,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                              7.0), // Cambia el radio de las esquinas a 10.0
                         ),
                         padding: EdgeInsets.all(8.0),
                         textColor: Colors.white,
