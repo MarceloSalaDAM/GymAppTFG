@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 
 class IPExamen extends StatelessWidget {
   final String titulo;
+  final String textoGuia;
+
   final bool contra;
   final TextEditingController myController = TextEditingController(text: "");
 
   IPExamen({
     Key? key,
     this.titulo = " ",
+    this.textoGuia = " ",
     this.contra = false,
   }) : super(key: key);
 
@@ -22,6 +25,7 @@ class IPExamen extends StatelessWidget {
       controller: myController,
       cursorColor: Colors.white,
       decoration: InputDecoration(
+        helperText: textoGuia,
         labelText: titulo,
         labelStyle: TextStyle(
           color: Colors.white,

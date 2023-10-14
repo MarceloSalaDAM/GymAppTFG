@@ -1,45 +1,49 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../custom/InputText.dart';
 
-class LoginViewApp extends StatelessWidget {
-  //Vista para el logeo a la aplicacion
-  LoginViewApp({Key? key}) : super(key: key);
+class RegisterView extends StatelessWidget {
+  //Vista para el registro de usuarios de la aplicación
+  RegisterView({Key? key}) : super(key: key);
 
-  /*Con esta funcion conseguimos que se logee el usuario
-  SI coincide con un usuario ya creado en el firebase*/
-  void btnAceptarPressed(
+  //Con esta función creamos un usuario y este es añadido al firebase
+  void btnRegistroPressed(
       String emailAdress, String password, BuildContext context) async {
     try {
-      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+      final credential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: emailAdress,
         password: password,
       );
-      print("LOGEADO CON EXITO");
-      Navigator.of(context).popAndPushNamed('/Home');
+      Navigator.of(context).popAndPushNamed('/OnBoarding');
     } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not found') {
-        print('No user found for that email');
-      } else if (e.code == 'wrong password') {
-        print('Wrong password provided for that user.');
-      }
+      if (e.code == 'weak-password') {
+        print('The password provided is too weak.');
+      } else if (e.code == 'email-already-in-use') {}
+    } catch (e) {
+      print(e);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    IPExamen iUser = IPExamen(
-      titulo: "Usuario",
+    IPExamen iUsuario = IPExamen(
+      textoGuia: "Introducir usuario",
+      titulo: "E-MAIL",
     );
-
-    IPExamen iPass = IPExamen(
-      titulo: "Contraseña",
+    IPExamen iContra = IPExamen(
+      textoGuia: "Introducir contraseña",
+      titulo: "CONTRASEÑA",
       contra: true,
     );
-/*
-    EL BOTON NO LO HE METIDO EN UNA CARPETA CUSTOM PORQUE SOLO LO VOY A UTILIZAR EN ESTA VENTANA,
-    POR LO TANTO LO HE CREADO AQUI MISMO*/
+    IPExamen iContra2 = IPExamen(
+      textoGuia: "Repetir contraseña",
+      titulo: "REPETIR CONTRASEÑA ",
+      contra: true,
+    );
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Stack(children: [
@@ -59,7 +63,7 @@ class LoginViewApp extends StatelessWidget {
               margin: EdgeInsets.fromLTRB(50, 150, 50, 60),
               padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
               width: 500,
-              height: 450,
+              height: 500,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [Colors.blue, Colors.green],
@@ -91,36 +95,45 @@ class LoginViewApp extends StatelessWidget {
                   ),
                   SizedBox(height: 5),
                   // Agrega un espacio entre la imagen y los campos de texto
-                  iUser,
-                  SizedBox(height: 30),
+                  iUsuario,
+                  SizedBox(height: 15),
                   // Agrega un espacio entre los campos de texto
-                  iPass,
-                  SizedBox(height: 30),
+                  iContra,
+                  iContra2,
+                  SizedBox(height: 20),
                   // Agrega un espacio entre los campos de texto y el botón
+
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      MaterialButton(
-                        color: Colors.black,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(
-                              7.0), // Cambia el radio de las esquinas a 10.0
-                        ),
-                        padding: EdgeInsets.all(8.0),
-                        textColor: Colors.white,
-                        splashColor: Colors.white,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text("REGISTRO"),
-                          ),
-                        ),
-                        // ),
+                    MaterialButton(
+                    color: Colors.black,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                          7.0), // Cambia el radio de las esquinas a 10.0
+                    ),
+                    padding: EdgeInsets.all(8.0),
+                    textColor: Colors.white,
+                    splashColor: Colors.white,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text("CREAR"),
+                      ),
+                    ),
                         onPressed: () {
-                          Navigator.of(context).popAndPushNamed('/Register');
+                          if (iContra.getText() == iContra2.getText()) {
+                            btnRegistroPressed(
+                                iUsuario.getText(), iContra.getText(), context);
+                            print("USUARIO CREADO CORRECTAMENTE------>>>" +
+                                " " +
+                                iUsuario.getText() +
+                                " " +
+                                iContra.getText());
+                          } else {}
                         },
                       ),
                       MaterialButton(
@@ -138,24 +151,15 @@ class LoginViewApp extends StatelessWidget {
                           ),
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Text("ENTRAR"),
+                            child: Text("CANCELAR"),
                           ),
                         ),
                         onPressed: () {
-                          btnAceptarPressed(
-                            iUser.getText(),
-                            iPass.getText(),
-                            context,
-                          );
-                          print("SESIÓN INICIADA CON----------->>> " +
-                              " " +
-                              iUser.getText() +
-                              " " +
-                              iPass.getText());
+                          Navigator.of(context).popAndPushNamed('/Login');
                         },
                       ),
                     ],
-                  ),
+                  )
                 ],
               ),
             ),
