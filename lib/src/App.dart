@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:gym_app_tfg/src/views/login_view.dart';
 
 class App extends StatelessWidget {
@@ -16,6 +17,11 @@ class App extends StatelessWidget {
     Desde la pantalla LOGIN, podemos registrar un nuevo usuario y desde la
     pantalla de REGISTRO, nos lleva al ONBOARDING para completar el perfil.*/
     return MaterialApp(
+      theme: ThemeData(
+        textTheme: GoogleFonts.baiJamjureeTextTheme(
+          Theme.of(context).textTheme,
+        ),
+      ),
       initialRoute: '/Login',
       routes: {
         '/Login': (context) => LoginViewApp(),

@@ -2,14 +2,12 @@ import 'package:flutter/material.dart';
 
 class IPExamen extends StatelessWidget {
   final String titulo;
-  final String textoGuia;
   final bool contra;
   final TextEditingController myController = TextEditingController(text: "");
 
   IPExamen({
     Key? key,
     this.titulo = " ",
-    this.textoGuia = " ",
     this.contra = false,
   }) : super(key: key);
 
@@ -22,17 +20,20 @@ class IPExamen extends StatelessWidget {
     return TextFormField(
       obscureText: contra,
       controller: myController,
-      cursorColor: Colors.black,
+      cursorColor: Colors.white,
       decoration: InputDecoration(
         labelText: titulo,
         labelStyle: TextStyle(
-          color: Colors.black,
+          color: Colors.white,
         ),
-        /*prefixIcon: Image(
-          image: AssetImage("assets/cr7.png"),
-          width: 5,
-        ),*/
-        helperText: textoGuia,
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(
+              color: Colors.black), // Cambia el color del borde a rojo
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(
+              color: Colors.black), // Cambia el color del borde a rojo
+        ),
       ),
     );
   }

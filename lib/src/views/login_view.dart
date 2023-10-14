@@ -30,13 +30,11 @@ class LoginViewApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     IPExamen iUser = IPExamen(
-      titulo: "EMAIL",
-      textoGuia: "Introducir su email",
+      titulo: "Usuario",
     );
 
     IPExamen iPass = IPExamen(
-      titulo: "PASSWORD",
-      textoGuia: "Introducir su clave",
+      titulo: "Contraseña",
       contra: true,
     );
 /*
@@ -66,7 +64,7 @@ class LoginViewApp extends StatelessWidget {
                 gradient: LinearGradient(
                   colors: [
                     Color.fromRGBO(52, 107, 243, 1),
-                    Color.fromRGBO(4, 73, 242, 100)
+                    Color.fromRGBO(4, 73, 242, 10)
                   ],
                   // Colores del gradiente
                   begin: Alignment.topCenter,
@@ -98,7 +96,7 @@ class LoginViewApp extends StatelessWidget {
                   SizedBox(height: 5),
                   // Agrega un espacio entre la imagen y los campos de texto
                   iUser,
-                  SizedBox(height: 1),
+                  SizedBox(height: 30),
                   // Agrega un espacio entre los campos de texto
                   iPass,
                   SizedBox(height: 30),
@@ -107,15 +105,16 @@ class LoginViewApp extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       MaterialButton(
+                        color: Colors.black,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15.0), // Cambia el radio de las esquinas a 10.0
+                        ),
                         padding: EdgeInsets.all(8.0),
-                        textColor: Colors.black,
-                        splashColor: Colors.teal,
+                        textColor: Colors.white,
+                        splashColor: Colors.white,
                         child: Container(
                           decoration: BoxDecoration(
                             border: Border.all(),
-                            /*image: DecorationImage(
-              image: AssetImage('assets/cr7.png'),
-              fit: BoxFit.scaleDown),*/
                           ),
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
