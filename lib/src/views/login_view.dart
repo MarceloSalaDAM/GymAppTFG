@@ -43,72 +43,106 @@ class LoginViewApp extends StatelessWidget {
     EL BOTON NO LO HE METIDO EN UNA CARPETA CUSTOM PORQUE SOLO LO VOY A UTILIZAR EN ESTA VENTANA,
     POR LO TANTO LO HE CREADO AQUI MISMO*/
     return Scaffold(
-      body: Center(
-        child: Container(
-            margin: EdgeInsets.fromLTRB(50, 160, 50, 0),
-            padding: EdgeInsets.fromLTRB(20, 100, 20, 50),
-            width: 300,
-            height: 400,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Colors.greenAccent, Colors.lightGreenAccent],
-                // Colores del gradiente
-                begin: Alignment.topCenter,
-                // Punto de inicio del gradiente
-                end: Alignment.bottomCenter, // Punto de fin del gradiente
-              ),
-              border: Border.all(),
-              borderRadius: BorderRadius.circular(20.0),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey, // Color de la sombra
-                  blurRadius: 5.0, // Radio de desenfoque de la sombra
-                  offset: Offset(
-                      0, 3), // Desplazamiento de la sombra (eje X, eje Y)
-                ),
-              ],
+      resizeToAvoidBottomInset: false,
+      body: Stack(children: [
+        Container(
+          width: double.maxFinite, // Ancho del contenedor
+          height: double.maxFinite,
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage("assets/fondo.jpg"),
+              fit: BoxFit.cover,
             ),
-            child: Column(
-              children: [
-                iUser,
-                iPass,
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    MaterialButton(
-                      padding: EdgeInsets.all(8.0),
-                      textColor: Colors.black,
-                      splashColor: Colors.teal,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          border: Border.all(),
-                          /*image: DecorationImage(
-                            image: AssetImage('assets/cr7.png'),
-                            fit: BoxFit.scaleDown),*/
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text("ENTRAR"),
-                        ),
-                      ),
-                      // ),
-                      onPressed: () {
-                        btnAceptarPressed(
-                            iUser.getText(), iPass.getText(), context);
-                        print("SESION INICIADA CON----------->>> " +
-                            " " +
-                            iUser.getText() +
-                            " " +
-                            iPass.getText());
-                      },
-                    ),
+          ),
+        ),
+        SingleChildScrollView(
+          child: Center(
+            child: Container(
+              margin: EdgeInsets.fromLTRB(50, 160, 50, 60),
+              padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
+              width: 500,
+              height: 450,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Color.fromRGBO(52, 107, 243, 1),
+                    Color.fromRGBO(4, 73, 242, 100)
                   ],
-                )
-              ],
-            )),
-      ),
-      backgroundColor: Colors.white70
-      ,
+                  // Colores del gradiente
+                  begin: Alignment.topCenter,
+                  // Punto de inicio del gradiente
+                  end: Alignment.bottomCenter, // Punto de fin del gradiente
+                ),
+                border: Border.all(),
+                borderRadius: BorderRadius.circular(20.0),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black, // Color de la sombra
+                    blurRadius: 5.0, // Radio de desenfoque de la sombra
+                    offset: Offset(
+                        0, 4), // Desplazamiento de la sombra (eje X, eje Y)
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                // Evita que la columna se expanda más allá del contenido
+                children: [
+                  Image.asset(
+                    'assets/logo.png',
+                    width: 100,
+                    height: 100,
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.topCenter,
+                  ),
+                  SizedBox(height: 5),
+                  // Agrega un espacio entre la imagen y los campos de texto
+                  iUser,
+                  SizedBox(height: 1),
+                  // Agrega un espacio entre los campos de texto
+                  iPass,
+                  SizedBox(height: 30),
+                  // Agrega un espacio entre los campos de texto y el botón
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      MaterialButton(
+                        padding: EdgeInsets.all(8.0),
+                        textColor: Colors.black,
+                        splashColor: Colors.teal,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(),
+                            /*image: DecorationImage(
+              image: AssetImage('assets/cr7.png'),
+              fit: BoxFit.scaleDown),*/
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text("ENTRAR"),
+                          ),
+                        ),
+                        onPressed: () {
+                          btnAceptarPressed(
+                            iUser.getText(),
+                            iPass.getText(),
+                            context,
+                          );
+                          print("SESIÓN INICIADA CON----------->>> " +
+                              " " +
+                              iUser.getText() +
+                              " " +
+                              iPass.getText());
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ]),
     );
   }
 }
