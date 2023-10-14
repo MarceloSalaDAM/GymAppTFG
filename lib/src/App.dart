@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:gym_app_tfg/src/views/login_view.dart';
+import 'package:gym_app_tfg/src/views/main_view.dart';
 import 'package:gym_app_tfg/src/views/register_view.dart';
 
 class App extends StatelessWidget {
@@ -27,6 +28,7 @@ class App extends StatelessWidget {
       routes: {
         '/Login': (context) => LoginViewApp(),
         '/Register': (context) => RegisterView(),
+        '/Main': (context) => MainViewApp(),
       },
     );
   }
