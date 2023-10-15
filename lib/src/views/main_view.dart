@@ -20,6 +20,30 @@ class _MainViewAppState extends State<MainViewApp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.blue, Colors.green], // Cambia estos colores según tus preferencias
+              begin: Alignment.topLeft,
+              end: Alignment.topRight,
+            ),
+          ),
+        ),
+        actions: <Widget>[
+          Container(
+            margin: EdgeInsets.fromLTRB(0, 0, 10, 5),
+            child: IconButton(
+              icon: Icon(Icons.settings),
+              iconSize: 37, // Tamaño personalizado del icono
+              onPressed: () {
+                // Acción al presionar el botón en la esquina superior derecha
+                print('Botón presionado');
+              },
+            ),
+          ),
+        ],
+      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
