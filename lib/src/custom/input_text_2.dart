@@ -25,19 +25,19 @@ class IPApp extends StatelessWidget {
         labelText: titulo,
         labelStyle: TextStyle(
           color: Colors.black,
-          fontSize: 10,
-
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
         ),
         enabledBorder: OutlineInputBorder(
           borderSide: BorderSide(color: Colors.black),
 
           borderRadius:
-          BorderRadius.circular(7.0), // Cambia el color del borde a rojo
+              BorderRadius.circular(7.0), // Cambia el color del borde a rojo
         ),
         focusedBorder: OutlineInputBorder(
           borderSide: BorderSide(color: Colors.black),
           borderRadius:
-          BorderRadius.circular(7.0), // Cambia el color del borde a rojo
+              BorderRadius.circular(7.0), // Cambia el color del borde a rojo
         ),
       ),
     );

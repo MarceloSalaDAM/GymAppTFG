@@ -16,8 +16,13 @@ class PickerButton<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Text(titulo),
-      // Puedes personalizar la etiqueta según tus necesidades
+      title: Text(
+        titulo,
+        style: TextStyle(
+          fontWeight: FontWeight.bold, // Texto en negrita
+          fontSize: 18.0, // Tamaño de fuente personalizado
+        ),
+      ),
       trailing: DropdownButton<T>(
         value: valorSeleccionado,
         onChanged: onChanged,

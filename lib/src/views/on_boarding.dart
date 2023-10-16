@@ -38,6 +38,23 @@ class _OnBoardingViewState extends State<OnBoardingView> {
       Navigator.of(context).popAndPushNamed("/Main");
     }
   }
+  Future<void> _cargarFoto() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      // Aquí puedes guardar la foto seleccionada en Firebase Storage o en otro lugar según tus necesidades.
+      // Guarda la URL de la foto en el perfil del usuario si es necesario.
+      String imageUrl = pickedFile.path;
+
+      // Actualiza el estado de tu widget con la URL de la foto seleccionada.
+      setState(() {
+        // Asigna la URL de la foto a una variable de estado, por ejemplo:
+        // imageUrl = pickedFile.path;
+      });
+    }
+  }
+
 
   void acceptPressed(String nombre, String edad, String genero, String estatura,
       String peso, BuildContext context) async {
@@ -67,25 +84,23 @@ class _OnBoardingViewState extends State<OnBoardingView> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("ONBOARDING"),
+        title: Text("DATOS"),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.blue, Colors.green],
+              // Cambia estos colores según tus preferencias
+              begin: Alignment.topLeft,
+              end: Alignment.topRight,
+            ),
+          ),
+        ),
       ),
       body: Stack(
         children: [
           SingleChildScrollView(
             child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(),
-                borderRadius: BorderRadius.circular(25.0),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black,
-                    blurRadius: 5.0,
-                    offset: Offset(0, 4),
-                  ),
-                ],
-              ),
-              margin: EdgeInsets.fromLTRB(20, 100, 20, 0),
+              margin: EdgeInsets.fromLTRB(0, 40, 0, 0),
               padding: EdgeInsets.fromLTRB(20, 20, 20, 20),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -95,12 +110,13 @@ class _OnBoardingViewState extends State<OnBoardingView> {
                     height: 80.0,
                     child: FloatingActionButton(
                       onPressed: () {
-                        // Lógica al hacer clic en el botón flotante
+                        _cargarFoto();
                       },
                       backgroundColor: Colors.blue,
                       child: Icon(Icons.add_a_photo),
                     ),
                   ),
+                  SizedBox(height: 30),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: iNombre,
@@ -119,7 +135,8 @@ class _OnBoardingViewState extends State<OnBoardingView> {
                   ),
                   PickerButton<String>(
                     titulo: 'EDAD',
-                    opciones: List.generate(55, (index) => (16 + index).toString()),
+                    opciones:
+                        List.generate(55, (index) => (16 + index).toString()),
                     valorSeleccionado: selectedEdad,
                     onChanged: (String? newValue) {
                       if (newValue != null) {
@@ -131,7 +148,8 @@ class _OnBoardingViewState extends State<OnBoardingView> {
                   ),
                   PickerButton<String>(
                     titulo: 'ESTATURA (cm)',
-                    opciones: List.generate(221, (index) => (100 + index ).toString()),
+                    opciones:
+                        List.generate(221, (index) => (100 + index).toString()),
                     valorSeleccionado: selectedEstatura,
                     onChanged: (String? newValue) {
                       if (newValue != null) {
@@ -143,7 +161,8 @@ class _OnBoardingViewState extends State<OnBoardingView> {
                   ),
                   PickerButton<String>(
                     titulo: 'PESO (kg)',
-                    opciones: List.generate(160, (index) => (40 + index).toString()),
+                    opciones:
+                        List.generate(160, (index) => (40 + index).toString()),
                     valorSeleccionado: selectedPeso,
                     onChanged: (String? newValue) {
                       if (newValue != null) {
@@ -171,7 +190,7 @@ class _OnBoardingViewState extends State<OnBoardingView> {
                           ),
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Text("REGISTRO"),
+                            child: Text("GUARDAR"),
                           ),
                         ),
                         onPressed: () {
