@@ -18,7 +18,7 @@ class _OnBoardingViewState extends State<OnBoardingView> {
   var txt = TextEditingController();
   FirebaseFirestore db = FirebaseFirestore.instance;
   String selectedEdad = '16'; // Valor seleccionado inicial para edad
-  String selectedEstatura = '40'; // Valor seleccionado inicial para estatura
+  String selectedEstatura = '100'; // Valor seleccionado inicial para estatura
   String selectedGenero = 'Hombre'; // Valor seleccionado inicial para género
   String selectedPeso = '40'; // Valor seleccionado inicial para peso
 
@@ -66,6 +66,9 @@ class _OnBoardingViewState extends State<OnBoardingView> {
     );
 
     return Scaffold(
+      appBar: AppBar(
+        title: Text("ONBOARDING"),
+      ),
       body: Stack(
         children: [
           SingleChildScrollView(
@@ -82,7 +85,7 @@ class _OnBoardingViewState extends State<OnBoardingView> {
                   ),
                 ],
               ),
-              margin: EdgeInsets.fromLTRB(20, 35, 20, 0),
+              margin: EdgeInsets.fromLTRB(20, 100, 20, 0),
               padding: EdgeInsets.fromLTRB(20, 20, 20, 20),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -103,6 +106,18 @@ class _OnBoardingViewState extends State<OnBoardingView> {
                     child: iNombre,
                   ),
                   PickerButton<String>(
+                    titulo: 'GENERO',
+                    opciones: ['Hombre', 'Mujer', 'Otro'],
+                    valorSeleccionado: selectedGenero,
+                    onChanged: (String? newValue) {
+                      if (newValue != null) {
+                        setState(() {
+                          selectedGenero = newValue;
+                        });
+                      }
+                    },
+                  ),
+                  PickerButton<String>(
                     titulo: 'EDAD',
                     opciones: List.generate(55, (index) => (16 + index).toString()),
                     valorSeleccionado: selectedEdad,
@@ -116,8 +131,8 @@ class _OnBoardingViewState extends State<OnBoardingView> {
                   ),
                   PickerButton<String>(
                     titulo: 'ESTATURA (cm)',
-                    opciones: List.generate(221, (index) => (40 + index ).toString()+ 'cm'),
-                    valorSeleccionado: selectedEstatura+ 'cm',
+                    opciones: List.generate(221, (index) => (100 + index ).toString()),
+                    valorSeleccionado: selectedEstatura,
                     onChanged: (String? newValue) {
                       if (newValue != null) {
                         setState(() {
@@ -127,21 +142,9 @@ class _OnBoardingViewState extends State<OnBoardingView> {
                     },
                   ),
                   PickerButton<String>(
-                    titulo: 'GENERO',
-                    opciones: ['Hombre', 'Mujer', 'Otro'],
-                    valorSeleccionado: selectedGenero,
-                    onChanged: (String? newValue) {
-                      if (newValue != null) {
-                        setState(() {
-                          selectedGenero = newValue;
-                        });
-                      }
-                    },
-                  ),
-                  PickerButton<String>(
                     titulo: 'PESO (kg)',
-                    opciones: List.generate(160, (index) => (40 + index).toString() + 'kg'),
-                    valorSeleccionado: selectedPeso + 'kg',
+                    opciones: List.generate(160, (index) => (40 + index).toString()),
+                    valorSeleccionado: selectedPeso,
                     onChanged: (String? newValue) {
                       if (newValue != null) {
                         setState(() {
