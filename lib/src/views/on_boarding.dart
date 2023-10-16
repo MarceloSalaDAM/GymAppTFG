@@ -18,13 +18,13 @@ class OnBoardingView extends StatefulWidget {
 }
 
 class _OnBoardingViewState extends State<OnBoardingView> {
-  var txt = TextEditingController();
   FirebaseFirestore db = FirebaseFirestore.instance;
   String selectedEdad = '16';
   String selectedEstatura = '100';
   String selectedGenero = 'Hombre';
   String selectedPeso = '40';
   String? _imagePath;
+  late IPApp iNombre = IPApp(textoGuia: "Introducir nombre", titulo: "NOMBRE");
 
   @override
   void initState() {
@@ -76,11 +76,6 @@ class _OnBoardingViewState extends State<OnBoardingView> {
 
   @override
   Widget build(BuildContext context) {
-    IPApp iNombre = IPApp(
-      textoGuia: "Introducir nombre",
-      titulo: "NOMBRE",
-    );
-
     return Scaffold(
       appBar: AppBar(
         title: Text("DATOS"),
@@ -112,13 +107,14 @@ class _OnBoardingViewState extends State<OnBoardingView> {
                     ),
                     child: InkWell(
                       onTap: () {
-                        _cargarFoto(); // Permite al usuario cambiar la imagen al tocarla
+                        _cargarFoto();
                       },
                       child: _imagePath != null
                           ? ClipOval(
-                        child: Image.file(File(_imagePath!)),
-                      )
-                          : Icon(Icons.add_a_photo, size: 40, color: Colors.white),
+                              child: Image.file(File(_imagePath!)),
+                            )
+                          : Icon(Icons.add_a_photo,
+                              size: 40, color: Colors.white),
                     ),
                   ),
                   SizedBox(height: 30),
@@ -141,7 +137,7 @@ class _OnBoardingViewState extends State<OnBoardingView> {
                   PickerButton<String>(
                     titulo: 'EDAD',
                     opciones:
-                    List.generate(55, (index) => (16 + index).toString()),
+                        List.generate(55, (index) => (16 + index).toString()),
                     valorSeleccionado: selectedEdad,
                     onChanged: (String? newValue) {
                       if (newValue != null) {
@@ -154,7 +150,7 @@ class _OnBoardingViewState extends State<OnBoardingView> {
                   PickerButton<String>(
                     titulo: 'ESTATURA (cm)',
                     opciones:
-                    List.generate(221, (index) => (100 + index).toString()),
+                        List.generate(221, (index) => (100 + index).toString()),
                     valorSeleccionado: selectedEstatura,
                     onChanged: (String? newValue) {
                       if (newValue != null) {
@@ -167,7 +163,7 @@ class _OnBoardingViewState extends State<OnBoardingView> {
                   PickerButton<String>(
                     titulo: 'PESO (kg)',
                     opciones:
-                    List.generate(160, (index) => (40 + index).toString()),
+                        List.generate(160, (index) => (40 + index).toString()),
                     valorSeleccionado: selectedPeso,
                     onChanged: (String? newValue) {
                       if (newValue != null) {
@@ -200,7 +196,8 @@ class _OnBoardingViewState extends State<OnBoardingView> {
                         ),
                         onPressed: () {
                           acceptPressed(
-                            iNombre.getText(),
+                            iNombre.myController.text,
+                            // Usar el controlador de iNombre
                             selectedEdad,
                             selectedGenero,
                             selectedEstatura,
@@ -221,4 +218,3 @@ class _OnBoardingViewState extends State<OnBoardingView> {
     );
   }
 }
-
