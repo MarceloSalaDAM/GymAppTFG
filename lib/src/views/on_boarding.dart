@@ -1,7 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../custom/input_text_2.dart';
+import '../custom/picker_button.dart';
 import '../firebase_objects/usuarios_firebase.dart';
 
 class OnBoardingView extends StatefulWidget {
@@ -16,17 +17,10 @@ class OnBoardingView extends StatefulWidget {
 class _OnBoardingViewState extends State<OnBoardingView> {
   var txt = TextEditingController();
   FirebaseFirestore db = FirebaseFirestore.instance;
-  late List<String> weightOptions;
-  String selectedWeight = '--Seleccionar--'; // Valor seleccionado inicial
-
-  _OnBoardingViewState() {
-    int minWeight = 40;
-    int maxWeight = 140;
-    weightOptions = List.generate(maxWeight - minWeight + 1, (index) {
-      return (minWeight + index).toString() + ' kg';
-    });
-    weightOptions.insert(0, selectedWeight); // Inserta "--Seleccionar--" en la primera posición de la lista
-  }
+  String selectedEdad = '16'; // Valor seleccionado inicial para edad
+  String selectedEstatura = '40'; // Valor seleccionado inicial para estatura
+  String selectedGenero = 'Hombre'; // Valor seleccionado inicial para género
+  String selectedPeso = '40'; // Valor seleccionado inicial para peso
 
   @override
   void initState() {
@@ -70,18 +64,6 @@ class _OnBoardingViewState extends State<OnBoardingView> {
       textoGuia: "Introducir nombre",
       titulo: "NOMBRE",
     );
-    IPApp iEdad = IPApp(
-      textoGuia: "Introducir edad",
-      titulo: "EDAD",
-    );
-    IPApp iGenero = IPApp(
-      textoGuia: "Introducir genero",
-      titulo: "GENERO",
-    );
-    IPApp iEstatura = IPApp(
-      textoGuia: "Introducir estatura(cm)",
-      titulo: "ESTATURA",
-    );
 
     return Scaffold(
       body: Stack(
@@ -120,34 +102,53 @@ class _OnBoardingViewState extends State<OnBoardingView> {
                     padding: const EdgeInsets.all(8.0),
                     child: iNombre,
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: iEdad,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: iGenero,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: iEstatura,
-                  ),
-                  ListTile(
-                    title: Text('Peso'),
-                    trailing: DropdownButton<String>(
-                      value: selectedWeight,
-                      onChanged: (String? newValue) {
+                  PickerButton<String>(
+                    titulo: 'EDAD',
+                    opciones: List.generate(55, (index) => (16 + index).toString()),
+                    valorSeleccionado: selectedEdad,
+                    onChanged: (String? newValue) {
+                      if (newValue != null) {
                         setState(() {
-                          selectedWeight = newValue!;
+                          selectedEdad = newValue;
                         });
-                      },
-                      items: weightOptions.map((String weight) {
-                        return DropdownMenuItem<String>(
-                          value: weight,
-                          child: Text(weight),
-                        );
-                      }).toList(),
-                    ),
+                      }
+                    },
+                  ),
+                  PickerButton<String>(
+                    titulo: 'ESTATURA (cm)',
+                    opciones: List.generate(221, (index) => (40 + index ).toString()+ 'cm'),
+                    valorSeleccionado: selectedEstatura+ 'cm',
+                    onChanged: (String? newValue) {
+                      if (newValue != null) {
+                        setState(() {
+                          selectedEstatura = newValue;
+                        });
+                      }
+                    },
+                  ),
+                  PickerButton<String>(
+                    titulo: 'GENERO',
+                    opciones: ['Hombre', 'Mujer', 'Otro'],
+                    valorSeleccionado: selectedGenero,
+                    onChanged: (String? newValue) {
+                      if (newValue != null) {
+                        setState(() {
+                          selectedGenero = newValue;
+                        });
+                      }
+                    },
+                  ),
+                  PickerButton<String>(
+                    titulo: 'PESO (kg)',
+                    opciones: List.generate(160, (index) => (40 + index).toString() + 'kg'),
+                    valorSeleccionado: selectedPeso + 'kg',
+                    onChanged: (String? newValue) {
+                      if (newValue != null) {
+                        setState(() {
+                          selectedPeso = newValue;
+                        });
+                      }
+                    },
                   ),
                   SizedBox(height: 20),
                   Row(
@@ -173,26 +174,26 @@ class _OnBoardingViewState extends State<OnBoardingView> {
                         onPressed: () {
                           acceptPressed(
                             iNombre.getText(),
-                            iEdad.getText(),
-                            iGenero.getText(),
-                            iEstatura.getText(),
-                            selectedWeight,
+                            selectedEdad,
+                            selectedGenero,
+                            selectedEstatura,
+                            selectedPeso,
                             context,
                           );
                           print("NOMBRE " +
                               iNombre.getText() +
                               " " +
                               "EDAD " +
-                              iEdad.getText() +
+                              selectedEdad +
                               " " +
                               "GENERO " +
-                              iGenero.getText() +
+                              selectedGenero +
                               " " +
                               "ESTATURA " +
-                              iEstatura.getText() +
+                              selectedEstatura +
                               " " +
                               "PESO " +
-                              selectedWeight);
+                              selectedPeso);
                         },
                       ),
                     ],
@@ -207,4 +208,3 @@ class _OnBoardingViewState extends State<OnBoardingView> {
     );
   }
 }
-

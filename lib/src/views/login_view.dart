@@ -94,9 +94,10 @@ class LoginViewApp extends StatelessWidget {
                   SizedBox(height: 5),
                   // Agrega un espacio entre la imagen y los campos de texto
                   iUser,
-                  SizedBox(height: 30),
-                  // Agrega un espacio entre los campos de texto
-                  iPass,
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 16.0), // Agrega espacio en la parte inferior
+                    child: iPass,
+                  ),
                   SizedBox(height: 30),
                   // Agrega un espacio entre los campos de texto y el botón
                   Row(

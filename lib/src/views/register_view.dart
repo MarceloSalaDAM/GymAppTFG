@@ -96,34 +96,36 @@ class RegisterView extends StatelessWidget {
                   SizedBox(height: 5),
                   // Agrega un espacio entre la imagen y los campos de texto
                   iUsuario,
-                  SizedBox(height: 15),
-                  // Agrega un espacio entre los campos de texto
-                  iContra,
+                  SizedBox(height: 10),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 16.0),
+                    // Agrega espacio en la parte inferior
+                    child: iContra,
+                  ),
                   iContra2,
                   SizedBox(height: 20),
                   // Agrega un espacio entre los campos de texto y el botón
-
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                    MaterialButton(
-                    color: Colors.black,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                          7.0), // Cambia el radio de las esquinas a 10.0
-                    ),
-                    padding: EdgeInsets.all(8.0),
-                    textColor: Colors.white,
-                    splashColor: Colors.white,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text("CREAR"),
-                      ),
-                    ),
+                      MaterialButton(
+                        color: Colors.black,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                              7.0), // Cambia el radio de las esquinas a 10.0
+                        ),
+                        padding: EdgeInsets.all(8.0),
+                        textColor: Colors.white,
+                        splashColor: Colors.white,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text("CREAR"),
+                          ),
+                        ),
                         onPressed: () {
                           if (iContra.getText() == iContra2.getText()) {
                             btnRegistroPressed(
