@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../custom/InputText.dart';
+import '../custom/input_text_1.dart';
 
 class RegisterView extends StatelessWidget {
   //Vista para el registro de usuarios de la aplicación
@@ -29,16 +29,16 @@ class RegisterView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    IPExamen iUsuario = IPExamen(
+    IPLogin iUsuario = IPLogin(
       textoGuia: "Introducir usuario",
       titulo: "E-MAIL",
     );
-    IPExamen iContra = IPExamen(
+    IPLogin iContra = IPLogin(
       textoGuia: "Introducir contraseña",
       titulo: "CONTRASEÑA",
       contra: true,
     );
-    IPExamen iContra2 = IPExamen(
+    IPLogin iContra2 = IPLogin(
       textoGuia: "Repetir contraseña",
       titulo: "REPETIR CONTRASEÑA ",
       contra: true,

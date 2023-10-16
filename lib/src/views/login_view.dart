@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-import '../custom/InputText.dart';
+import '../custom/input_text_1.dart';
 
 class LoginViewApp extends StatelessWidget {
   //Vista para el logeo a la aplicacion
@@ -31,11 +31,11 @@ class LoginViewApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    IPExamen iUser = IPExamen(
+    IPLogin iUser = IPLogin(
       titulo: "Usuario",
     );
 
-    IPExamen iPass = IPExamen(
+    IPLogin iPass = IPLogin(
       titulo: "Contraseña",
       contra: true,
     );

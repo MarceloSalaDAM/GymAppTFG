@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class IPExamen extends StatelessWidget {
+class IPLogin extends StatelessWidget {
   final String titulo;
   final String textoGuia;
 
   final bool contra;
   final TextEditingController myController = TextEditingController(text: "");
 
-  IPExamen({
+  IPLogin({
     Key? key,
     this.titulo = " ",
     this.textoGuia = " ",
