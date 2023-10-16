@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+
 import '../custom/input_text_2.dart';
 import '../custom/picker_button.dart';
 import '../firebase_objects/usuarios_firebase.dart';
@@ -17,10 +20,11 @@ class OnBoardingView extends StatefulWidget {
 class _OnBoardingViewState extends State<OnBoardingView> {
   var txt = TextEditingController();
   FirebaseFirestore db = FirebaseFirestore.instance;
-  String selectedEdad = '16'; // Valor seleccionado inicial para edad
-  String selectedEstatura = '100'; // Valor seleccionado inicial para estatura
-  String selectedGenero = 'Hombre'; // Valor seleccionado inicial para género
-  String selectedPeso = '40'; // Valor seleccionado inicial para peso
+  String selectedEdad = '16';
+  String selectedEstatura = '100';
+  String selectedGenero = 'Hombre';
+  String selectedPeso = '40';
+  String? _imagePath;
 
   @override
   void initState() {
@@ -38,23 +42,17 @@ class _OnBoardingViewState extends State<OnBoardingView> {
       Navigator.of(context).popAndPushNamed("/Main");
     }
   }
+
   Future<void> _cargarFoto() async {
     final picker = ImagePicker();
-    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
-      // Aquí puedes guardar la foto seleccionada en Firebase Storage o en otro lugar según tus necesidades.
-      // Guarda la URL de la foto en el perfil del usuario si es necesario.
-      String imageUrl = pickedFile.path;
-
-      // Actualiza el estado de tu widget con la URL de la foto seleccionada.
       setState(() {
-        // Asigna la URL de la foto a una variable de estado, por ejemplo:
-        // imageUrl = pickedFile.path;
+        _imagePath = pickedFile.path;
       });
     }
   }
-
 
   void acceptPressed(String nombre, String edad, String genero, String estatura,
       String peso, BuildContext context) async {
@@ -64,6 +62,7 @@ class _OnBoardingViewState extends State<OnBoardingView> {
       genero: genero,
       estatura: estatura,
       peso: peso,
+      imageUrl: _imagePath,
     );
 
     await db
@@ -89,7 +88,6 @@ class _OnBoardingViewState extends State<OnBoardingView> {
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [Colors.blue, Colors.green],
-              // Cambia estos colores según tus preferencias
               begin: Alignment.topLeft,
               end: Alignment.topRight,
             ),
@@ -100,20 +98,27 @@ class _OnBoardingViewState extends State<OnBoardingView> {
         children: [
           SingleChildScrollView(
             child: Container(
-              margin: EdgeInsets.fromLTRB(0, 40, 0, 0),
+              margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
               padding: EdgeInsets.fromLTRB(20, 20, 20, 20),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Container(
-                    width: 80.0,
-                    height: 80.0,
-                    child: FloatingActionButton(
-                      onPressed: () {
-                        _cargarFoto();
+                    width: 120.0,
+                    height: 120.0,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.blue,
+                    ),
+                    child: InkWell(
+                      onTap: () {
+                        _cargarFoto(); // Permite al usuario cambiar la imagen al tocarla
                       },
-                      backgroundColor: Colors.blue,
-                      child: Icon(Icons.add_a_photo),
+                      child: _imagePath != null
+                          ? ClipOval(
+                        child: Image.file(File(_imagePath!)),
+                      )
+                          : Icon(Icons.add_a_photo, size: 40, color: Colors.white),
                     ),
                   ),
                   SizedBox(height: 30),
@@ -136,7 +141,7 @@ class _OnBoardingViewState extends State<OnBoardingView> {
                   PickerButton<String>(
                     titulo: 'EDAD',
                     opciones:
-                        List.generate(55, (index) => (16 + index).toString()),
+                    List.generate(55, (index) => (16 + index).toString()),
                     valorSeleccionado: selectedEdad,
                     onChanged: (String? newValue) {
                       if (newValue != null) {
@@ -149,7 +154,7 @@ class _OnBoardingViewState extends State<OnBoardingView> {
                   PickerButton<String>(
                     titulo: 'ESTATURA (cm)',
                     opciones:
-                        List.generate(221, (index) => (100 + index).toString()),
+                    List.generate(221, (index) => (100 + index).toString()),
                     valorSeleccionado: selectedEstatura,
                     onChanged: (String? newValue) {
                       if (newValue != null) {
@@ -162,7 +167,7 @@ class _OnBoardingViewState extends State<OnBoardingView> {
                   PickerButton<String>(
                     titulo: 'PESO (kg)',
                     opciones:
-                        List.generate(160, (index) => (40 + index).toString()),
+                    List.generate(160, (index) => (40 + index).toString()),
                     valorSeleccionado: selectedPeso,
                     onChanged: (String? newValue) {
                       if (newValue != null) {
@@ -202,20 +207,6 @@ class _OnBoardingViewState extends State<OnBoardingView> {
                             selectedPeso,
                             context,
                           );
-                          print("NOMBRE " +
-                              iNombre.getText() +
-                              " " +
-                              "EDAD " +
-                              selectedEdad +
-                              " " +
-                              "GENERO " +
-                              selectedGenero +
-                              " " +
-                              "ESTATURA " +
-                              selectedEstatura +
-                              " " +
-                              "PESO " +
-                              selectedPeso);
                         },
                       ),
                     ],
@@ -230,3 +221,4 @@ class _OnBoardingViewState extends State<OnBoardingView> {
     );
   }
 }
+

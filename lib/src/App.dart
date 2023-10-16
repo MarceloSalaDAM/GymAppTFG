@@ -9,6 +9,7 @@ import 'package:gym_app_tfg/src/views/register_view.dart';
 import 'package:gym_app_tfg/src/views/settings.dart';
 import 'package:gym_app_tfg/src/views/splash_view.dart';
 
+
 class App extends StatelessWidget {
   App({Key? key}) : super(key: key);
   FirebaseFirestore db = FirebaseFirestore.instance;

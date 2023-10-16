@@ -6,7 +6,7 @@ class Usuarios {
   final String? nombre;
   final String? edad;
   final String? estatura;
-  final String? fotoPerfil;
+  final String? imageUrl;
   final String? peso;
   final String? genero;
 
@@ -14,7 +14,7 @@ class Usuarios {
     this.nombre = " ",
     this.edad = " ",
     this.estatura = " ",
-    this.fotoPerfil = " ",
+    this.imageUrl = " ",
     this.peso = " ",
     this.genero = " ",
   });
@@ -28,7 +28,7 @@ class Usuarios {
         nombre: data?['nombre'],
         edad: data?['edad'],
         estatura: data?['estatura'],
-        fotoPerfil: data?['fotoPerfil'],
+        imageUrl: data?['fotoPerfil'],
         peso: data?['peso'],
         genero: data?['genero']);
   }
@@ -40,6 +40,7 @@ class Usuarios {
       if (estatura != null) "estatura": estatura,
       if (peso != null) "peso": peso,
       if (genero != null) "genero": genero,
+      if (imageUrl != null) "fotoPerfil": imageUrl,
     };
   }
 }
