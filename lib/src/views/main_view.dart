@@ -37,7 +37,7 @@ class _MainViewAppState extends State<MainViewApp> {
               icon: Icon(Icons.settings),
               iconSize: 37, // Tamaño personalizado del icono
               onPressed: () {
-                // Acción al presionar el botón en la esquina superior derecha
+                Navigator.of(context).popAndPushNamed("/Settings");
                 print('Botón presionado');
               },
             ),
