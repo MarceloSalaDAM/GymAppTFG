@@ -1,18 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:gym_app_tfg/src/firebase_objects/usuarios_firebase.dart';
-
 import '../custom/InputText.dart';
+import '../firebase_objects/usuarios_firebase.dart';
 
 class OnBoardingView extends StatefulWidget {
-  // Vista para la cración del perfil una vez ha sido registrado
   OnBoardingView({Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
     return _OnBoardingViewState();
   }
 }
@@ -23,12 +19,10 @@ class _OnBoardingViewState extends State<OnBoardingView> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     checkExistingProfile();
   }
 
-  //Comprobación de la existencia del perfil
   void checkExistingProfile() async {
     String? idUser = FirebaseAuth.instance.currentUser?.uid;
     final docRef = db.collection("usuarios").doc(idUser);
@@ -40,8 +34,8 @@ class _OnBoardingViewState extends State<OnBoardingView> {
     }
   }
 
-  void acceptPressed(
-      String nombre, String apellidos, BuildContext context) async {
+  void acceptPressed(String nombre, String edad, String genero, String estatura,
+      String peso, BuildContext context) async {
     Usuarios usuario = Usuarios(
       nombre: nombre,
     );
@@ -61,43 +55,87 @@ class _OnBoardingViewState extends State<OnBoardingView> {
       textoGuia: "Introducir nombre",
       titulo: "NOMBRE",
     );
-    IPExamen iApellidos = IPExamen(
-      textoGuia: "Introducir apellidos",
-      titulo: "APELLIDOS",
+    IPExamen iEdad = IPExamen(
+      textoGuia: "Introducir edad",
+      titulo: "EDAD",
+    );
+    IPExamen iGenero = IPExamen(
+      textoGuia: "Introducir genero",
+      titulo: "GENERO",
+    );
+    IPExamen iEstatura = IPExamen(
+      textoGuia: "Introducir estatura(cm)",
+      titulo: "ESTATURA",
+    );
+    IPExamen iPeso = IPExamen(
+      textoGuia: "Introducir peso(kg)",
+      titulo: "PESO",
     );
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("ON BOARDING EXAMEN"),
-        //esta barra de código es para quitar el icono de la flecha arriba a la izquierda de mi aplicacion
-        automaticallyImplyLeading: false,
-        backgroundColor: Colors.black,
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            iNombre,
-            iApellidos,
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                OutlinedButton(
-                  onPressed: () {
-                    acceptPressed(
-                        iNombre.getText(), iApellidos.getText(), context);
-                    print("NOMBRE " +
-                        iNombre.getText() +
-                        " " +
-                        "APELLIDOS " +
-                        iApellidos.getText());
-                  },
-                  child: Text("CONFIRMAR"),
+                SizedBox(height: 200), // Espacio para el botón flotante
+                iNombre,
+                iEdad,
+                iGenero,
+                iEstatura,
+                iPeso,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    OutlinedButton(
+                      onPressed: () {
+                        acceptPressed(
+                            iNombre.getText(),
+                            iEdad.getText(),
+                            iGenero.getText(),
+                            iEstatura.getText(),
+                            iPeso.getText(),
+                            context);
+                        print("NOMBRE " +
+                            iNombre.getText() +
+                            " " +
+                            "EDAD " +
+                            iEdad.getText() +
+                            " " +
+                            "GENERO " +
+                            iGenero.getText() +
+                            " " +
+                            "ESTATURA " +
+                            iEstatura.getText() +
+                            " " +
+                            "PESO " +
+                            iPeso.getText());
+                      },
+                      child: Text("CONFIRMAR"),
+                    ),
+                  ],
                 ),
               ],
-            )
-          ],
-        ),
+            ),
+          ),
+          Positioned(
+              top: 80, // Ajusta la posición vertical según sea necesario
+              left: 0,
+              right: 0,
+              child: Container(
+
+                width: 80.0, // Ancho deseado
+                height: 80.0, // Alto deseado
+                child: FloatingActionButton(
+                  onPressed: () {
+                    // Lógica al hacer clic en el botón flotante
+                  },
+                  backgroundColor: Colors.blue, // Cambiar el color a azul
+                  child: Icon(Icons.add_a_photo),
+                ),
+              )),
+        ],
       ),
       backgroundColor: Colors.white,
     );

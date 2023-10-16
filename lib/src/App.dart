@@ -21,7 +21,7 @@ class App extends StatelessWidget {
     Desde la pantalla LOGIN, podemos registrar un nuevo usuario y desde la
     pantalla de REGISTRO, nos lleva al ONBOARDING para completar el perfil.*/
     return MaterialApp(
-      theme: ThemeData(
+     theme: ThemeData(
         textTheme: GoogleFonts.baiJamjureeTextTheme(
           Theme.of(context).textTheme,
         ),
