@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:gym_app_tfg/src/views/login_view.dart';
 import 'package:gym_app_tfg/src/views/main_view.dart';
 import 'package:gym_app_tfg/src/views/on_boarding.dart';
+import 'package:gym_app_tfg/src/views/profile_view.dart';
 import 'package:gym_app_tfg/src/views/register_view.dart';
 import 'package:gym_app_tfg/src/views/settings.dart';
 import 'package:gym_app_tfg/src/views/splash_view.dart';
@@ -36,6 +37,7 @@ class App extends StatelessWidget {
         '/OnBoarding': (context) => OnBoardingView(),
         '/Splash': (context) => SplashView(),
         '/Settings': (context) => SettingsView(),
+        '/Profile': (context) => ProfileView(),
       },
     );
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gym_app_tfg/src/views/profile_view.dart';
 import '../custom/card_item.dart';
 
 class MainViewApp extends StatefulWidget {
@@ -84,15 +85,7 @@ class _MainViewAppState extends State<MainViewApp> {
                   ),
                 )
               : _currentIndex == 2
-                  ? const Center(
-                      child: Text(
-                        'Contenido de Perfil',
-                        style: TextStyle(
-                          fontSize: 24,
-                          color: Colors.black,
-                        ),
-                      ),
-                    )
+                  ? ProfileView()
                   : Container(),
       // Widget vacío para otras pestañas
       bottomNavigationBar: Container(
