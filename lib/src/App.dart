@@ -33,11 +33,11 @@ class App extends StatelessWidget {
       routes: {
         '/Login': (context) => LoginViewApp(),
         '/Register': (context) => RegisterView(),
-        '/Main': (context) => MainViewApp(),
-        '/OnBoarding': (context) => OnBoardingView(),
+        '/Main': (context) => const MainViewApp(),
+        '/OnBoarding': (context) => const OnBoardingView(),
         '/Splash': (context) => SplashView(),
         '/Settings': (context) => SettingsView(),
-        '/Profile': (context) => ProfileView(),
+        '/Profile': (context) => const ProfileView(),
       },
     );
   }

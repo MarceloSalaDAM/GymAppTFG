@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class SplashView extends StatefulWidget {
-  SplashView({Key? key}) : super(key: key);
+  const SplashView({Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -20,16 +20,16 @@ class _SplashViewState extends State<SplashView> {
   }
 
   void descargaDatos() async {
-    await Future.delayed(Duration(seconds: 4));
+    await Future.delayed(const Duration(seconds: 3));
 
     if (FirebaseAuth.instance.currentUser == null) {
-      Navigator.of(context).popAndPushNamed("/Login");
+      Navigator.of(context).pushReplacementNamed("/Login");
     } else {
       bool existe = await checkExistingProfile();
       if (existe) {
-        Navigator.of(context).popAndPushNamed("/Main");
+        Navigator.of(context).pushReplacementNamed("/Main");
       } else {
-        Navigator.of(context).popAndPushNamed("/OnBoarding");
+        Navigator.of(context).pushReplacementNamed("/OnBoarding");
       }
     }
   }
@@ -51,7 +51,7 @@ class _SplashViewState extends State<SplashView> {
         fit: StackFit.expand,
         children: [
           Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               gradient: LinearGradient(
                 colors: [Colors.blue, Colors.green],
                 begin: Alignment.topLeft,
@@ -59,7 +59,7 @@ class _SplashViewState extends State<SplashView> {
               ),
             ),
           ),
-          Center(
+          const Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -71,7 +71,7 @@ class _SplashViewState extends State<SplashView> {
               ],
             ),
           ),
-          Positioned(
+          const Positioned(
             bottom: 0,
             left: 0,
             right: 0,

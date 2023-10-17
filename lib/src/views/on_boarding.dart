@@ -9,7 +9,7 @@ import '../custom/picker_button.dart';
 import '../firebase_objects/usuarios_firebase.dart';
 
 class OnBoardingView extends StatefulWidget {
-  OnBoardingView({Key? key}) : super(key: key);
+  const OnBoardingView({Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -78,9 +78,9 @@ class _OnBoardingViewState extends State<OnBoardingView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("DATOS"),
+        title: const Text("DATOS"),
         flexibleSpace: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [Colors.blue, Colors.green],
               begin: Alignment.topLeft,
@@ -93,15 +93,15 @@ class _OnBoardingViewState extends State<OnBoardingView> {
         children: [
           SingleChildScrollView(
             child: Container(
-              margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
-              padding: EdgeInsets.fromLTRB(20, 20, 20, 20),
+              margin: const EdgeInsets.fromLTRB(0, 10, 0, 0),
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Container(
                     width: 120.0,
                     height: 120.0,
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       shape: BoxShape.circle,
                       color: Colors.blue,
                     ),
@@ -113,18 +113,18 @@ class _OnBoardingViewState extends State<OnBoardingView> {
                           ? ClipOval(
                               child: Image.file(File(_imagePath!)),
                             )
-                          : Icon(Icons.add_a_photo,
+                          : const Icon(Icons.add_a_photo,
                               size: 40, color: Colors.white),
                     ),
                   ),
-                  SizedBox(height: 30),
+                  const SizedBox(height: 30),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: iNombre,
                   ),
                   PickerButton<String>(
                     titulo: 'GENERO',
-                    opciones: ['Hombre', 'Mujer', 'Otro'],
+                    opciones: const ['Hombre', 'Mujer', 'Otro'],
                     valorSeleccionado: selectedGenero,
                     onChanged: (String? newValue) {
                       if (newValue != null) {
@@ -173,7 +173,7 @@ class _OnBoardingViewState extends State<OnBoardingView> {
                       }
                     },
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -182,15 +182,15 @@ class _OnBoardingViewState extends State<OnBoardingView> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(7.0),
                         ),
-                        padding: EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(8.0),
                         textColor: Colors.white,
                         splashColor: Colors.white,
                         child: Container(
                           decoration: BoxDecoration(
                             border: Border.all(),
                           ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
+                          child: const Padding(
+                            padding: EdgeInsets.all(8.0),
                             child: Text("GUARDAR"),
                           ),
                         ),

@@ -126,7 +126,7 @@ class _MainViewAppState extends State<MainViewApp> {
                   ),
                 )
               : _currentIndex == 2
-                  ? ProfileView()
+                  ? const ProfileView()
                   : Container(),
       // Widget vacío para otras pestañas
       bottomNavigationBar: Container(

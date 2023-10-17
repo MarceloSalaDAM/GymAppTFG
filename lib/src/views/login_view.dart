@@ -1,13 +1,13 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+
 
 import '../custom/input_text_1.dart';
+import 'main_view.dart';
 
 class LoginViewApp extends StatelessWidget {
   //Vista para el logeo a la aplicacion
-  LoginViewApp({Key? key}) : super(key: key);
+  const LoginViewApp({Key? key}) : super(key: key);
 
   /*Con esta funcion conseguimos que se logee el usuario
   SI coincide con un usuario ya creado en el firebase*/
@@ -20,7 +20,12 @@ class LoginViewApp extends StatelessWidget {
       );
       print("LOGEADO CON EXITO");
 
-      Navigator.of(context).popAndPushNamed('/Main');
+      // Agregar un retraso de 2 segundos antes de navegar a la pantalla principal
+      Future.delayed(const Duration(seconds: 2), () {
+        Navigator.of(context).pushReplacement(MaterialPageRoute(
+          builder: (context) => const MainViewApp(),
+        ));
+      });
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not found') {
         print('No user found for that email');
@@ -60,12 +65,12 @@ class LoginViewApp extends StatelessWidget {
           child: Center(
             child: Container(
 
-              margin: EdgeInsets.fromLTRB(50, 150, 50, 60),
-              padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
+              margin: const EdgeInsets.fromLTRB(50, 150, 50, 60),
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
               width: 500,
               height: 450,
               decoration: BoxDecoration(
-                gradient: LinearGradient(
+                gradient: const LinearGradient(
                   colors: [Colors.blue, Colors.green],
                   // Cambia estos colores según tus preferencias
                   begin: Alignment.topLeft,
@@ -73,7 +78,7 @@ class LoginViewApp extends StatelessWidget {
                 ),
                 border: Border.all(),
                 borderRadius: BorderRadius.circular(25.0),
-                boxShadow: [
+                boxShadow: const [
                   BoxShadow(
                     color: Colors.black, // Color de la sombra
                     blurRadius: 5.0, // Radio de desenfoque de la sombra
@@ -93,7 +98,7 @@ class LoginViewApp extends StatelessWidget {
                     fit: BoxFit.scaleDown,
                     alignment: Alignment.topCenter,
                   ),
-                  SizedBox(height: 5),
+                  const SizedBox(height: 5),
                   // Agrega un espacio entre la imagen y los campos de texto
                   iUser,
                   Padding(
@@ -102,7 +107,7 @@ class LoginViewApp extends StatelessWidget {
                     child: iPass,
                   ),
 
-                  SizedBox(height: 30),
+                  const SizedBox(height: 30),
                   // Agrega un espacio entre los campos de texto y el botón
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -113,15 +118,15 @@ class LoginViewApp extends StatelessWidget {
                           borderRadius: BorderRadius.circular(
                               7.0), // Cambia el radio de las esquinas a 10.0
                         ),
-                        padding: EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(8.0),
                         textColor: Colors.white,
                         splashColor: Colors.white,
                         child: Container(
                           decoration: BoxDecoration(
                             border: Border.all(),
                           ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
+                          child: const Padding(
+                            padding: EdgeInsets.all(8.0),
                             child: Text("REGISTRO"),
                           ),
                         ),
@@ -136,15 +141,15 @@ class LoginViewApp extends StatelessWidget {
                           borderRadius: BorderRadius.circular(
                               7.0), // Cambia el radio de las esquinas a 10.0
                         ),
-                        padding: EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(8.0),
                         textColor: Colors.white,
                         splashColor: Colors.white,
                         child: Container(
                           decoration: BoxDecoration(
                             border: Border.all(),
                           ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
+                          child: const Padding(
+                            padding: EdgeInsets.all(8.0),
                             child: Text("ENTRAR"),
                           ),
                         ),
@@ -154,11 +159,7 @@ class LoginViewApp extends StatelessWidget {
                             iPass.getText(),
                             context,
                           );
-                          print("SESIÓN INICIADA CON----------->>> " +
-                              " " +
-                              iUser.getText() +
-                              " " +
-                              iPass.getText());
+                          print("SESIÓN INICIADA CON----------->>>  ${iUser.getText()} ${iPass.getText()}");
                         },
                       ),
                     ],

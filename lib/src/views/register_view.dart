@@ -1,12 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../custom/input_text_1.dart';
 
 class RegisterView extends StatelessWidget {
   //Vista para el registro de usuarios de la aplicación
-  RegisterView({Key? key}) : super(key: key);
+  const RegisterView({Key? key}) : super(key: key);
 
   //Con esta función creamos un usuario y este es añadido al firebase
   void btnRegistroPressed(
@@ -60,12 +59,12 @@ class RegisterView extends StatelessWidget {
         SingleChildScrollView(
           child: Center(
             child: Container(
-              margin: EdgeInsets.fromLTRB(50, 150, 50, 60),
-              padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
+              margin: const EdgeInsets.fromLTRB(50, 150, 50, 60),
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
               width: 500,
               height: 500,
               decoration: BoxDecoration(
-                gradient: LinearGradient(
+                gradient: const LinearGradient(
                   colors: [Colors.blue, Colors.green],
                   // Cambia estos colores según tus preferencias
                   begin: Alignment.topLeft,
@@ -73,7 +72,7 @@ class RegisterView extends StatelessWidget {
                 ),
                 border: Border.all(),
                 borderRadius: BorderRadius.circular(25.0),
-                boxShadow: [
+                boxShadow: const [
                   BoxShadow(
                     color: Colors.black, // Color de la sombra
                     blurRadius: 5.0, // Radio de desenfoque de la sombra
@@ -93,17 +92,17 @@ class RegisterView extends StatelessWidget {
                     fit: BoxFit.scaleDown,
                     alignment: Alignment.topCenter,
                   ),
-                  SizedBox(height: 5),
+                  const SizedBox(height: 5),
                   // Agrega un espacio entre la imagen y los campos de texto
                   iUsuario,
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   Padding(
                     padding: const EdgeInsets.only(bottom: 16.0),
                     // Agrega espacio en la parte inferior
                     child: iContra,
                   ),
                   iContra2,
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   // Agrega un espacio entre los campos de texto y el botón
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -114,15 +113,15 @@ class RegisterView extends StatelessWidget {
                           borderRadius: BorderRadius.circular(
                               7.0), // Cambia el radio de las esquinas a 10.0
                         ),
-                        padding: EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(8.0),
                         textColor: Colors.white,
                         splashColor: Colors.white,
                         child: Container(
                           decoration: BoxDecoration(
                             border: Border.all(),
                           ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
+                          child: const Padding(
+                            padding: EdgeInsets.all(8.0),
                             child: Text("CREAR"),
                           ),
                         ),
@@ -130,11 +129,7 @@ class RegisterView extends StatelessWidget {
                           if (iContra.getText() == iContra2.getText()) {
                             btnRegistroPressed(
                                 iUsuario.getText(), iContra.getText(), context);
-                            print("USUARIO CREADO CORRECTAMENTE------>>>" +
-                                " " +
-                                iUsuario.getText() +
-                                " " +
-                                iContra.getText());
+                            print("USUARIO CREADO CORRECTAMENTE------>>> ${iUsuario.getText()} ${iContra.getText()}");
                           } else {}
                         },
                       ),
@@ -144,15 +139,15 @@ class RegisterView extends StatelessWidget {
                           borderRadius: BorderRadius.circular(
                               7.0), // Cambia el radio de las esquinas a 10.0
                         ),
-                        padding: EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(8.0),
                         textColor: Colors.white,
                         splashColor: Colors.white,
                         child: Container(
                           decoration: BoxDecoration(
                             border: Border.all(),
                           ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
+                          child: const Padding(
+                            padding: EdgeInsets.all(8.0),
                             child: Text("CANCELAR"),
                           ),
                         ),

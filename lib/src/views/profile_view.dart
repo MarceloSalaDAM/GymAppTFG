@@ -7,7 +7,7 @@ import 'dart:io';
 import '../custom/picker_button.dart';
 
 class ProfileView extends StatefulWidget {
-  ProfileView({Key? key}) : super(key: key);
+  const ProfileView({Key? key}) : super(key: key);
 
   @override
   _ProfileViewState createState() => _ProfileViewState();
@@ -97,7 +97,7 @@ class _ProfileViewState extends State<ProfileView> {
 
       // Notifica al usuario que la actualización se realizó con éxito.
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('Datos actualizados con éxito.'),
         ),
       );
@@ -115,20 +115,20 @@ class _ProfileViewState extends State<ProfileView> {
   Widget build(BuildContext context) {
     if (nombreController.text.isEmpty && _imagePath == null) {
       // Muestra una pantalla de carga mientras se obtienen los datos
-      return Center(child: CircularProgressIndicator());
+      return const Center(child: CircularProgressIndicator());
     } else {
       return Scaffold(
         body: SingleChildScrollView(
           child: Container(
-            margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
-            padding: EdgeInsets.fromLTRB(20, 20, 20, 20),
+            margin: const EdgeInsets.fromLTRB(0, 10, 0, 0),
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Container(
                   width: 90.0,
                   height: 90.0,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     shape: BoxShape.circle,
                     color: Colors.grey,
                   ),
@@ -140,23 +140,23 @@ class _ProfileViewState extends State<ProfileView> {
                         ? ClipOval(
                       child: Image.file(File(_imagePath!)),
                     )
-                        : Icon(Icons.add_a_photo,
+                        : const Icon(Icons.add_a_photo,
                         size: 40, color: Colors.white),
                   ),
                 ),
-                SizedBox(height: 30),
+                const SizedBox(height: 30),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TextField(
                     controller: nombreController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'NOMBRE',
                     ),
                   ),
                 ),
                 PickerButton<String>(
                   titulo: 'GENERO',
-                  opciones: ['Hombre', 'Mujer', 'Otro'],
+                  opciones: const ['Hombre', 'Mujer', 'Otro'],
                   valorSeleccionado: selectedGenero,
                   onChanged: (String? newValue) {
                     if (newValue != null) {
@@ -205,7 +205,7 @@ class _ProfileViewState extends State<ProfileView> {
                     }
                   },
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
@@ -215,14 +215,14 @@ class _ProfileViewState extends State<ProfileView> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(7.0),
                       ),
-                      padding: EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.all(8.0),
                       textColor: Colors.white,
                       splashColor: Colors.white,
                       child: Container(
                         decoration: BoxDecoration(
                           border: Border.all(),
                         ),
-                        child: Padding(
+                        child: const Padding(
                           padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
                           child: Icon(Icons.save_alt),
                         ),

@@ -30,19 +30,19 @@ class SettingsView extends StatelessWidget {
           SingleChildScrollView(
             child: Center(
               child: Container(
-                margin: EdgeInsets.fromLTRB(50, 150, 50, 60),
-                padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
+                margin: const EdgeInsets.fromLTRB(50, 150, 50, 60),
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
                 width: 500,
                 height: 450,
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
+                  gradient: const LinearGradient(
                     colors: [Colors.blue, Colors.green],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
                   border: Border.all(),
                   borderRadius: BorderRadius.circular(25.0),
-                  boxShadow: [
+                  boxShadow: const [
                     BoxShadow(
                       color: Colors.black,
                       blurRadius: 5.0,
@@ -60,7 +60,7 @@ class SettingsView extends StatelessWidget {
                       style: ElevatedButton.styleFrom(
                         primary: Colors.red, // Color del botón
                       ),
-                      child: Text('Cerrar Sesión',
+                      child: const Text('Cerrar Sesión',
                           style: TextStyle(color: Colors.white)),
                     ),
                   ],
