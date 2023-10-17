@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class MainViewApp extends StatefulWidget {
@@ -24,7 +23,7 @@ class _MainViewAppState extends State<MainViewApp> {
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [Colors.blue, Colors.green], // Cambia estos colores según tus preferencias
+              colors: [Colors.blue, Colors.green],
               begin: Alignment.topLeft,
               end: Alignment.topRight,
             ),
@@ -35,7 +34,7 @@ class _MainViewAppState extends State<MainViewApp> {
             margin: EdgeInsets.fromLTRB(0, 0, 10, 5),
             child: IconButton(
               icon: Icon(Icons.settings),
-              iconSize: 37, // Tamaño personalizado del icono
+              iconSize: 37,
               onPressed: () {
                 Navigator.of(context).popAndPushNamed("/Settings");
                 print('Botón presionado');
@@ -44,108 +43,161 @@ class _MainViewAppState extends State<MainViewApp> {
           ),
         ],
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              '¡Bienvenido a mi aplicación!',
-              style: TextStyle(fontSize: 24),
+      body: Column(
+        children: <Widget>[
+          Container(
+            margin: EdgeInsets.fromLTRB(10, 30, 10, 50),
+            padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+            height: 60,
+            width: 400,
+            color: Colors.lightBlueAccent,
+            child: Text(
+              "HOLA! (nombreusuario)",
+              style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
             ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      title: Text('Diálogo de Ejemplo'),
-                      content: Text('Esto es un mensaje de ejemplo.'),
-                      actions: <Widget>[
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: Text('Cerrar'),
-                        ),
-                      ],
-                    );
-                  },
-                );
-              },
-              child: Text('Mostrar Diálogo'),
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Acción al presionar el botón central
-          print('Botón central presionado');
-        },
-        child: Icon(Icons.add),
-        backgroundColor: Colors.black,
-        // Color de fondo personalizado
-        elevation: 1.0, // Controla la sombra del botón
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      // Posición central
-      bottomNavigationBar: Container(
-        height: 55,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Colors.blue, Colors.green],
-            // Cambia estos colores según tus preferencias
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
           ),
-        ),
-        child: BottomAppBar(
-          shape: CircularNotchedRectangle(),
-          color: Colors.transparent,
-          // Establece el color de la barra de navegación como transparente
-          child: Row(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: <Widget>[
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _onItemTapped(0);
-                  });
+          Text(
+            '¡Bienvenido a mi aplicación!',
+            style: TextStyle(fontSize: 24),
+          ),
+          SizedBox(height: 20),
+          ElevatedButton(
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: Text('Diálogo de Ejemplo'),
+                    content: Text('Esto es un mensaje de ejemplo.'),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text('Cerrar'),
+                      ),
+                    ],
+                  );
                 },
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Icon(
-                      Icons.query_stats_outlined,
-                      color: _currentIndex == 0 ? Colors.white : Colors.grey,
-                      size: 38,
-                    ),
-                  ],
-                ),
-              ),
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _onItemTapped(1);
-                  });
+              );
+            },
+            child: Text('Mostrar Diálogo'),
+          ),
+          SizedBox(height: 20),
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              FloatingActionButton(
+                onPressed: () {
+                  print('Botón central presionado');
                 },
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Icon(
-                      Icons.person_outline_outlined,
-                      color: _currentIndex == 1 ? Colors.white : Colors.grey,
-                      size: 38,
-                    ),
-                  ],
-                ),
+                child: Icon(Icons.add, size: 36),
+                backgroundColor: Colors.black,
+                elevation: 1.0,
               ),
             ],
           ),
-        ),
+        ],
+      ),
+      bottomNavigationBar: MyBottomNavigationBar(
+        currentIndex: _currentIndex,
+        onItemTapped: _onItemTapped,
       ),
     );
   }
 }
+
+class MyBottomNavigationBar extends StatelessWidget {
+  final int currentIndex;
+  final Function(int) onItemTapped;
+
+  MyBottomNavigationBar({
+    required this.currentIndex,
+    required this.onItemTapped,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Colors.blue, Colors.green],
+          begin: Alignment.topLeft,
+          end: Alignment.topRight,
+        ),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Container(
+              color: Colors.blue,
+              height: 3,
+            ),
+          ),
+          GestureDetector(
+            onTap: () {
+              onItemTapped(0);
+            },
+            child: Container(
+              width: 60,
+              child: Icon(
+                Icons.home,
+                size: 36,
+                color: currentIndex == 0 ? Colors.blue : Colors.grey,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Container(
+              color: Colors.blue,
+              height: 3,
+            ),
+          ),
+          GestureDetector(
+            onTap: () {
+              onItemTapped(1);
+            },
+            child: Container(
+              width: 60,
+              child: Icon(
+                Icons.search,
+                size: 36,
+                color: currentIndex == 1 ? Colors.blue : Colors.grey,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Container(
+              color: Colors.blue,
+              height: 3,
+            ),
+          ),
+          GestureDetector(
+            onTap: () {
+              onItemTapped(2);
+            },
+            child: Container(
+              width: 60,
+              child: Icon(
+                Icons.person_outline,
+                size: 36,
+                color: currentIndex == 2 ? Colors.blue : Colors.grey,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Container(
+              color: Colors.blue,
+              height: 3,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+
+

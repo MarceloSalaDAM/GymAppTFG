@@ -19,6 +19,7 @@ class LoginViewApp extends StatelessWidget {
         password: password,
       );
       print("LOGEADO CON EXITO");
+
       Navigator.of(context).popAndPushNamed('/Main');
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not found') {
@@ -58,6 +59,7 @@ class LoginViewApp extends StatelessWidget {
         SingleChildScrollView(
           child: Center(
             child: Container(
+
               margin: EdgeInsets.fromLTRB(50, 150, 50, 60),
               padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
               width: 500,
@@ -95,9 +97,11 @@ class LoginViewApp extends StatelessWidget {
                   // Agrega un espacio entre la imagen y los campos de texto
                   iUser,
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 16.0), // Agrega espacio en la parte inferior
+                    padding: const EdgeInsets.only(bottom: 16.0),
+                    // Agrega espacio en la parte inferior
                     child: iPass,
                   ),
+
                   SizedBox(height: 30),
                   // Agrega un espacio entre los campos de texto y el botón
                   Row(
