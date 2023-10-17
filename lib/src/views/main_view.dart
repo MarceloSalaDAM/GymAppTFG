@@ -8,13 +8,49 @@ class MainViewApp extends StatefulWidget {
 }
 
 class _MainViewAppState extends State<MainViewApp> {
-  int _currentIndex = 0;
+  int _currentIndex = 1;
 
-  void _onItemTapped(int index) {
-    setState(() {
-      _currentIndex = index;
-    });
-  }
+  final List<Widget> _pages = [
+    // Contenido para la página de estadísticas
+    Container(
+      color: Colors.blue,
+      child: Center(
+        child: Text(
+          'Progreso',
+          style: TextStyle(
+            fontSize: 24,
+            color: Colors.white,
+          ),
+        ),
+      ),
+    ),
+    // Contenido para la página de inicio
+    Container(
+      color: Colors.blue,
+      child: Center(
+        child: Text(
+          'Bienvenido',
+          style: TextStyle(
+            fontSize: 24,
+            color: Colors.white,
+          ),
+        ),
+      ),
+    ),
+    // Contenido para la página de perfil
+    Container(
+      color: Colors.blue,
+      child: Center(
+        child: Text(
+          'Perfil',
+          style: TextStyle(
+            fontSize: 24,
+            color: Colors.white,
+          ),
+        ),
+      ),
+    ),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -43,161 +79,62 @@ class _MainViewAppState extends State<MainViewApp> {
           ),
         ],
       ),
-      body: Column(
-        children: <Widget>[
-          Container(
-            margin: EdgeInsets.fromLTRB(10, 30, 10, 50),
-            padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
-            height: 60,
-            width: 400,
-            color: Colors.lightBlueAccent,
-            child: Text(
-              "HOLA! (nombreusuario)",
-              style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-            ),
+      body: _pages[_currentIndex],
+      bottomNavigationBar: Container(
+        height: 90,
+        margin: EdgeInsets.fromLTRB(5, 5, 5, 15),
+        padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.blue, Colors.green],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
-          Text(
-            '¡Bienvenido a mi aplicación!',
-            style: TextStyle(fontSize: 24),
+          border: Border.all(),
+          borderRadius: BorderRadius.circular(30.0),
+        ),
+        child: Theme(
+          data: Theme.of(context).copyWith(
+            canvasColor: Colors.transparent,
           ),
-          SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (context) {
-                  return AlertDialog(
-                    title: Text('Diálogo de Ejemplo'),
-                    content: Text('Esto es un mensaje de ejemplo.'),
-                    actions: <Widget>[
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: Text('Cerrar'),
-                      ),
-                    ],
-                  );
-                },
-              );
-            },
-            child: Text('Mostrar Diálogo'),
-          ),
-          SizedBox(height: 20),
-          Stack(
-            alignment: Alignment.center,
-            children: [
-              FloatingActionButton(
-                onPressed: () {
-                  print('Botón central presionado');
-                },
-                child: Icon(Icons.add, size: 36),
-                backgroundColor: Colors.black,
-                elevation: 1.0,
+          child: BottomNavigationBar(
+            elevation: 0.0, // Eliminar la sombra
+            backgroundColor: Colors.transparent,
+            currentIndex: _currentIndex,
+            type: BottomNavigationBarType.fixed,
+            items: [
+              BottomNavigationBarItem(
+                icon: Icon(Icons.query_stats),
+                label: 'PROGRESO',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.home),
+                label: 'INICIO',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.person),
+                label: 'PERFIL',
               ),
             ],
+            onTap: (index) {
+              setState(() {
+                _currentIndex = index;
+              });
+            },
+            iconSize: 30,
+            selectedItemColor: Colors.white,
+            unselectedItemColor: Colors.black,
           ),
-        ],
-      ),
-      bottomNavigationBar: MyBottomNavigationBar(
-        currentIndex: _currentIndex,
-        onItemTapped: _onItemTapped,
-      ),
-    );
-  }
-}
-
-class MyBottomNavigationBar extends StatelessWidget {
-  final int currentIndex;
-  final Function(int) onItemTapped;
-
-  MyBottomNavigationBar({
-    required this.currentIndex,
-    required this.onItemTapped,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.blue, Colors.green],
-          begin: Alignment.topLeft,
-          end: Alignment.topRight,
         ),
       ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Container(
-              color: Colors.blue,
-              height: 3,
-            ),
-          ),
-          GestureDetector(
-            onTap: () {
-              onItemTapped(0);
-            },
-            child: Container(
-              width: 60,
-              child: Icon(
-                Icons.home,
-                size: 36,
-                color: currentIndex == 0 ? Colors.blue : Colors.grey,
-              ),
-            ),
-          ),
-          Expanded(
-            child: Container(
-              color: Colors.blue,
-              height: 3,
-            ),
-          ),
-          GestureDetector(
-            onTap: () {
-              onItemTapped(1);
-            },
-            child: Container(
-              width: 60,
-              child: Icon(
-                Icons.search,
-                size: 36,
-                color: currentIndex == 1 ? Colors.blue : Colors.grey,
-              ),
-            ),
-          ),
-          Expanded(
-            child: Container(
-              color: Colors.blue,
-              height: 3,
-            ),
-          ),
-          GestureDetector(
-            onTap: () {
-              onItemTapped(2);
-            },
-            child: Container(
-              width: 60,
-              child: Icon(
-                Icons.person_outline,
-                size: 36,
-                color: currentIndex == 2 ? Colors.blue : Colors.grey,
-              ),
-            ),
-          ),
-          Expanded(
-            child: Container(
-              color: Colors.blue,
-              height: 3,
-            ),
-          ),
-        ],
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Acción cuando se presiona el botón flotante
+        },
+        child: Icon(Icons.add,size: 40),
+        backgroundColor: Colors.black,
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }
-
-
-
-
