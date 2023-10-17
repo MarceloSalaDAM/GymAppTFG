@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import '../custom/card_item.dart';
 
 class MainViewApp extends StatefulWidget {
-  MainViewApp({Key? key}) : super(key: key);
+  const MainViewApp({Key? key}) : super(key: key);
 
   @override
   _MainViewAppState createState() => _MainViewAppState();
@@ -10,54 +11,12 @@ class MainViewApp extends StatefulWidget {
 class _MainViewAppState extends State<MainViewApp> {
   int _currentIndex = 1;
 
-  final List<Widget> _pages = [
-    // Contenido para la página de estadísticas
-    Container(
-      color: Colors.blue,
-      child: Center(
-        child: Text(
-          'Progreso',
-          style: TextStyle(
-            fontSize: 24,
-            color: Colors.white,
-          ),
-        ),
-      ),
-    ),
-    // Contenido para la página de inicio
-    Container(
-      color: Colors.blue,
-      child: Center(
-        child: Text(
-          'Bienvenido',
-          style: TextStyle(
-            fontSize: 24,
-            color: Colors.white,
-          ),
-        ),
-      ),
-    ),
-    // Contenido para la página de perfil
-    Container(
-      color: Colors.blue,
-      child: Center(
-        child: Text(
-          'Perfil',
-          style: TextStyle(
-            fontSize: 24,
-            color: Colors.white,
-          ),
-        ),
-      ),
-    ),
-  ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         flexibleSpace: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [Colors.blue, Colors.green],
               begin: Alignment.topLeft,
@@ -67,9 +26,9 @@ class _MainViewAppState extends State<MainViewApp> {
         ),
         actions: <Widget>[
           Container(
-            margin: EdgeInsets.fromLTRB(0, 0, 10, 5),
+            margin: const EdgeInsets.fromLTRB(0, 0, 10, 5),
             child: IconButton(
-              icon: Icon(Icons.settings),
+              icon: const Icon(Icons.settings),
               iconSize: 37,
               onPressed: () {
                 Navigator.of(context).popAndPushNamed("/Settings");
@@ -79,13 +38,69 @@ class _MainViewAppState extends State<MainViewApp> {
           ),
         ],
       ),
-      body: _pages[_currentIndex],
+      body: _currentIndex == 1
+          ? Column(
+              children: <Widget>[
+                Container(
+                  margin: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+                  child: const Text(
+                    'HOLA! --usuario--',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    margin: const EdgeInsets.fromLTRB(20, 20, 20, 20),
+                    child: CardListView(
+                      cards: [
+                        CardModel('Carta 1', 'Descripción de la Carta 1'),
+                        CardModel('Carta 2', 'Descripción de la Carta 2'),
+                        CardModel('Carta 3', 'Descripción de la Carta 3'),
+                      ],
+                      onCardTap: (card) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CardDetail(card),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            )
+          : _currentIndex == 0
+              ? const Center(
+                  child: Text(
+                    'Contenido de Estadísticas',
+                    style: TextStyle(
+                      fontSize: 24,
+                      color: Colors.black,
+                    ),
+                  ),
+                )
+              : _currentIndex == 2
+                  ? const Center(
+                      child: Text(
+                        'Contenido de Perfil',
+                        style: TextStyle(
+                          fontSize: 24,
+                          color: Colors.black,
+                        ),
+                      ),
+                    )
+                  : Container(),
+      // Widget vacío para otras pestañas
       bottomNavigationBar: Container(
         height: 90,
-        margin: EdgeInsets.fromLTRB(5, 5, 5, 15),
-        padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+        margin: const EdgeInsets.fromLTRB(5, 5, 5, 15),
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
         decoration: BoxDecoration(
-          gradient: LinearGradient(
+          gradient: const LinearGradient(
             colors: [Colors.blue, Colors.green],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -98,11 +113,12 @@ class _MainViewAppState extends State<MainViewApp> {
             canvasColor: Colors.transparent,
           ),
           child: BottomNavigationBar(
-            elevation: 0.0, // Eliminar la sombra
+            elevation: 0.0,
+            // Eliminar la sombra
             backgroundColor: Colors.transparent,
             currentIndex: _currentIndex,
             type: BottomNavigationBarType.fixed,
-            items: [
+            items: const [
               BottomNavigationBarItem(
                 icon: Icon(Icons.query_stats),
                 label: 'PROGRESO',
@@ -127,13 +143,16 @@ class _MainViewAppState extends State<MainViewApp> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Acción cuando se presiona el botón flotante
-        },
-        child: Icon(Icons.add,size: 40),
-        backgroundColor: Colors.black,
-      ),
+      floatingActionButton: _currentIndex == 1
+          ? FloatingActionButton(
+              onPressed: () {
+                // Acción cuando se presiona el botón flotante
+              },
+              backgroundColor: Colors.black,
+              child: const Icon(Icons.add, size: 40),
+            )
+          : null,
+      // Sin botón flotante para otras pestañas
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
