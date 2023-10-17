@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gym_app_tfg/src/views/profile_view.dart';
+
 import '../custom/card_item.dart';
 
 class MainViewApp extends StatefulWidget {
@@ -10,6 +13,44 @@ class MainViewApp extends StatefulWidget {
 }
 
 class _MainViewAppState extends State<MainViewApp> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  String userName = ''; // Variable para almacenar el nombre del usuario
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserName();
+  }
+
+  Future<void> _loadUserName() async {
+    final user = _auth.currentUser;
+    final uid = user?.uid;
+
+    if (uid != null) {
+      final docRef = _firestore.collection("usuarios").doc(uid);
+      final snapshot = await docRef.get();
+
+      if (snapshot.exists) {
+        final data = snapshot.data() as Map<String, dynamic>;
+        setState(() {
+          userName = data['nombre'] ?? '';
+        });
+      }
+
+      // Escuchar cambios en el documento del usuario y actualizar en tiempo real
+      docRef.snapshots().listen((event) {
+        if (event.exists) {
+          final data = event.data() as Map<String, dynamic>;
+          setState(() {
+            userName = data['nombre'] ?? '';
+          });
+        }
+      });
+    }
+  }
+
   int _currentIndex = 1;
 
   @override
@@ -44,9 +85,9 @@ class _MainViewAppState extends State<MainViewApp> {
               children: <Widget>[
                 Container(
                   margin: const EdgeInsets.fromLTRB(20, 20, 20, 10),
-                  child: const Text(
-                    'HOLA! --usuario--',
-                    style: TextStyle(
+                  child: Text(
+                    'HOLA! $userName', // Muestra el nombre del usuario aquí
+                    style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                     ),
