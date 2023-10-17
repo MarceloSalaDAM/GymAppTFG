@@ -28,7 +28,7 @@ class Usuarios {
         nombre: data?['nombre'],
         edad: data?['edad'],
         estatura: data?['estatura'],
-        imageUrl: data?['fotoPerfil'],
+        imageUrl: data?['imageURL'],
         peso: data?['peso'],
         genero: data?['genero']);
   }
@@ -40,7 +40,7 @@ class Usuarios {
       if (estatura != null) "estatura": estatura,
       if (peso != null) "peso": peso,
       if (genero != null) "genero": genero,
-      if (imageUrl != null) "fotoPerfil": imageUrl,
+      if (imageUrl != null) "imageURL": imageUrl,
     };
   }
 }

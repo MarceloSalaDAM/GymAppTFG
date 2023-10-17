@@ -83,6 +83,7 @@ class _ProfileViewState extends State<ProfileView> {
         'genero': genero,
         'estatura': estatura,
         'peso': peso,
+        'imageURL': _imagePath,
       });
 
       // Si también deseas actualizar la imagen, puedes hacerlo de manera similar.
@@ -125,11 +126,11 @@ class _ProfileViewState extends State<ProfileView> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Container(
-                  width: 120.0,
+                  width: 90.0,
                   height: 90.0,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Colors.blue,
+                    color: Colors.grey,
                   ),
                   child: InkWell(
                     onTap: () {
@@ -137,10 +138,10 @@ class _ProfileViewState extends State<ProfileView> {
                     },
                     child: _imagePath != null
                         ? ClipOval(
-                            child: Image.network(_imagePath!),
-                          )
+                      child: Image.file(File(_imagePath!)),
+                    )
                         : Icon(Icons.add_a_photo,
-                            size: 40, color: Colors.white),
+                        size: 40, color: Colors.white),
                   ),
                 ),
                 SizedBox(height: 30),
