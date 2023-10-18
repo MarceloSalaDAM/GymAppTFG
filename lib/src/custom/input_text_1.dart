@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 
-class IPLogin extends StatelessWidget {
+class IPLogin extends StatefulWidget {
   final String titulo;
   final String textoGuia;
-
   final bool contra;
   final TextEditingController myController = TextEditingController(text: "");
 
@@ -19,28 +18,47 @@ class IPLogin extends StatelessWidget {
   }
 
   @override
+  _IPLoginState createState() => _IPLoginState();
+}
+
+class _IPLoginState extends State<IPLogin> {
+  bool _obscureText = true; // Establecemos el estado inicial como oculto
+
+  @override
   Widget build(BuildContext context) {
     return TextFormField(
-      obscureText: contra,
-      controller: myController,
+      obscureText: widget.contra && _obscureText,
+      controller: widget.myController,
       cursorColor: Colors.white,
       decoration: InputDecoration(
-        helperText: textoGuia,
-        labelText: titulo,
-        labelStyle: TextStyle(
+        helperText: widget.textoGuia,
+        labelText: widget.titulo,
+        labelStyle: const TextStyle(
           color: Colors.white,
         ),
         enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.black),
-
-          borderRadius:
-              BorderRadius.circular(7.0), // Cambia el color del borde a rojo
+          borderSide: const BorderSide(color: Colors.black),
+          borderRadius: BorderRadius.circular(7.0),
         ),
         focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.black),
-          borderRadius:
-              BorderRadius.circular(7.0), // Cambia el color del borde a rojo
+          borderSide: const BorderSide(color: Colors.black),
+          borderRadius: BorderRadius.circular(7.0),
         ),
+        suffixIcon: widget.contra
+            ? IconButton(
+                icon: Icon(
+                  _obscureText
+                      ? Icons.visibility_off
+                      : Icons.visibility, // Cambiamos los íconos
+                  color: Colors.grey.shade600, // Cambia el color del ícono
+                ),
+                onPressed: () {
+                  setState(() {
+                    _obscureText = !_obscureText;
+                  });
+                },
+              )
+            : null,
       ),
     );
   }

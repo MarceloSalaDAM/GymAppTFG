@@ -23,11 +23,19 @@ class LoginViewApp extends StatelessWidget {
       });
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
+        // Notifica al usuario que la actualización se realizó con éxito.
         print('No user found for that email');
       } else if (e.code == 'wrong-password') {
         print('Wrong password provided for that user.');
       }
     }
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('USUARIO O CONTRASEÑA INCORRECTOS'),
+        duration: Duration(milliseconds: 4000),
+        backgroundColor: Colors.red,
+      ),
+    );
   }
 
   @override
@@ -101,7 +109,6 @@ class LoginViewApp extends StatelessWidget {
                           decoration: TextDecoration.underline,
                           fontSize: 16,
                           fontStyle: FontStyle.italic,
-
                         ),
                       ),
                     ),
