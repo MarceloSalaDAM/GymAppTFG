@@ -28,14 +28,14 @@ class LoginViewApp extends StatelessWidget {
       } else if (e.code == 'wrong-password') {
         print('Wrong password provided for that user.');
       }
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('USUARIO O CONTRASEÑA INCORRECTOS'),
+          duration: Duration(milliseconds: 4000),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('USUARIO O CONTRASEÑA INCORRECTOS'),
-        duration: Duration(milliseconds: 4000),
-        backgroundColor: Colors.red,
-      ),
-    );
   }
 
   @override
@@ -118,6 +118,7 @@ class LoginViewApp extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         MaterialButton(
+                          height: 40,
                           color: Colors.black,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(7.0),
@@ -126,12 +127,13 @@ class LoginViewApp extends StatelessWidget {
                           textColor: Colors.white,
                           splashColor: Colors.white,
                           child: Container(
+                            margin: EdgeInsets.fromLTRB(0, 5, 5, 5),
                             decoration: BoxDecoration(
                               border: Border.all(),
                             ),
                             child: const Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Text("ENTRAR"),
+                              padding: EdgeInsets.all(3.0),
+                              child: Icon(Icons.login_outlined),
                             ),
                           ),
                           onPressed: () {

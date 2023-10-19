@@ -1,10 +1,42 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:intl/intl.dart';
 
-class SettingsView extends StatelessWidget {
+class SettingsView extends StatefulWidget {
   SettingsView({Key? key}) : super(key: key);
 
-  // Función para cerrar la sesión del usuario
+  @override
+  _SettingsViewState createState() => _SettingsViewState();
+}
+
+class _SettingsViewState extends State<SettingsView> {
+  String _selectedLanguage = 'Español'; // Idioma predeterminado
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSelectedLanguage();
+  }
+
+  Future<void> _loadSelectedLanguage() async {
+    final prefs = await SharedPreferences.getInstance();
+    final selectedLanguage = prefs.getString('selectedLanguage');
+    if (selectedLanguage != null) {
+      setState(() {
+        _selectedLanguage = selectedLanguage;
+      });
+    }
+  }
+
+  Future<void> _changeLanguage(String newLanguage) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('selectedLanguage', newLanguage);
+    setState(() {
+      _selectedLanguage = newLanguage;
+    });
+  }
+
   void signOut(BuildContext context) async {
     await FirebaseAuth.instance.signOut();
     Navigator.of(context).popAndPushNamed('/Login');
@@ -53,15 +85,59 @@ class SettingsView extends StatelessWidget {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        signOut(context); // Llama a la función signOut
-                      },
-                      style: ElevatedButton.styleFrom(
-                        primary: Colors.red, // Color del botón
-                      ),
-                      child: const Text('Cerrar Sesión',
-                          style: TextStyle(color: Colors.white)),
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text(
+                          'AJUSTES',
+                          style: TextStyle(
+                            fontSize: 34,
+                            fontWeight: FontWeight.bold,
+                            decoration: TextDecoration.overline,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        DropdownButton<String>(
+                          value: _selectedLanguage,
+                          items: <String>[
+                            'Español',
+                            'Inglés',
+                            'Francés',
+                            'Alemán'
+                          ].map((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                          onChanged: (String? newValue) {
+                            if (newValue != null) {
+                              _changeLanguage(newValue);
+                              // Cambiar el idioma de la aplicación según la selección del usuario
+                              // Puedes utilizar la biblioteca intl para la internacionalización.
+                              // Aquí puedes establecer el nuevo locale según el idioma seleccionado.
+                              Locale newLocale =
+                                  _getLocaleForLanguage(newValue);
+                              // Luego, configura el nuevo locale en la aplicación
+                              // Esto es solo un ejemplo, y debes configurar la internacionalización en tu aplicación.
+                              //intl.updateLocales(newLocale);
+
+                              // Otras tareas necesarias para cambiar el idioma de la aplicación.
+                            }
+                          },
+                        ),
+                        const SizedBox(height: 30),
+                        ElevatedButton(
+                          onPressed: () {
+                            signOut(context);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            primary: Colors.red,
+                          ),
+                          child: const Text('Cerrar Sesión',
+                              style: TextStyle(color: Colors.white)),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -71,5 +147,20 @@ class SettingsView extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Locale _getLocaleForLanguage(String language) {
+    switch (language) {
+      case 'Español':
+        return Locale('es', 'ES');
+      case 'Inglés':
+        return Locale('en', 'US');
+      case 'Francés':
+        return Locale('fr', 'FR');
+      case 'Alemán':
+        return Locale('de', 'DE');
+      default:
+        return Locale('es', 'ES'); // Idioma predeterminado
+    }
   }
 }

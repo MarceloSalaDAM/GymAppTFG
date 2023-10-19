@@ -57,6 +57,13 @@ class _MainViewAppState extends State<MainViewApp> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        title: Text(
+          'HOLA! $userName', // Muestra el nombre del usuario aquí
+          style: const TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
@@ -178,15 +185,17 @@ class _MainViewAppState extends State<MainViewApp> {
         ),
       ),
       floatingActionButton: _currentIndex == 1
-          ? FloatingActionButton(
-              onPressed: () {
-                // Acción cuando se presiona el botón flotante
-              },
-              backgroundColor: Colors.black,
-              child: const Icon(Icons.add, size: 40),
+          ? Tooltip(
+              message: 'Añadir nueva rutina',
+              child: FloatingActionButton(
+                onPressed: () {
+                  // Acción cuando se presiona el botón flotante
+                },
+                backgroundColor: Colors.black,
+                child: const Icon(Icons.add, size: 40),
+              ),
             )
           : null,
-      // Sin botón flotante para otras pestañas
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
