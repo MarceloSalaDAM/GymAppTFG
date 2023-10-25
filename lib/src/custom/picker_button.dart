@@ -18,7 +18,7 @@ class PickerButton<T> extends StatelessWidget {
     return ListTile(
       title: Text(
         titulo,
-        style: TextStyle(
+        style: const TextStyle(
           fontWeight: FontWeight.bold, // Texto en negrita
           fontSize: 18.0, // Tamaño de fuente personalizado
         ),

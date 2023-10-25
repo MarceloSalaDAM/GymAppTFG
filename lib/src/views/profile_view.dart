@@ -138,10 +138,10 @@ class _ProfileViewState extends State<ProfileView> {
                     },
                     child: _imagePath != null
                         ? ClipOval(
-                      child: Image.file(File(_imagePath!)),
-                    )
+                            child: Image.file(File(_imagePath!)),
+                          )
                         : const Icon(Icons.add_a_photo,
-                        size: 40, color: Colors.white),
+                            size: 40, color: Colors.white),
                   ),
                 ),
                 const SizedBox(height: 30),
