@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CardModel {
   final String title;
@@ -7,21 +9,50 @@ class CardModel {
   CardModel(this.title, this.description);
 }
 
-class CardListView extends StatelessWidget {
-  final List<CardModel> cards;
+class CardListView extends StatefulWidget {
   final Function(CardModel) onCardTap;
+  final List<CardModel> cards; // Debes definir el parámetro 'cards' aquí
 
-  const CardListView({super.key,
-    required this.cards,
+  CardListView({
+    Key? key,
     required this.onCardTap,
-  });
+    required this.cards, // Asegúrate de incluir 'cards' en el constructor
+  }) : super(key: key);
+
+  @override
+  _CardListViewState createState() => _CardListViewState();
+}
+
+class _CardListViewState extends State<CardListView> {
+  final List<CardModel> cards = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadExercisesFromFirebase();
+  }
+
+  void _loadExercisesFromFirebase() async {
+    await Firebase
+        .initializeApp(); // Inicializa Firebase (debe hacerse una vez en la aplicación)
+
+    final firestore = FirebaseFirestore.instance;
+    final exerciseSnapshot = await firestore.collection('ejercicios').get();
+
+    setState(() {
+      cards.clear();
+      for (var exercise in exerciseSnapshot.docs) {
+        cards.add(CardModel(exercise['nombre'], exercise['descripcion']));
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return ListView(
       children: cards.map((card) {
         return CardItem(card, () {
-          onCardTap(card);
+          widget.onCardTap(card);
         });
       }).toList(),
     );
@@ -32,25 +63,25 @@ class CardItem extends StatelessWidget {
   final CardModel card;
   final VoidCallback onPressed;
 
-  const CardItem(this.card, this.onPressed, {super.key});
+  CardItem(this.card, this.onPressed);
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 4, // Añade sombra a la tarjeta
-      margin: const EdgeInsets.all(10), // Margen alrededor de la tarjeta
+      elevation: 4,
+      margin: const EdgeInsets.all(10),
       child: ListTile(
         title: Text(
-          card.title,
+          "RUTINA 1",
           style: const TextStyle(
-            fontSize: 18, // Tamaño de fuente del título
-            fontWeight: FontWeight.bold, // Texto en negrita
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
           ),
         ),
         subtitle: Text(
-          card.description,
+          "Rutina 1 de pruba app",
           style: const TextStyle(
-            fontSize: 14, // Tamaño de fuente de la descripción
+            fontSize: 14,
           ),
         ),
         onTap: onPressed,
@@ -62,7 +93,7 @@ class CardItem extends StatelessWidget {
 class CardDetail extends StatelessWidget {
   final CardModel card;
 
-  const CardDetail(this.card, {super.key});
+  CardDetail(this.card);
 
   @override
   Widget build(BuildContext context) {
