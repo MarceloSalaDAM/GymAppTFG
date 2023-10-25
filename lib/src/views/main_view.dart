@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gym_app_tfg/src/views/profile_view.dart';
 
 import '../custom/card_item.dart';
+import '../firebase_objects/ejercicios_firebase.dart';
 
 class MainViewApp extends StatefulWidget {
   const MainViewApp({Key? key}) : super(key: key);
@@ -15,13 +16,14 @@ class MainViewApp extends StatefulWidget {
 class _MainViewAppState extends State<MainViewApp> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
   String userName = ''; // Variable para almacenar el nombre del usuario
+  List<Ejercicios> ejercicios = []; // Lista para almacenar los ejercicios
 
   @override
   void initState() {
     super.initState();
     _loadUserName();
+    _loadEjercicios();
   }
 
   Future<void> _loadUserName() async {
@@ -38,7 +40,6 @@ class _MainViewAppState extends State<MainViewApp> {
           userName = data['nombre'] ?? '';
         });
       }
-
       // Escuchar cambios en el documento del usuario y actualizar en tiempo real
       docRef.snapshots().listen((event) {
         if (event.exists) {
@@ -49,6 +50,21 @@ class _MainViewAppState extends State<MainViewApp> {
         }
       });
     }
+  }
+
+  //Descarga de los elementos de la coleccion para la lista
+  Future<void> _loadEjercicios() async {
+    final docRef = _firestore.collection("ejercicios").withConverter(
+        fromFirestore: Ejercicios.fromFirestore,
+        toFirestore: (Ejercicios ejercicio, _) => ejercicio.toFirestore());
+
+    final docsSnap = await docRef.get();
+
+    setState(() {
+      for (int i = 0; i < docsSnap.docs.length; i++) {
+        ejercicios.add(docsSnap.docs[i].data());
+      }
+    });
   }
 
   int _currentIndex = 1;
@@ -103,17 +119,26 @@ class _MainViewAppState extends State<MainViewApp> {
                 Expanded(
                   child: Container(
                     margin: const EdgeInsets.fromLTRB(20, 20, 20, 20),
-                    child: CardListView(
-                      cards: [
-                        CardModel('Carta 1', 'Descripción de la Carta 1'),
-                        CardModel('Carta 2', 'Descripción de la Carta 2'),
-                        CardModel('Carta 3', 'Descripción de la Carta 3'),
-                      ],
-                      onCardTap: (card) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => CardDetail(card),
+                    child: ListView.builder(
+                      itemCount: ejercicios.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        final ejercicio = ejercicios[index];
+                        return Card(
+                          child: ListTile(
+                            leading: Image.network(ejercicio.imagen!),
+                            // Muestra la imagen del ejercicio
+                            title: Text(ejercicio.nombre!),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Descripción: ${ejercicio.descripcion}'),
+                                // Muestra la descripción del ejercicio
+                                Text('Grupo: ${ejercicio.grupo}'),
+                                // Muestra el grupo del ejercicio
+                                // Puedes agregar más detalles aquí si es necesario
+                              ],
+                            ),
+                            // Puedes personalizar aún más la visualización de cada ejercicio aquí
                           ),
                         );
                       },

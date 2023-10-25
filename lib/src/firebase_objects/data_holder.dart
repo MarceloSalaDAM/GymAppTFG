@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:gym_app_tfg/src/firebase_objects/ejercicios_firebase.dart';
 import 'package:gym_app_tfg/src/firebase_objects/usuarios_firebase.dart';
 
 import 'fb_admin.dart';
@@ -15,7 +16,7 @@ class DataHolderExamen {
   String sMensaje = "";
   Usuarios usuario = Usuarios();
 
-  //BichosExamen selectedBicho= BichosExamen();
+  Ejercicios ejercicios = Ejercicios();
   FbAdmin fbAdmin = FbAdmin();
 
   DataHolderExamen._internal() {
