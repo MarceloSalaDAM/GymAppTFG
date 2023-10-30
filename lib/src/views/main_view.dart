@@ -52,18 +52,16 @@ class _MainViewAppState extends State<MainViewApp> {
     }
   }
 
-  //Descarga de los elementos de la coleccion para la lista
   Future<void> _loadEjercicios() async {
-    final docRef = _firestore.collection("ejercicios").withConverter(
-        fromFirestore: Ejercicios.fromFirestore,
-        toFirestore: (Ejercicios ejercicio, _) => ejercicio.toFirestore());
+    final docRef = _firestore.collection("ejercicios");
 
     final docsSnap = await docRef.get();
 
     setState(() {
-      for (int i = 0; i < docsSnap.docs.length; i++) {
-        ejercicios.add(docsSnap.docs[i].data());
-      }
+      ejercicios = docsSnap.docs.map((doc) {
+        return Ejercicios.fromFirestore(
+            doc, null); // Convierte el documento en un objeto Ejercicios
+      }).toList();
     });
   }
 
@@ -106,16 +104,6 @@ class _MainViewAppState extends State<MainViewApp> {
       body: _currentIndex == 1
           ? Column(
               children: <Widget>[
-                Container(
-                  margin: const EdgeInsets.fromLTRB(20, 20, 20, 10),
-                  child: Text(
-                    'HOLA! $userName', // Muestra el nombre del usuario aquí
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
                 Expanded(
                   child: Container(
                     margin: const EdgeInsets.fromLTRB(20, 20, 20, 20),
@@ -125,20 +113,30 @@ class _MainViewAppState extends State<MainViewApp> {
                         final ejercicio = ejercicios[index];
                         return Card(
                           child: ListTile(
-                            leading: Image.network(ejercicio.imagen!),
-                            // Muestra la imagen del ejercicio
-                            title: Text(ejercicio.nombre!),
+                            leading: ejercicio.imagen != null
+                                ? Image.network(ejercicio.imagen!)
+                                : Text("No foto"),
+
+                            // Verifica si la URL de la imagen no es nula
+                            title: Text(
+                                ejercicio.nombre ?? 'Nombre no disponible'),
+                            // Verifica si el nombre es nulo
                             subtitle: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Descripción: ${ejercicio.descripcion}'),
-                                // Muestra la descripción del ejercicio
-                                Text('Grupo: ${ejercicio.grupo}'),
-                                // Muestra el grupo del ejercicio
-                                // Puedes agregar más detalles aquí si es necesario
+                                Text(
+                                    'Descripción: ${ejercicio.descripcion ?? 'Descripción no disponible'}'),
+                                // Verifica si la descripción es nula
+                                Text(
+                                    'Grupo: ${ejercicio.grupo ?? 'Grupo no disponible'}'),
+                                // Verifica si el grupo es nulo
+                                if (ejercicio.musculos != null &&
+                                    ejercicio.musculos!.isNotEmpty)
+                                  Text(
+                                      'Músculos: ${ejercicio.musculos!.join(", ")}'),
                               ],
                             ),
-                            // Puedes personalizar aún más la visualización de cada ejercicio aquí
+                            // Resto del contenido del ListTile
                           ),
                         );
                       },

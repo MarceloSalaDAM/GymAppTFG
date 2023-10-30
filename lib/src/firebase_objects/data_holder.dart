@@ -16,7 +16,7 @@ class DataHolderExamen {
   String sMensaje = "";
   Usuarios usuario = Usuarios();
 
-  Ejercicios ejercicios = Ejercicios();
+  Ejercicios ejercicios = Ejercicios(musculos: []);
   FbAdmin fbAdmin = FbAdmin();
 
   DataHolderExamen._internal() {

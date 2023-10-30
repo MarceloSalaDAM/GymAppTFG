@@ -5,12 +5,14 @@ class Ejercicios {
   final String? descripcion;
   final String? grupo;
   final String? imagen;
+  final List<String>? musculos;
 
   Ejercicios({
     this.nombre = " ",
     this.descripcion = " ",
     this.grupo = " ",
     this.imagen = " ",
+    required this.musculos,
   });
 
   factory Ejercicios.fromFirestore(
@@ -23,6 +25,7 @@ class Ejercicios {
       descripcion: data?['descripcion'],
       grupo: data?['grupo'],
       imagen: data?['imagen'],
+      musculos: List<String>.from(data?['musculos'] ?? []),
     );
   }
 
@@ -32,6 +35,7 @@ class Ejercicios {
       if (descripcion != null) "descripcion": descripcion,
       if (grupo != null) "grupo": grupo,
       if (imagen != null) "imagen": imagen,
+      if (musculos != null) "musculos": musculos,
     };
   }
 

@@ -1,7 +1,8 @@
-import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
 
 import '../custom/picker_button.dart';
@@ -26,7 +27,6 @@ class _ProfileViewState extends State<ProfileView> {
   void initState() {
     super.initState();
     nombreController = TextEditingController();
-    // Carga los datos del usuario desde Firebase y configura los valores iniciales en los widgets.
     loadUserData();
   }
 
@@ -44,12 +44,7 @@ class _ProfileViewState extends State<ProfileView> {
         selectedGenero = userData['genero'];
         selectedEstatura = userData['estatura'];
         selectedPeso = userData['peso'];
-
-        // Obtener la URL de la imagen desde Firestore
-        String? imageUrl = userData['imageURL'];
-
-        // Asignar la URL de la imagen a _imagePath para cargarla
-        _imagePath = imageUrl;
+        _imagePath = userData['imageURL'];
       });
     }
   }
@@ -59,8 +54,18 @@ class _ProfileViewState extends State<ProfileView> {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
-      setState(() {
-        _imagePath = pickedFile.path;
+      var file = File(pickedFile.path);
+      String filename =
+          FirebaseAuth.instance.currentUser!.uid + "_profile_image.jpg";
+      Reference ref =
+          FirebaseStorage.instance.ref().child("profileImages/$filename");
+      UploadTask uploadTask = ref.putFile(file);
+
+      await uploadTask.whenComplete(() async {
+        String imageUrl = await ref.getDownloadURL();
+        setState(() {
+          _imagePath = imageUrl;
+        });
       });
     }
   }
@@ -76,7 +81,6 @@ class _ProfileViewState extends State<ProfileView> {
       String? idUser = FirebaseAuth.instance.currentUser?.uid;
       final docRef = db.collection("usuarios").doc(idUser);
 
-      // Actualiza los datos en Firebase utilizando el método `update`.
       await docRef.update({
         'nombre': nombre,
         'edad': edad,
@@ -86,23 +90,12 @@ class _ProfileViewState extends State<ProfileView> {
         'imageURL': _imagePath,
       });
 
-      // Si también deseas actualizar la imagen, puedes hacerlo de manera similar.
-      // Asegúrate de que `_imagePath` contenga la URL de la nueva imagen.
-
-      if (_imagePath != null) {
-        await docRef.update({
-          'imageURL': _imagePath,
-        });
-      }
-
-      // Notifica al usuario que la actualización se realizó con éxito.
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Datos actualizados con éxito.'),
         ),
       );
     } catch (error) {
-      // Maneja los errores si la actualización falla.
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error al actualizar los datos: $error'),
@@ -114,7 +107,6 @@ class _ProfileViewState extends State<ProfileView> {
   @override
   Widget build(BuildContext context) {
     if (nombreController.text.isEmpty && _imagePath == null) {
-      // Muestra una pantalla de carga mientras se obtienen los datos
       return const Center(child: CircularProgressIndicator());
     } else {
       return Scaffold(
@@ -133,12 +125,20 @@ class _ProfileViewState extends State<ProfileView> {
                     color: Colors.grey,
                   ),
                   child: InkWell(
-                    onTap: () {
-                      _cargarFoto();
-                    },
+                    onTap: _cargarFoto,
                     child: _imagePath != null
                         ? ClipOval(
-                            child: Image.file(File(_imagePath!)),
+                            child: Container(
+                              width: 90.0,
+                              height: 90.0,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                image: DecorationImage(
+                                  fit: BoxFit.cover,
+                                  image: NetworkImage(_imagePath!),
+                                ),
+                              ),
+                            ),
                           )
                         : const Icon(Icons.add_a_photo,
                             size: 40, color: Colors.white),
