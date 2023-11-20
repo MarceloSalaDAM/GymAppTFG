@@ -120,15 +120,15 @@ class _ProfileViewState extends State<ProfileView> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Container(
-                margin: const EdgeInsets.fromLTRB(0, 20, 0, 0),
                 width: double.infinity,
                 height: 120,
                 decoration: const BoxDecoration(
+                  color: Colors.blue,
                   border:
-                      Border(bottom: BorderSide(color: Colors.black, width: 2)),
+                      Border(bottom: BorderSide(color: Colors.black, width: 2), top: BorderSide(color: Colors.black, width: 2) ),
                 ),
                 child: Container(
-                  margin: const EdgeInsets.fromLTRB(0, 0, 0, 20),
+                  margin: const EdgeInsets.fromLTRB(0, 3, 0, 3),
                   width: 120.0,
                   height: 120.0,
                   decoration: const BoxDecoration(
@@ -139,8 +139,8 @@ class _ProfileViewState extends State<ProfileView> {
                     child: InkWell(
                       onTap: _cargarFoto,
                       child: Container(
-                        width: 100.0,
-                        height: 100.0,
+                        width: 120.0,
+                        height: 120.0,
                         decoration: const BoxDecoration(
                           shape: BoxShape.circle,
                         ),
@@ -288,3 +288,4 @@ class _ProfileViewState extends State<ProfileView> {
     }
   }
 }
+

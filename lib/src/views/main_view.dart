@@ -5,6 +5,7 @@ import 'package:gym_app_tfg/src/views/profile_view.dart';
 
 import '../custom/card_item.dart';
 import '../firebase_objects/ejercicios_firebase.dart';
+import 'details_profile_view.dart';
 
 class MainViewApp extends StatefulWidget {
   const MainViewApp({Key? key}) : super(key: key);
@@ -71,13 +72,23 @@ class _MainViewAppState extends State<MainViewApp> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'HOLA! $userName', // Muestra el nombre del usuario aquí
-          style: const TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+        title: _currentIndex == 1
+            ? Text(
+                'HOLA! $userName', // Muestra el nombre del usuario aquí
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              )
+            : _currentIndex == 2
+                ? const Text(
+                    'PERFIL',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  )
+                : null,
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
@@ -158,7 +169,7 @@ class _MainViewAppState extends State<MainViewApp> {
                   ),
                 )
               : _currentIndex == 2
-                  ? const ProfileView()
+                  ? const DetailsProfileView()
                   : Container(),
       // Widget vacío para otras pestañas
       bottomNavigationBar: Container(
