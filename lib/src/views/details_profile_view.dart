@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:gym_app_tfg/src/views/profile_view.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
@@ -16,6 +17,10 @@ class DetailsProfileView extends StatefulWidget {
 
 class _DetailsProfileViewState extends State<DetailsProfileView> {
   FirebaseFirestore db = FirebaseFirestore.instance;
+  String selectedEdad = '16';
+  String selectedEstatura = '100';
+  String selectedGenero = 'Hombre';
+  String selectedPeso = '40';
   String? _imagePath;
   late TextEditingController nombreController;
   late bool isLoading;
@@ -38,8 +43,13 @@ class _DetailsProfileViewState extends State<DetailsProfileView> {
       Map<String, dynamic> userData = docsnap.data() as Map<String, dynamic>;
       setState(() {
         nombreController.text = userData['nombre'];
+        selectedEdad = userData['edad'];
+        selectedGenero = userData['genero'];
+        selectedEstatura = userData['estatura'];
+        selectedPeso = userData['peso'];
         _imagePath = userData['imageURL'];
-        isLoading = false;
+        isLoading =
+            false; // Cambiar isLoading a false después de cargar los datos
       });
     }
   }
@@ -55,15 +65,14 @@ class _DetailsProfileViewState extends State<DetailsProfileView> {
         Text(
           label,
           style: TextStyle(
-
-            fontSize:25,
+            fontSize: 25,
             fontWeight: FontWeight.bold,
           ),
         ),
         Text(
           value,
           style: TextStyle(
-            fontSize:20,
+            fontSize: 20,
             color: Colors.grey[600],
           ),
         ),
@@ -110,16 +119,16 @@ class _DetailsProfileViewState extends State<DetailsProfileView> {
                       child: ClipOval(
                         child: _imagePath != null
                             ? Image.network(
-                          _imagePath!,
-                          fit: BoxFit.cover,
-                        )
+                                _imagePath!,
+                                fit: BoxFit.cover,
+                              )
                             : const Center(
-                          child: Icon(
-                            Icons.add_a_photo,
-                            size: 60,
-                            color: Colors.white,
-                          ),
-                        ),
+                                child: Icon(
+                                  Icons.add_a_photo,
+                                  size: 60,
+                                  color: Colors.white,
+                                ),
+                              ),
                       ),
                     ),
                   ),
@@ -131,13 +140,48 @@ class _DetailsProfileViewState extends State<DetailsProfileView> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     _buildDataRow('NOMBRE', nombreController.text),
-                    _buildDataRow('GENERO', 'Hombre'), // Puedes cambiarlo según el valor almacenado
-                    _buildDataRow('EDAD', '16'), // Puedes cambiarlo según el valor almacenado
-                    _buildDataRow('ESTATURA (cm)', '100'), // Puedes cambiarlo según el valor almacenado
-                    _buildDataRow('PESO (kg)', '40'), // Puedes cambiarlo según el valor almacenado
+                    const SizedBox(height: 20),
+                    _buildDataRow('GENERO', selectedGenero),
+                    const SizedBox(height: 20),
+                    // Utiliza el valor obtenido de Firebase
+                    _buildDataRow('EDAD', selectedEdad),
+                    const SizedBox(height: 20),
+                    // Utiliza el valor obtenido de Firebase
+                    _buildDataRow('ESTATURA (cm)', selectedEstatura),
+                    const SizedBox(height: 20),
+                    // Utiliza el valor obtenido de Firebase
+                    _buildDataRow('PESO (kg)', selectedPeso),
+                    // Utiliza el valor obtenido de Firebase
                     const SizedBox(height: 20),
                   ],
                 ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  MaterialButton(
+                    height: 25,
+                    color: Color(0xFF0C7075),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(7.0),
+                    ),
+                    padding: const EdgeInsets.all(8.0),
+                    textColor: Colors.white,
+                    splashColor: Colors.white,
+                    child: const Padding(
+                      padding: EdgeInsets.all(0),
+                      child: Icon(Icons.edit),
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ProfileView(),
+                        ),
+                      );
+                    },
+                  ),
+                ],
               ),
             ],
           ),

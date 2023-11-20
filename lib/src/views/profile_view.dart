@@ -124,8 +124,9 @@ class _ProfileViewState extends State<ProfileView> {
                 height: 120,
                 decoration: const BoxDecoration(
                   color: Colors.blue,
-                  border:
-                      Border(bottom: BorderSide(color: Colors.black, width: 2), top: BorderSide(color: Colors.black, width: 2) ),
+                  border: Border(
+                      bottom: BorderSide(color: Colors.black, width: 2),
+                      top: BorderSide(color: Colors.black, width: 2)),
                 ),
                 child: Container(
                   margin: const EdgeInsets.fromLTRB(0, 3, 0, 3),
@@ -273,6 +274,7 @@ class _ProfileViewState extends State<ProfileView> {
                               selectedEstatura,
                               selectedPeso,
                             );
+                            Navigator.pop(context);
                           },
                         ),
                       ],
@@ -288,4 +290,3 @@ class _ProfileViewState extends State<ProfileView> {
     }
   }
 }
-
