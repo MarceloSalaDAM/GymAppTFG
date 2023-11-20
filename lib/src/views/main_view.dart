@@ -125,15 +125,17 @@ class _MainViewAppState extends State<MainViewApp> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                    'Descripción: ${ejercicio.descripcion ?? 'Descripción no disponible'}'),
+                                    '***Descripción: ${ejercicio.descripcion ?? 'Descripción no disponible'}'),
                                 // Verifica si la descripción es nula
                                 Text(
-                                    'Grupo: ${ejercicio.grupo ?? 'Grupo no disponible'}'),
+                                    '***Comentarios: ${ejercicio.comentarios ?? 'Comentarios no disponibles'}'),
+                                Text(
+                                    '***Grupo: ${ejercicio.grupo ?? 'Grupo no disponible'}'),
                                 // Verifica si el grupo es nulo
                                 if (ejercicio.musculos != null &&
                                     ejercicio.musculos!.isNotEmpty)
                                   Text(
-                                      'Músculos: ${ejercicio.musculos!.join(", ")}'),
+                                      '***Músculos: ${ejercicio.musculos!.join(", ")}'),
                               ],
                             ),
                             // Resto del contenido del ListTile

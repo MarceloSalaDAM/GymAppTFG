@@ -88,13 +88,28 @@ class LoginViewApp extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
-                    Image.asset(
-                      'assets/logo.png',
-                      width: 100,
+                    Container(
                       height: 100,
-                      fit: BoxFit.scaleDown,
-                      alignment: Alignment.topCenter,
+                      margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Colors.black,
+                        ),
+                        color: Colors.black,
+                        borderRadius: BorderRadius.circular(125.0),
+                      ),
+                      child: FittedBox(
+                        fit: BoxFit.cover,
+                        // Ajusta la propiedad BoxFit.cover para cubrir el contenedor sin distorsionar la imagen.
+                        child: Image.asset(
+                          'assets/image.png',
+                          width: 500,
+                          height: 110,
+                          alignment: Alignment.topCenter,
+                        ),
+                      ),
                     ),
+
                     const SizedBox(height: 5),
                     iUser,
                     iPass,

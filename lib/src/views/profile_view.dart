@@ -254,7 +254,7 @@ class _ProfileViewState extends State<ProfileView> {
                       children: [
                         MaterialButton(
                           height: 25,
-                          color: Colors.black,
+                          color: Color(0xFF0C7075),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(7.0),
                           ),
