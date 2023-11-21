@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gym_app_tfg/src/views/profile_view.dart';
+import 'package:gym_app_tfg/src/views/settings.dart';
 
 import '../custom/card_item.dart';
+import '../custom/custom_drawer.dart';
 import '../firebase_objects/ejercicios_firebase.dart';
 import 'details_profile_view.dart';
 
@@ -74,7 +76,7 @@ class _MainViewAppState extends State<MainViewApp> {
       appBar: AppBar(
         title: _currentIndex == 1
             ? Text(
-                'HOLA! $userName', // Muestra el nombre del usuario aquí
+                'HOLA! $userName',
                 style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -98,20 +100,10 @@ class _MainViewAppState extends State<MainViewApp> {
             ),
           ),
         ),
-        actions: <Widget>[
-          Container(
-            margin: const EdgeInsets.fromLTRB(0, 0, 10, 5),
-            child: IconButton(
-              icon: const Icon(Icons.settings),
-              iconSize: 37,
-              onPressed: () {
-                Navigator.of(context).popAndPushNamed("/Settings");
-                print('Botón presionado');
-              },
-            ),
-          ),
-        ],
       ),
+      endDrawer: _currentIndex == 2
+          ? CustomDrawer(onLanguageChanged: (String language) {})
+          : null,
       body: _currentIndex == 1
           ? Column(
               children: <Widget>[
@@ -127,29 +119,23 @@ class _MainViewAppState extends State<MainViewApp> {
                             leading: ejercicio.imagen != null
                                 ? Image.network(ejercicio.imagen!)
                                 : Text("No foto"),
-
-                            // Verifica si la URL de la imagen no es nula
                             title: Text(
                                 ejercicio.nombre ?? 'Nombre no disponible'),
-                            // Verifica si el nombre es nulo
                             subtitle: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                     '***Descripción: ${ejercicio.descripcion ?? 'Descripción no disponible'}'),
-                                // Verifica si la descripción es nula
                                 Text(
                                     '***Comentarios: ${ejercicio.comentarios ?? 'Comentarios no disponibles'}'),
                                 Text(
                                     '***Grupo: ${ejercicio.grupo ?? 'Grupo no disponible'}'),
-                                // Verifica si el grupo es nulo
                                 if (ejercicio.musculos != null &&
                                     ejercicio.musculos!.isNotEmpty)
                                   Text(
                                       '***Músculos: ${ejercicio.musculos!.join(", ")}'),
                               ],
                             ),
-                            // Resto del contenido del ListTile
                           ),
                         );
                       },
@@ -171,7 +157,6 @@ class _MainViewAppState extends State<MainViewApp> {
               : _currentIndex == 2
                   ? const DetailsProfileView()
                   : Container(),
-      // Widget vacío para otras pestañas
       bottomNavigationBar: Container(
         height: 90,
         margin: const EdgeInsets.fromLTRB(5, 5, 5, 15),
@@ -191,7 +176,6 @@ class _MainViewAppState extends State<MainViewApp> {
           ),
           child: BottomNavigationBar(
             elevation: 0.0,
-            // Eliminar la sombra
             backgroundColor: Colors.transparent,
             currentIndex: _currentIndex,
             type: BottomNavigationBarType.fixed,

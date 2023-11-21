@@ -37,9 +37,7 @@ class App extends StatelessWidget {
         '/Main': (context) => const MainViewApp(),
         '/OnBoarding': (context) => const OnBoardingView(),
         '/Splash': (context) => SplashView(),
-        '/Settings': (context) => SettingsView(),
         '/DetailsProfile': (context) => const DetailsProfileView(),
-        '/Profile': (context) => const ProfileView(),
       },
     );
   }

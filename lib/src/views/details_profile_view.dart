@@ -142,7 +142,7 @@ class _DetailsProfileViewState extends State<DetailsProfileView> {
       children: [
         Text(
           label,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 25,
             fontWeight: FontWeight.bold,
           ),
@@ -206,7 +206,7 @@ class _DetailsProfileViewState extends State<DetailsProfileView> {
               padding: const EdgeInsets.all(8.0),
               textColor: Colors.white,
               splashColor: Colors.white,
-              child: Padding(
+              child: const Padding(
                 padding: EdgeInsets.all(0),
                 child: Icon(
                   Icons.cancel, // Reemplaza con el icono que desees
@@ -217,18 +217,17 @@ class _DetailsProfileViewState extends State<DetailsProfileView> {
                   context: context,
                   builder: (BuildContext context) {
                     return AlertDialog(
-                      title: Text("Confirmación"),
-                      content: Text("¿Estás seguro que quieres salir?"),
+                      content: const Text("¿Estás seguro que quieres salir?"),
                       actions: [
                         TextButton(
-                          child: Text("Cancelar"),
+                          child: const Text("Cancelar"),
                           onPressed: () {
                             Navigator.of(context).pop();
                             // Cierra el cuadro de diálogo
                           },
                         ),
                         TextButton(
-                          child: Text("Aceptar"),
+                          child: const Text("Aceptar"),
                           onPressed: () {
                             Navigator.of(context)
                                 .pop(); // Cierra el cuadro de diálogo
@@ -242,11 +241,11 @@ class _DetailsProfileViewState extends State<DetailsProfileView> {
               },
             ),
           // Spacer para agregar espacio entre los dos botones
-          Spacer(),
+          const Spacer(),
           // Botón existente
           MaterialButton(
             height: 25,
-            color: Color(0xFF0C7075),
+            color: const Color(0xFF0C7075),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(7.0),
             ),
@@ -254,7 +253,7 @@ class _DetailsProfileViewState extends State<DetailsProfileView> {
             textColor: Colors.white,
             splashColor: Colors.white,
             child: Padding(
-              padding: EdgeInsets.all(0),
+              padding: const EdgeInsets.all(0),
               child: Icon(
                 _isEditing ? Icons.save_alt : Icons.edit,
               ),
@@ -297,7 +296,7 @@ class _DetailsProfileViewState extends State<DetailsProfileView> {
                 ),
               ),
               child: Container(
-                margin: EdgeInsets.fromLTRB(0, 3, 0, 3),
+                margin: const EdgeInsets.fromLTRB(0, 3, 0, 3),
                 width: 140.0,
                 height: 140.0,
                 decoration: const BoxDecoration(
@@ -315,7 +314,7 @@ class _DetailsProfileViewState extends State<DetailsProfileView> {
                       ),
                       child: ClipOval(
                         child: _isImageLoading
-                            ? CircularProgressIndicator()
+                            ? const CircularProgressIndicator()
                             : _imagePath != null
                                 ? Image.network(
                                     _imagePath!,
