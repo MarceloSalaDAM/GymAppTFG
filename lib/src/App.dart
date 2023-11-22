@@ -26,7 +26,7 @@ class App extends StatelessWidget {
     pantalla de REGISTRO, nos lleva al ONBOARDING para completar el perfil.*/
     return MaterialApp(
       theme: ThemeData(
-        textTheme: GoogleFonts.baiJamjureeTextTheme(
+        textTheme: GoogleFonts.radioCanadaTextTheme(
           Theme.of(context).textTheme,
         ),
       ),

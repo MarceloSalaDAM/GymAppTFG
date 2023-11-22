@@ -288,7 +288,7 @@ class _DetailsProfileViewState extends State<DetailsProfileView> {
             width: double.infinity,
             height: 150,
             decoration: const BoxDecoration(
-              color: Colors.blue,
+              color: Colors.grey,
               border: Border(
                 bottom: BorderSide(color: Colors.black, width: 2),
                 top: BorderSide(color: Colors.black, width: 2),

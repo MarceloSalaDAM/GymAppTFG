@@ -60,7 +60,7 @@ class CustomDrawer extends StatelessWidget {
         title,
         style: TextStyle(
           color: Colors.white,
-          fontSize: 16,
+          fontSize: 20,
         ),
       ),
       leading: Icon(
