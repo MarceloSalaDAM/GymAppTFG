@@ -4,6 +4,7 @@ class Ejercicios {
   final String? nombre;
   final String? descripcion;
   final String? grupo;
+  final String? tipo;
   final String? imagen;
   final String? comentarios;
   final List<String>? musculos;
@@ -12,6 +13,7 @@ class Ejercicios {
     this.nombre = " ",
     this.descripcion = " ",
     this.grupo = " ",
+    this.tipo = " ",
     this.imagen = " ",
     this.comentarios = " ",
     required this.musculos,
@@ -26,6 +28,7 @@ class Ejercicios {
       nombre: data?['nombre'],
       descripcion: data?['descripcion'],
       grupo: data?['grupo'],
+      tipo: data?['tipo'],
       imagen: data?['imagen'],
       comentarios: data?['comentarios'],
       musculos: List<String>.from(data?['musculos'] ?? []),
@@ -37,6 +40,7 @@ class Ejercicios {
       if (nombre != null) "nombre": nombre,
       if (descripcion != null) "descripcion": descripcion,
       if (grupo != null) "grupo": grupo,
+      if (tipo != null) "tipo": tipo,
       if (imagen != null) "imagen": imagen,
       if (comentarios != null) "comentarios": comentarios,
       if (musculos != null) "musculos": musculos,

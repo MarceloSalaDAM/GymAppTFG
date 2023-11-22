@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:gym_app_tfg/src/views/profile_view.dart';
-import 'package:gym_app_tfg/src/views/settings.dart';
-
-import '../custom/card_item.dart';
 import '../custom/custom_drawer.dart';
 import '../firebase_objects/ejercicios_firebase.dart';
 import 'details_profile_view.dart';
+import 'main_list_view.dart';
 
 class MainViewApp extends StatefulWidget {
   const MainViewApp({Key? key}) : super(key: key);
@@ -105,45 +102,7 @@ class _MainViewAppState extends State<MainViewApp> {
           ? CustomDrawer(onLanguageChanged: (String language) {})
           : null,
       body: _currentIndex == 1
-          ? Column(
-              children: <Widget>[
-                Expanded(
-                  child: Container(
-                    margin: const EdgeInsets.fromLTRB(20, 20, 20, 20),
-                    child: ListView.builder(
-                      itemCount: ejercicios.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        final ejercicio = ejercicios[index];
-                        return Card(
-                          child: ListTile(
-                            leading: ejercicio.imagen != null
-                                ? Image.network(ejercicio.imagen!)
-                                : Text("No foto"),
-                            title: Text(
-                                ejercicio.nombre ?? 'Nombre no disponible'),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                    '***Descripción: ${ejercicio.descripcion ?? 'Descripción no disponible'}'),
-                                Text(
-                                    '***Comentarios: ${ejercicio.comentarios ?? 'Comentarios no disponibles'}'),
-                                Text(
-                                    '***Grupo: ${ejercicio.grupo ?? 'Grupo no disponible'}'),
-                                if (ejercicio.musculos != null &&
-                                    ejercicio.musculos!.isNotEmpty)
-                                  Text(
-                                      '***Músculos: ${ejercicio.musculos!.join(", ")}'),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ),
-              ],
-            )
+          ? MainListView(ejercicios: ejercicios)
           : _currentIndex == 0
               ? const Center(
                   child: Text(
