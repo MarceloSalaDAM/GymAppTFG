@@ -12,18 +12,41 @@ class CustomDrawer extends StatelessWidget {
     return Drawer(
       child: Container(
         color: Colors.blue,
-        child: ListView(
-          padding: EdgeInsets.zero,
+        child: Column(
           children: [
-            buildDrawerItem('Cambiar Idioma', Icons.language, () {
-              Navigator.pop(context); // Cierra el Drawer
-              _showLanguageDialog(context);
-            }),
+            Container(
+              height: 150,
+              decoration: BoxDecoration(
+                color: Colors.black,
+                image: DecorationImage(
+                  image: AssetImage('assets/image.png'),
+                  fit: BoxFit.cover, // Ajusta según tus necesidades
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
             Divider(color: Colors.white),
-            buildDrawerItem('Cerrar Sesión', Icons.exit_to_app, () {
-              Navigator.pop(context); // Cierra el Drawer
-              _showSignOutConfirmation(context);
-            }),
+            Expanded(
+              child: ListView(
+                padding: EdgeInsets.zero,
+                children: [
+                  buildDrawerItem('Cambiar Idioma', Icons.language, () {
+                    Navigator.pop(context);
+                    _showLanguageDialog(context);
+                  }),
+                  Divider(color: Colors.white),
+                  buildDrawerItem('Cerrar Sesión', Icons.exit_to_app, () {
+                    Navigator.pop(context);
+                    _showSignOutConfirmation(context);
+                  }),
+                  Divider(color: Colors.white),
+                  buildDrawerItem('Ayuda', Icons.help, () {
+                    Navigator.pop(context);
+                    _showInfoDialog(context);
+                  }),
+                ],
+              ),
+            ),
           ],
         ),
       ),
@@ -63,19 +86,53 @@ class CustomDrawer extends StatelessWidget {
             ),
             TextButton(
               onPressed: () {
-                onLanguageChanged('Español'); // Cambia 'Español' por el idioma seleccionado
+                onLanguageChanged(
+                    'Español'); // Cambia 'Español' por el idioma seleccionado
                 Navigator.pop(context);
               },
               child: Text('Español'),
             ),
             TextButton(
               onPressed: () {
-                onLanguageChanged('Inglés'); // Cambia 'Inglés' por el idioma seleccionado
+                onLanguageChanged(
+                    'Inglés'); // Cambia 'Inglés' por el idioma seleccionado
                 Navigator.pop(context);
               },
               child: Text('Inglés'),
             ),
             // Agrega más opciones según sea necesario
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _showInfoDialog(BuildContext context) async {
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+              style: TextStyle(fontWeight: FontWeight.w800, fontSize: 20),
+              'Sobre FLEXIFY'),
+          content: SingleChildScrollView(
+            child: Text('¡Bienvenido a Flexify!\n'
+                'Gracias por elegir nuestra aplicación para acompañarte en tu viaje hacia un estilo de vida más saludable y activo.'
+                '\nQueremos que aproveches al máximo todas las funciones que hemos desarrollado para ti.\n\n '
+                '¿Cómo funciona la aplicación?\n'
+                'Flexify está diseñada para proporcionarte una experiencia personalizada en tu entrenamiento físico.\n'
+                'Explora la sección de ejercicios, sigue tu progreso y ajusta tu perfil en la sección de configuración.\n\n'
+                '¿Necesitas ayuda o tienes preguntas?\n'
+                'Estamos aquí para ayudarte en cada paso del camino. Si tienes alguna pregunta, inquietud o simplemente necesitas orientación,\n'
+                'no dudes en consultarnos a traves de e-mail: flexify.support@gmail.com'),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('SALIR'),
+            ), // Agrega más opciones según sea necesario
           ],
         );
       },
