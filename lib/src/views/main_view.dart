@@ -90,11 +90,7 @@ class _MainViewAppState extends State<MainViewApp> {
                 : null,
         flexibleSpace: Container(
           decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.blue, Colors.green],
-              begin: Alignment.topLeft,
-              end: Alignment.topRight,
-            ),
+            color: const Color(0XFF0f7991),
           ),
         ),
       ),
@@ -121,11 +117,7 @@ class _MainViewAppState extends State<MainViewApp> {
         margin: const EdgeInsets.fromLTRB(5, 5, 5, 15),
         padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [Colors.blue, Colors.green],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
+          color: const Color(0XFF0f7991),
           border: Border.all(),
           borderRadius: BorderRadius.circular(30.0),
         ),
@@ -170,7 +162,7 @@ class _MainViewAppState extends State<MainViewApp> {
                 onPressed: () {
                   // Acción cuando se presiona el botón flotante
                 },
-                backgroundColor: Colors.black,
+                backgroundColor: const Color(0xFF0c5363),
                 child: const Icon(Icons.add, size: 40),
               ),
             )

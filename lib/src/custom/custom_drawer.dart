@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:gym_app_tfg/src/views/login_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CustomDrawer extends StatelessWidget {
@@ -11,7 +12,7 @@ class CustomDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Drawer(
       child: Container(
-        color: Colors.blue,
+        color: const Color(0XFF0f7991),
         child: Column(
           children: [
             Container(
@@ -158,7 +159,12 @@ class CustomDrawer extends StatelessWidget {
                 await FirebaseAuth.instance.signOut();
                 final prefs = await SharedPreferences.getInstance();
                 await prefs.clear();
-                Navigator.popAndPushNamed(context, '/Login');
+
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginViewApp()),
+                      (route) => false,
+                );
               },
               child: const Text('Aceptar'),
             ),
@@ -167,4 +173,5 @@ class CustomDrawer extends StatelessWidget {
       },
     );
   }
+
 }

@@ -245,7 +245,7 @@ class _DetailsProfileViewState extends State<DetailsProfileView> {
           // Botón existente
           MaterialButton(
             height: 25,
-            color: const Color(0xFF0C7075),
+            color: const Color(0xFF0c5363),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(7.0),
             ),

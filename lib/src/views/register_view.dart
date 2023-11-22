@@ -64,12 +64,7 @@ class RegisterView extends StatelessWidget {
               width: 500,
               height: 500,
               decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Colors.blue, Colors.green],
-                  // Cambia estos colores según tus preferencias
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
+                color: const Color(0XFF0f7991),
                 border: Border.all(),
                 borderRadius: BorderRadius.circular(25.0),
                 boxShadow: const [
@@ -85,12 +80,26 @@ class RegisterView extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 // Evita que la columna se expanda más allá del contenido
                 children: [
-                  Image.asset(
-                    'assets/logo.png',
-                    width: 100,
+                  Container(
                     height: 100,
-                    fit: BoxFit.scaleDown,
-                    alignment: Alignment.topCenter,
+                    margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Colors.black,
+                      ),
+                      color: Colors.black,
+                      borderRadius: BorderRadius.circular(125.0),
+                    ),
+                    child: FittedBox(
+                      fit: BoxFit.cover,
+                      // Ajusta la propiedad BoxFit.cover para cubrir el contenedor sin distorsionar la imagen.
+                      child: Image.asset(
+                        'assets/image.png',
+                        width: 500,
+                        height: 110,
+                        alignment: Alignment.topCenter,
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 5),
                   // Agrega un espacio entre la imagen y los campos de texto

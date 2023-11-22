@@ -51,13 +51,7 @@ class _SplashViewState extends State<SplashView> {
         fit: StackFit.expand,
         children: [
           Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Colors.blue, Colors.green],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
+            color: const Color(0XFF0f7991),
           ),
           const Center(
             child: Column(

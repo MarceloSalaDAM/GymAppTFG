@@ -81,11 +81,7 @@ class _OnBoardingViewState extends State<OnBoardingView> {
         title: const Text("DATOS"),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.blue, Colors.green],
-              begin: Alignment.topLeft,
-              end: Alignment.topRight,
-            ),
+            color: const Color(0XFF0f7991),
           ),
         ),
       ),
@@ -178,7 +174,7 @@ class _OnBoardingViewState extends State<OnBoardingView> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       MaterialButton(
-                        color: Colors.black,
+                        color: const Color(0xFF0c5363),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(7.0),
                         ),
@@ -186,9 +182,6 @@ class _OnBoardingViewState extends State<OnBoardingView> {
                         textColor: Colors.white,
                         splashColor: Colors.white,
                         child: Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(),
-                          ),
                           child: const Padding(
                             padding: EdgeInsets.all(8.0),
                             child: Text("GUARDAR"),
