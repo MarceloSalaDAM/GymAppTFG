@@ -18,6 +18,7 @@ class _MainViewAppState extends State<MainViewApp> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String userName = ''; // Variable para almacenar el nombre del usuario
   List<Ejercicios> ejercicios = []; // Lista para almacenar los ejercicios
+  bool _showSubFABs = false;
 
   @override
   void initState() {
@@ -63,6 +64,27 @@ class _MainViewAppState extends State<MainViewApp> {
             doc, null); // Convierte el documento en un objeto Ejercicios
       }).toList();
     });
+  }
+
+  Future<void> _showRutinaDialog(BuildContext context) async {
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+              style: TextStyle(fontWeight: FontWeight.w800, fontSize: 20),
+              'Que opcion quieres'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('SALIR'),
+            ), // Agrega más opciones según sea necesario
+          ],
+        );
+      },
+    );
   }
 
   int _currentIndex = 1;
@@ -160,7 +182,7 @@ class _MainViewAppState extends State<MainViewApp> {
               message: 'Añadir nueva rutina',
               child: FloatingActionButton(
                 onPressed: () {
-                  // Acción cuando se presiona el botón flotante
+                  _showRutinaDialog(context);
                 },
                 backgroundColor: const Color(0xFF0c5363),
                 child: const Icon(Icons.add, size: 40),
