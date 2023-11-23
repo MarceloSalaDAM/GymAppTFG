@@ -38,6 +38,7 @@ class App extends StatelessWidget {
         '/OnBoarding': (context) => const OnBoardingView(),
         '/Splash': (context) => SplashView(),
         '/DetailsProfile': (context) => const DetailsProfileView(),
+        //'/AddRoutine': (context) => const AddRoutineView(),
       },
     );
   }

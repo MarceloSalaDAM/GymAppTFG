@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../custom/alert_dialogs.dart';
 import '../custom/custom_drawer.dart';
 import '../firebase_objects/ejercicios_firebase.dart';
 import 'details_profile_view.dart';
@@ -64,27 +65,6 @@ class _MainViewAppState extends State<MainViewApp> {
             doc, null); // Convierte el documento en un objeto Ejercicios
       }).toList();
     });
-  }
-
-  Future<void> _showRutinaDialog(BuildContext context) async {
-    await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(
-              style: TextStyle(fontWeight: FontWeight.w800, fontSize: 20),
-              'Que opcion quieres'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text('SALIR'),
-            ), // Agrega más opciones según sea necesario
-          ],
-        );
-      },
-    );
   }
 
   int _currentIndex = 1;
@@ -181,8 +161,9 @@ class _MainViewAppState extends State<MainViewApp> {
           ? Tooltip(
               message: 'Añadir nueva rutina',
               child: FloatingActionButton(
-                onPressed: () {
-                  _showRutinaDialog(context);
+                onPressed: () async {
+                  // Llama al método para mostrar el AlertDialog específico
+                  await AlertDialogManager.showRutinaDialog(context);
                 },
                 backgroundColor: const Color(0xFF0c5363),
                 child: const Icon(Icons.add, size: 40),
@@ -192,4 +173,6 @@ class _MainViewAppState extends State<MainViewApp> {
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
+
+
 }
