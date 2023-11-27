@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../firebase_objects/ejercicios_firebase.dart';
+import 'exercise_list_view.dart';
 
 class MainListView extends StatefulWidget {
   final List<Ejercicios> ejercicios;
@@ -50,7 +51,7 @@ class _MainListViewState extends State<MainListView> {
                     ),
                     child: InkWell(
                       onTap: () {
-                        _showExerciseDialog(context);
+                        _showExerciseListScreen(context);
                       },
                       child: const Padding(
                         padding: EdgeInsets.all(10.0), // Adjust the padding
@@ -157,60 +158,12 @@ class _MainListViewState extends State<MainListView> {
     });
   }
 
-  void _showExerciseDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Ejercicios'),
-          content: SingleChildScrollView(
-            child: Column(
-              children: [
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: widget.ejercicios.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    final ejercicio = widget.ejercicios[index];
-                    return Card(
-                      child: ListTile(
-                        title: Text(ejercicio.nombre ?? 'Nombre no disponible'),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (ejercicio.imagen != null)
-                              Image.network(ejercicio.imagen!),
-                            Text(
-                                '***Descripción: ${ejercicio.descripcion ?? 'Descripción no disponible'}'),
-                            Text(
-                                '***Comentarios: ${ejercicio.comentarios ?? 'Comentarios no disponibles'}'),
-                            Text(
-                                '***Grupo: ${ejercicio.grupo ?? 'Grupo no disponible'}'),
-                            Text(
-                                '***Tipo: ${ejercicio.tipo ?? 'Tipo no disponible'}'),
-                            if (ejercicio.musculos != null &&
-                                ejercicio.musculos!.isNotEmpty)
-                              Text(
-                                  '***Músculos: ${ejercicio.musculos!.join(", ")}'),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Cerrar'),
-            ),
-          ],
-        );
-      },
+  void _showExerciseListScreen(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ExerciseListScreen(ejercicios: widget.ejercicios),
+      ),
     );
   }
 }

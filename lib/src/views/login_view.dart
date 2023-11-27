@@ -16,11 +16,9 @@ class LoginViewApp extends StatelessWidget {
       );
       print("LOGEADO CON EXITO");
 
-      Future.delayed(const Duration(seconds: 3), () {
-        Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (context) => const MainViewApp(),
-        ));
-      });
+      Navigator.of(context).pushReplacement(MaterialPageRoute(
+        builder: (context) => const MainViewApp(),
+      ));
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         // Notifica al usuario que la actualización se realizó con éxito.

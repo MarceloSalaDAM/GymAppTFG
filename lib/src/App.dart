@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:gym_app_tfg/src/views/details_profile_view.dart';
+import 'package:gym_app_tfg/src/views/exercise_list_view.dart';
 import 'package:gym_app_tfg/src/views/login_view.dart';
 import 'package:gym_app_tfg/src/views/main_view.dart';
 import 'package:gym_app_tfg/src/views/on_boarding.dart';
@@ -38,6 +39,7 @@ class App extends StatelessWidget {
         '/OnBoarding': (context) => const OnBoardingView(),
         '/Splash': (context) => SplashView(),
         '/DetailsProfile': (context) => const DetailsProfileView(),
+        '/ExerciseList': (context) => ExerciseListScreen(ejercicios: []),
         //'/AddRoutine': (context) => const AddRoutineView(),
       },
     );
