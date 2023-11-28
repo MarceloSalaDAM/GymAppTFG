@@ -9,6 +9,9 @@ class ExerciseListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Ordenar la lista de ejercicios por nombre alfabéticamente
+    ejercicios.sort((a, b) => (a.nombre ?? '').compareTo(b.nombre ?? ''));
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Lista de Ejercicios'),
@@ -23,24 +26,26 @@ class ExerciseListScreen extends StatelessWidget {
               itemBuilder: (BuildContext context, int index) {
                 final ejercicio = ejercicios[index];
                 return Card(
-                  child: ListTile(
+                  child: ExpansionTile(
                     title: Text(ejercicio.nombre ?? 'Nombre no disponible'),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (ejercicio.imagen != null)
-                          Image.network(ejercicio.imagen!),
-                        Text(
-                            '***Descripción: ${ejercicio.descripcion ?? 'Descripción no disponible'}'),
-                        Text(
-                            '***Comentarios: ${ejercicio.comentarios ?? 'Comentarios no disponibles'}'),
-                        Text('***Grupo: ${ejercicio.grupo ?? 'Grupo no disponible'}'),
-                        Text('***Tipo: ${ejercicio.tipo ?? 'Tipo no disponible'}'),
-                        if (ejercicio.musculos != null &&
-                            ejercicio.musculos!.isNotEmpty)
-                          Text('***Músculos: ${ejercicio.musculos!.join(", ")}'),
-                      ],
-                    ),
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (ejercicio.imagen != null)
+                            Image.network(ejercicio.imagen!),
+                          Text(
+                              '***Descripción: ${ejercicio.descripcion ?? 'Descripción no disponible'}'),
+                          Text(
+                              '***Comentarios: ${ejercicio.comentarios ?? 'Comentarios no disponibles'}'),
+                          Text('***Grupo: ${ejercicio.grupo ?? 'Grupo no disponible'}'),
+                          Text('***Tipo: ${ejercicio.tipo ?? 'Tipo no disponible'}'),
+                          if (ejercicio.musculos != null &&
+                              ejercicio.musculos!.isNotEmpty)
+                            Text('***Músculos: ${ejercicio.musculos!.join(", ")}'),
+                        ],
+                      ),
+                    ],
                   ),
                 );
               },
@@ -51,3 +56,4 @@ class ExerciseListScreen extends StatelessWidget {
     );
   }
 }
+
