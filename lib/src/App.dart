@@ -2,12 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:gym_app_tfg/src/views/create_new_rutine.dart';
 import 'package:gym_app_tfg/src/views/details_profile_view.dart';
 import 'package:gym_app_tfg/src/views/exercise_list_view.dart';
 import 'package:gym_app_tfg/src/views/login_view.dart';
 import 'package:gym_app_tfg/src/views/main_view.dart';
 import 'package:gym_app_tfg/src/views/on_boarding.dart';
-import 'package:gym_app_tfg/src/views/profile_view.dart';
+
 import 'package:gym_app_tfg/src/views/register_view.dart';
 import 'package:gym_app_tfg/src/views/settings.dart';
 import 'package:gym_app_tfg/src/views/splash_view.dart';
@@ -40,7 +41,7 @@ class App extends StatelessWidget {
         '/Splash': (context) => SplashView(),
         '/DetailsProfile': (context) => const DetailsProfileView(),
         '/ExerciseList': (context) => ExerciseListScreen(ejercicios: []),
-        //'/AddRoutine': (context) => const AddRoutineView(),
+        '/CreateRoutine': (context) =>  const CrearRutinaView(ejercicios: [],),
       },
     );
   }

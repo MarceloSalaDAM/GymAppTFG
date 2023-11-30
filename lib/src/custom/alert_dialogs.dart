@@ -25,7 +25,11 @@ class AlertDialogManager {
             Container(
               margin: const EdgeInsets.fromLTRB(25, 5, 25, 5),
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.of(context)
+                      .popAndPushNamed('/CreateRoutine');
+
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.black,
                   shape: RoundedRectangleBorder(

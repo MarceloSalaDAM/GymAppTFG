@@ -8,6 +8,7 @@ class Ejercicios {
   final String? imagen;
   final String? comentarios;
   final List<String>? musculos;
+  bool isSelected;  // Nueva línea
 
   Ejercicios({
     this.nombre = " ",
@@ -17,6 +18,7 @@ class Ejercicios {
     this.imagen = " ",
     this.comentarios = " ",
     required this.musculos,
+    this.isSelected = false,
   });
 
   factory Ejercicios.fromFirestore(
