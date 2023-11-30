@@ -44,15 +44,6 @@ class _ExerciseListScreenState extends State<ExerciseListScreen> {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/fondotarjeta1.jpg'),
-                // Reemplaza con la ruta correcta de tu imagen estática
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
           Positioned(
             top: 30,
             left: 20,
@@ -65,7 +56,7 @@ class _ExerciseListScreenState extends State<ExerciseListScreen> {
                   style: TextStyle(
                     fontSize: 30,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    color: Colors.black,
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -73,11 +64,14 @@ class _ExerciseListScreenState extends State<ExerciseListScreen> {
                   value: selectedGroup,
                   decoration: InputDecoration(
                     filled: true,
-                    fillColor: Colors.black,  // Cambia el color de fondo del botón según tus necesidades
+                    fillColor: Colors
+                        .black, // Cambia el color de fondo del botón según tus necesidades
                   ),
                   style: TextStyle(color: Colors.white),
-                  icon: Icon(Icons.arrow_drop_down, color: Colors.white),  // Cambia el color del icono según tus necesidades
-                  dropdownColor: Colors.black,  // Cambia el color del menú desplegable según tus necesidades
+                  icon: Icon(Icons.arrow_drop_down, color: Colors.white),
+                  // Cambia el color del icono según tus necesidades
+                  dropdownColor: Colors.black,
+                  // Cambia el color del menú desplegable según tus necesidades
                   onChanged: (value) {
                     setState(() {
                       selectedGroup = value!;
@@ -93,7 +87,6 @@ class _ExerciseListScreenState extends State<ExerciseListScreen> {
                     );
                   }).toList(),
                 ),
-
               ],
             ),
           ),
