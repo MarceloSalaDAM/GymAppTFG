@@ -51,7 +51,7 @@ class _CustomCardState extends State<CustomCard>
                 style: TextStyle(
                   fontSize: 25,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: Colors.black,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -111,19 +111,26 @@ class _CustomCardState extends State<CustomCard>
                               style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                                color: Colors.black,
                               ),
                               textAlign: TextAlign.center,
                             ),
                             Text(
                               '${widget.ejercicio.descripcion ?? 'Descripción no disponible'}',
                               style: TextStyle(
-                                fontSize: 17,
+                                fontSize: 16,
                                 fontStyle: FontStyle.italic,
                                 color: Colors.white,
                               ),
-                              textAlign: TextAlign.justify,
+                              textAlign: TextAlign.center,
                             ),
+                            IconButton(
+                              alignment: Alignment.centerRight,
+                              icon: Icon(Icons.info_outline_rounded),
+                              color: Colors.black,
+                              onPressed: _showCommentsDialog,
+                            ),
+                            const SizedBox(height: 10),
                             if (widget.ejercicio.musculos != null &&
                                 widget.ejercicio.musculos!.isNotEmpty)
                               Text(
@@ -131,12 +138,12 @@ class _CustomCardState extends State<CustomCard>
                                 style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.white,
+                                  color: Colors.black,
                                 ),
                                 textAlign: TextAlign.center,
                               ),
                             Text(
-                              ' ${widget.ejercicio.musculos!.join(", ")}',
+                              '${widget.ejercicio.musculos!.map((musculo) => '• $musculo\n').join()}',
                               style: TextStyle(
                                 fontSize: 17,
                                 fontStyle: FontStyle.italic,
@@ -149,7 +156,7 @@ class _CustomCardState extends State<CustomCard>
                               style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                                color: Colors.black,
                               ),
                               textAlign: TextAlign.center,
                             ),
@@ -170,7 +177,9 @@ class _CustomCardState extends State<CustomCard>
                     ),
                     const SizedBox(height: 10),
                     Icon(
-                      isExpanded ? Icons.arrow_drop_up_sharp : Icons.arrow_drop_down_sharp,
+                      isExpanded
+                          ? Icons.arrow_drop_up_sharp
+                          : Icons.arrow_drop_down_sharp,
                       color: Colors.white,
                     ),
                   ],
@@ -180,6 +189,100 @@ class _CustomCardState extends State<CustomCard>
           ),
         ),
       ),
+    );
+  }
+
+  void _showCommentsDialog() {
+    String comentarios =
+        widget.ejercicio.comentarios ?? 'No hay comentarios disponibles';
+
+    // Buscar la posición de "Errores frecuentes"
+    int indexErroresFrecuentes = comentarios.indexOf('Errores frecuentes:');
+
+    // Puedes ajustar el estilo según tus preferencias
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16.0),
+          ),
+          title: const Text(
+            'COMENTARIOS',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 20.0,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          content: RichText(
+            text: TextSpan(
+              style: DefaultTextStyle.of(context).style,
+              children: [
+                if (indexErroresFrecuentes != -1)
+                  TextSpan(
+                    text:
+                        '${comentarios.substring(0, indexErroresFrecuentes)}\n',
+                    style: const TextStyle(
+                      fontSize: 17,
+                      color: Colors.black,
+                    ),
+                  ),
+                if (indexErroresFrecuentes != -1)
+                  const WidgetSpan(
+                    child: Padding(
+                      padding: EdgeInsets.only(left: 4.0),
+                      child: Icon(
+                        Icons.warning,
+                        color: Colors.red,
+                      ),
+                    ),
+                  ),
+                if (indexErroresFrecuentes != -1)
+                  const TextSpan(
+                    text: 'Errores frecuentes',
+                    style: TextStyle(
+                      fontSize: 21,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.red,
+                    ),
+                  ),
+                TextSpan(
+                  text: comentarios.substring(indexErroresFrecuentes + 18),
+                  style: const TextStyle(
+                    fontSize: 17,
+                    color: Colors.black,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.black,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+              ),
+              child: const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Text(
+                  'CERRAR',
+                  style: TextStyle(
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
