@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:gym_app_tfg/src/views/create_new_rutine.dart';
 import 'package:gym_app_tfg/src/views/details_profile_view.dart';
@@ -13,19 +14,17 @@ import 'package:gym_app_tfg/src/views/register_view.dart';
 import 'package:gym_app_tfg/src/views/settings.dart';
 import 'package:gym_app_tfg/src/views/splash_view.dart';
 
-
 class App extends StatelessWidget {
   App({Key? key}) : super(key: key);
   FirebaseFirestore db = FirebaseFirestore.instance;
 
   @override
   Widget build(BuildContext context) {
-    /*Declaramos las rutas que va a seguir nuestra aplicación,
-    la primera que entra es el SPLASH, si no se ha iniciado sesion
-    anteriormente, nos lleva al LOGIN, si ya esta iniciada la sesión
-    nos lleva al home directamente.
-    Desde la pantalla LOGIN, podemos registrar un nuevo usuario y desde la
-    pantalla de REGISTRO, nos lleva al ONBOARDING para completar el perfil.*/
+    // Bloquea la orientación en posición vertical
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     return MaterialApp(
       theme: ThemeData(
         textTheme: GoogleFonts.radioCanadaTextTheme(
@@ -41,8 +40,9 @@ class App extends StatelessWidget {
         '/Splash': (context) => SplashView(),
         '/DetailsProfile': (context) => const DetailsProfileView(),
         '/ExerciseList': (context) => ExerciseListScreen(ejercicios: []),
-        '/CreateRoutine': (context) =>  const CrearRutinaView(ejercicios: [],),
+        '/CreateRoutine': (context) => const CrearRutinaView(ejercicios: []),
       },
+
     );
   }
 }

@@ -54,9 +54,10 @@ class _ExerciseListScreenState extends State<ExerciseListScreen> {
           Center(
             child: Container(
               width: MediaQuery.of(context).size.width * 0.9,
-              margin: const EdgeInsets.fromLTRB(25, 20, 25, 0),
+              margin: const EdgeInsets.fromLTRB(25, 25, 25, 0),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const Text(
                     "FILTRAR POR GRUPO MUSCULAR",
@@ -67,7 +68,7 @@ class _ExerciseListScreenState extends State<ExerciseListScreen> {
                       color: Colors.black,
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 25),
                   DropdownButtonFormField<String>(
                     value: selectedGroup,
                     decoration: const InputDecoration(
@@ -75,7 +76,8 @@ class _ExerciseListScreenState extends State<ExerciseListScreen> {
                       fillColor: Colors.black,
                     ),
                     style: const TextStyle(color: Colors.white, fontSize: 15),
-                    icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
+                    icon:
+                    const Icon(Icons.arrow_drop_down, color: Colors.white),
                     dropdownColor: Colors.black,
                     onChanged: (value) {
                       setState(() {
@@ -93,25 +95,34 @@ class _ExerciseListScreenState extends State<ExerciseListScreen> {
                     }).toList(),
                   ),
                   const SizedBox(height: 10),
-                  Container(
-                    height: 390,
-                    child: PageView.builder(
-                      itemCount: widget.ejercicios
-                          .where((ejercicio) => ejercicio.grupo == selectedGroup)
-                          .length,
-                      itemBuilder: (BuildContext context, int index) {
-                        final ejercicio = widget.ejercicios
+                  Center(
+                    child: Container(
+                      height:
+                      MediaQuery.of(context).size.height > 800 ? 450 : 390,
+                      child: PageView.builder(
+                        itemCount: widget.ejercicios
                             .where(
                                 (ejercicio) => ejercicio.grupo == selectedGroup)
-                            .toList()[index];
+                            .length,
+                        itemBuilder: (BuildContext context, int index) {
+                          final ejercicio = widget.ejercicios
+                              .where((ejercicio) =>
+                          ejercicio.grupo == selectedGroup)
+                              .toList()[index];
 
-                        return Container(
-                          margin: const EdgeInsets.symmetric(vertical: 10),
-                          child: CustomCard(
-                            ejercicio: ejercicio,
-                          ),
-                        );
-                      },
+                          return Container(
+                            margin: const EdgeInsets.symmetric(vertical: 10),
+                            child: CustomCard(
+                              ejercicio: ejercicio,
+                              currentIndex: index + 1,
+                              totalItems: widget.ejercicios
+                                  .where((ejercicio) =>
+                              ejercicio.grupo == selectedGroup)
+                                  .length,
+                            ),
+                          );
+                        },
+                      ),
                     ),
                   ),
                 ],
@@ -122,22 +133,29 @@ class _ExerciseListScreenState extends State<ExerciseListScreen> {
       ),
       bottomNavigationBar: BottomAppBar(
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
           height: 60,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              ElevatedButton(
+              SizedBox(
+                width: 200,
+              ),
+              IconButton(
                 onPressed: () {
                   // Acción del primer botón
                 },
-                child: Text("Botón 1"),
+                icon: Icon(Icons.favorite),
+                color: Colors.red,
               ),
-              ElevatedButton(
+              SizedBox(
+                width: 10,
+              ),
+              IconButton(
                 onPressed: () {
                   // Acción del segundo botón
                 },
-                child: Text("Botón 2"),
+                icon: Icon(Icons.add_sharp),
               ),
             ],
           ),
@@ -146,3 +164,4 @@ class _ExerciseListScreenState extends State<ExerciseListScreen> {
     );
   }
 }
+

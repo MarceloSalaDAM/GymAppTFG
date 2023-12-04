@@ -3,8 +3,14 @@ import '../firebase_objects/ejercicios_firebase.dart';
 
 class CustomCard extends StatefulWidget {
   final Ejercicios ejercicio;
+  final int currentIndex;
+  final int totalItems;
 
-  CustomCard({required this.ejercicio});
+  CustomCard({
+    required this.ejercicio,
+    required this.currentIndex,
+    required this.totalItems,
+  });
 
   @override
   _CustomCardState createState() => _CustomCardState();
@@ -40,12 +46,30 @@ class _CustomCardState extends State<CustomCard>
         borderRadius: BorderRadius.circular(24.0),
         side: const BorderSide(),
       ),
-      child: Container(
+      child:Container(
         padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: List.generate(
+                  widget.totalItems,
+                      (index) => Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                    width: index == widget.currentIndex - 1 ? 4 : 2, // Tamaño más grande para el elemento actual
+                    height: index == widget.currentIndex - 1 ? 4 : 2, // Tamaño más grande para el elemento actual
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: index == widget.currentIndex - 1
+                          ? Colors.white // Color más fuerte para el elemento actual
+                          : Colors.grey,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
               Text(
                 widget.ejercicio.nombre ?? 'Nombre no disponible',
                 style: const TextStyle(
@@ -55,7 +79,7 @@ class _CustomCardState extends State<CustomCard>
                 ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 10),
               if (widget.ejercicio.imagen != null)
                 FutureBuilder(
                   future: precacheImage(
@@ -66,15 +90,15 @@ class _CustomCardState extends State<CustomCard>
                       (BuildContext context, AsyncSnapshot<void> snapshot) {
                     if (snapshot.connectionState == ConnectionState.done) {
                       return Container(
-                        width: 220,
-                        height: 220,
+                        width: 230,
+                        height: 230,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Image.network(
                           widget.ejercicio.imagen!,
-                          width: 220,
-                          height: 220,
+                          width: 230,
+                          height: 230,
                           fit: BoxFit.contain,
                         ),
                       );
@@ -83,7 +107,7 @@ class _CustomCardState extends State<CustomCard>
                     }
                   },
                 ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 10),
               GestureDetector(
                 onTap: _toggleExpansion,
                 child: Column(
@@ -109,7 +133,8 @@ class _CustomCardState extends State<CustomCard>
                               textAlign: TextAlign.center,
                             ),
                             Text(
-                              widget.ejercicio.descripcion ?? 'Descripción no disponible',
+                              widget.ejercicio.descripcion ??
+                                  'Descripción no disponible',
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontStyle: FontStyle.italic,
@@ -136,7 +161,9 @@ class _CustomCardState extends State<CustomCard>
                                 textAlign: TextAlign.center,
                               ),
                             Text(
-                              widget.ejercicio.musculos!.map((musculo) => '• $musculo\n').join(),
+                              widget.ejercicio.musculos!
+                                  .map((musculo) => '• $musculo\n')
+                                  .join(),
                               style: const TextStyle(
                                 fontSize: 17,
                                 fontStyle: FontStyle.italic,
@@ -144,7 +171,7 @@ class _CustomCardState extends State<CustomCard>
                               ),
                               textAlign: TextAlign.justify,
                             ),
-                            Text(
+                            const Text(
                               'TIPO DE EJERCICIO:',
                               style: TextStyle(
                                 fontSize: 20,
@@ -154,8 +181,8 @@ class _CustomCardState extends State<CustomCard>
                               textAlign: TextAlign.center,
                             ),
                             Text(
-                              '${widget.ejercicio.tipo ?? 'Tipo no disponible'}',
-                              style: TextStyle(
+                              widget.ejercicio.tipo ?? 'Tipo no disponible',
+                              style: const TextStyle(
                                 fontSize: 17,
                                 fontStyle: FontStyle.italic,
                                 color: Colors.white,
