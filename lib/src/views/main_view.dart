@@ -163,7 +163,8 @@ class _MainViewAppState extends State<MainViewApp> {
               child: FloatingActionButton(
                 onPressed: () async {
                   // Llama al método para mostrar el AlertDialog específico
-                  await AlertDialogManager.showRutinaDialog(context);
+                  await AlertDialogManager.showRutinaDialog(
+                      context, ejercicios);
                 },
                 backgroundColor: const Color(0xFF0c5363),
                 child: const Icon(Icons.add, size: 40),
@@ -173,6 +174,4 @@ class _MainViewAppState extends State<MainViewApp> {
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
-
-
 }

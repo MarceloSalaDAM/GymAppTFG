@@ -41,7 +41,7 @@ class App extends StatelessWidget {
         '/Splash': (context) => SplashView(),
         '/DetailsProfile': (context) => const DetailsProfileView(),
         '/ExerciseList': (context) => ExerciseListScreen(ejercicios: []),
-        '/CreateRoutine': (context) => const CrearRutinaView(ejercicios: []),
+        '/CreateRoutine': (context) => CrearRutinaView(ejercicios: []),
       },
     );
   }

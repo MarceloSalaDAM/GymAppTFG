@@ -24,16 +24,20 @@ class _ExerciseListScreenState extends State<ExerciseListScreen> {
         grupos.add(ejercicio.grupo!);
       }
     }
+    print('Grupos encontrados: $grupos');
     return grupos.toList()..sort();
   }
 
   @override
   void initState() {
     super.initState();
-    selectedGroup = obtenerGrupos(widget.ejercicios).first;
-    _pageController = PageController();
-  }
+    List<String> grupos = obtenerGrupos(widget.ejercicios);
+    print('Grupos disponibles: $grupos');
 
+    selectedGroup = grupos.isNotEmpty ? grupos.first : '';
+    print('Selected Group: $selectedGroup');
+
+  }
   @override
   void dispose() {
     super.dispose();

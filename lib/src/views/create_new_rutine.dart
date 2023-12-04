@@ -1,35 +1,27 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../firebase_objects/ejercicios_firebase.dart';
 
 class CrearRutinaView extends StatefulWidget {
   final List<Ejercicios> ejercicios;
 
-  const CrearRutinaView({Key? key, required this.ejercicios})
-      : super(key: key);
+  const CrearRutinaView({Key? key, required this.ejercicios}) : super(key: key);
 
   @override
   _CrearRutinaViewState createState() => _CrearRutinaViewState();
 }
 
 class _CrearRutinaViewState extends State<CrearRutinaView> {
-  int selectedDias = 3;
-  List<Ejercicios> selectedEjercicios = [];
   late String selectedGroup;
-
-  static Future<List<Ejercicios>> cargarEjerciciosDesdeFirebase() async {
-    try {
-      final QuerySnapshot<Map<String, dynamic>> querySnapshot =
-      await FirebaseFirestore.instance.collection('ejercicios').get();
-
-      return querySnapshot.docs.map((doc) {
-        return Ejercicios.fromFirestore(doc, null);
-      }).toList();
-    } catch (error) {
-      print('Error al cargar ejercicios desde Firebase: $error');
-      throw error;
-    }
-  }
+  int selectedDias = 3;
+  List<String> selectedDiasSemana = [
+    "LUNES",
+    "MARTES",
+    "MIÉRCOLES",
+    "JUEVES",
+    "VIERNES",
+    "SÁBADO",
+    "DOMINGO"
+  ];
 
   List<String> obtenerGrupos(List<Ejercicios> ejercicios) {
     Set<String> grupos = Set<String>();
@@ -41,61 +33,152 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
     return grupos.toList()..sort();
   }
 
-  List<Ejercicios> obtenerEjerciciosFiltrados() {
-    return selectedEjercicios
-        .where((ejercicio) => ejercicio.grupo == selectedGroup)
-        .toList();
-  }
-
   @override
   void initState() {
     super.initState();
+    print('Ejercicios en CrearRutinaView: ${widget.ejercicios}');
     List<String> grupos = obtenerGrupos(widget.ejercicios);
+    print('Grupos disponibles: $grupos');
     selectedGroup = grupos.isNotEmpty ? grupos.first : '';
-    cargarEjercicios();
-  }
-  Future<void> cargarEjercicios() async {
-    List<Ejercicios> ejercicios = await cargarEjerciciosDesdeFirebase();
-    setState(() {
-      selectedEjercicios = ejercicios;
-    });
+    print('Selected Group: $selectedGroup');
   }
 
   @override
   Widget build(BuildContext context) {
+    widget.ejercicios
+        .sort((a, b) => (a.nombre ?? '').compareTo(b.nombre ?? ''));
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Crear Rutina'),
+        title: const Text(
+          'CREAR RUTINA',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        backgroundColor: const Color(0XFF0f7991),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(30.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Número de días:'),
-            DropdownButton<int>(
+            Container(
+              child: const Text(
+                "CONFIGURAR NUEVA RUTINA",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 25,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              'Días a la semana:',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+            DropdownButtonFormField<int>(
               value: selectedDias,
+              decoration: const InputDecoration(
+                filled: true,
+                fillColor: Colors.black,
+              ),
+              style: const TextStyle(color: Colors.white, fontSize: 15),
+              icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
+              dropdownColor: Colors.black,
               onChanged: (value) {
                 setState(() {
                   selectedDias = value!;
                 });
               },
               items:
-              [1, 2, 3, 4, 5, 6, 7].map<DropdownMenuItem<int>>((int value) {
+                  [1, 2, 3, 4, 5, 6, 7].map<DropdownMenuItem<int>>((int value) {
                 return DropdownMenuItem<int>(
                   value: value,
                   child: Text(value.toString()),
                 );
               }).toList(),
             ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Text(
+                      'Días de la semana',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Wrap(
+                  spacing: 8.0,
+                  // Ajusta el espacio horizontal entre los elementos
+                  runSpacing: 4.0,
+                  // Ajusta el espacio vertical entre los elementos
+                  children: [
+                    for (var dia in [
+                      "LUNES",
+                      "MARTES",
+                      "MIÉRCOLES",
+                      "JUEVES",
+                      "VIERNES",
+                      "SÁBADO",
+                      "DOMINGO",
+                    ])
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Checkbox(
+                            activeColor: const Color(0XFF0f7991),
+                            value: selectedDiasSemana.contains(dia),
+                            onChanged: (value) {
+                              setState(() {
+                                if (value != null) {
+                                  if (value) {
+                                    selectedDiasSemana.add(dia);
+                                  } else {
+                                    selectedDiasSemana.remove(dia);
+                                  }
+                                }
+                              });
+                            },
+                          ),
+                          Text(
+                            dia,
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                            textAlign: TextAlign.left,
+                          ),
+                        ],
+                      ),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 25),
             DropdownButtonFormField<String>(
               value: selectedGroup,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 filled: true,
                 fillColor: Colors.black,
               ),
-              style: TextStyle(color: Colors.white),
-              icon: Icon(Icons.arrow_drop_down, color: Colors.white),
+              style: const TextStyle(color: Colors.white, fontSize: 15),
+              icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
               dropdownColor: Colors.black,
               onChanged: (value) {
                 setState(() {
@@ -107,49 +190,54 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                   value: grupo,
                   child: Text(
                     grupo,
-                    style: TextStyle(color: Colors.white),
+                    style: const TextStyle(color: Colors.white),
                   ),
                 );
               }).toList(),
             ),
-            SizedBox(height: 16),
-            Text('Selecciona ejercicios:'),
+            const SizedBox(height: 10),
             Expanded(
               child: ListView.builder(
-                itemCount: obtenerEjerciciosFiltrados().length,
-                itemBuilder: (context, index) {
-                  return CheckboxListTile(
-                    title:
-                    Text(obtenerEjerciciosFiltrados()[index].nombre ?? ''),
-                    value: obtenerEjerciciosFiltrados()[index].isSelected ??
-                        false,
-                    onChanged: (value) {
-                      setState(() {
-                        obtenerEjerciciosFiltrados()[index].isSelected = value!;
-                      });
+                itemCount: widget.ejercicios
+                    .where((ejercicio) => ejercicio.grupo == selectedGroup)
+                    .length,
+                itemBuilder: (BuildContext context, int index) {
+                  final ejercicio = widget.ejercicios
+                      .where((ejercicio) => ejercicio.grupo == selectedGroup)
+                      .toList()[index];
+
+                  return ListTile(
+                    title: Text(ejercicio.nombre ?? 'Nombre no disponible'),
+                    onTap: () {
+                      // Agrega aquí la lógica para manejar el tap en el elemento
                     },
                   );
                 },
               ),
             ),
-            SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                guardarRutina();
-              },
-              child: Text('Guardar Rutina'),
-            ),
           ],
         ),
       ),
+      bottomNavigationBar: BottomAppBar(
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+          height: 60,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              SizedBox(
+                width: 200,
+              ),
+              IconButton(
+                onPressed: () {
+                  // Acción del segundo botón
+                },
+                icon: Icon(Icons.save_outlined),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
-  }
-
-  Future<void> guardarRutina() async {
-    // Implementa la lógica para guardar la rutina con los ejercicios seleccionados y el número de días
-    // Puedes utilizar Firebase u otro método según tus necesidades.
-    // Por ejemplo, puedes crear una clase `Rutina` que tenga la información necesaria y guardarla en Firebase.
-    // Rutina nuevaRutina = Rutina(dias: selectedDias, ejercicios: obtenerEjerciciosFiltrados().where((e) => e.isSelected).toList());
-    // await FirebaseService.guardarRutinaEnFirebase(nuevaRutina);
   }
 }
