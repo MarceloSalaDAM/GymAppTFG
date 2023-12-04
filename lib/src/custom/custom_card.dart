@@ -40,33 +40,33 @@ class _CustomCardState extends State<CustomCard>
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      color: Colors.blueGrey,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(24.0),
-        side: const BorderSide(),
-      ),
-      child: Container(
-        padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
-        child: SingleChildScrollView(
+    return GestureDetector(
+      onTap: _toggleExpansion,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        height: isExpanded ? null : 390.0,
+        child: Card(
+          color: Colors.blueGrey,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24.0),
+            side: const BorderSide(),
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              const SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: List.generate(
                   widget.totalItems,
-                  (index) => Container(
+                      (index) => Container(
                     margin: const EdgeInsets.symmetric(horizontal: 4),
                     width: index == widget.currentIndex - 1 ? 4 : 2,
-                    // Tamaño más grande para el elemento actual
                     height: index == widget.currentIndex - 1 ? 4 : 2,
-                    // Tamaño más grande para el elemento actual
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: index == widget.currentIndex - 1
-                          ? Colors
-                              .white // Color más fuerte para el elemento actual
+                          ? Colors.white
                           : Colors.grey,
                     ),
                   ),
@@ -92,11 +92,10 @@ class _CustomCardState extends State<CustomCard>
                   builder:
                       (BuildContext context, AsyncSnapshot<void> snapshot) {
                     if (snapshot.connectionState == ConnectionState.done) {
-                      // Obtener el alto de la pantalla
-                      double screenHeight = MediaQuery.of(context).size.height;
-
-                      // Establecer el tamaño deseado de la imagen en función del alto de la pantalla
-                      double imageSize = screenHeight > 800 ? 300.0 : 230.0;
+                      double screenHeight =
+                          MediaQuery.of(context).size.height;
+                      double imageSize =
+                      screenHeight > 800 ? 300.0 : 230.0;
 
                       return Container(
                         width: imageSize,
@@ -117,102 +116,95 @@ class _CustomCardState extends State<CustomCard>
                   },
                 ),
               const SizedBox(height: 10),
-              GestureDetector(
-                onTap: _toggleExpansion,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    AnimatedCrossFade(
-                      duration: Duration(milliseconds: 300),
-                      crossFadeState: isExpanded
-                          ? CrossFadeState.showFirst
-                          : CrossFadeState.showSecond,
-                      firstChild: FadeTransition(
-                        opacity: _animation,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            const Text(
-                              'EJECUCIÓN:',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                            Text(
-                              widget.ejercicio.descripcion ??
-                                  'Descripción no disponible',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontStyle: FontStyle.italic,
-                                color: Colors.white,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                            IconButton(
-                              alignment: Alignment.centerRight,
-                              icon: const Icon(Icons.info_outline_rounded),
-                              color: Colors.black,
-                              onPressed: _showCommentsDialog,
-                            ),
-                            const SizedBox(height: 10),
-                            if (widget.ejercicio.musculos != null &&
-                                widget.ejercicio.musculos!.isNotEmpty)
-                              Text(
-                                'MÚSCULOS TRABAJADOS:',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                            Text(
-                              widget.ejercicio.musculos!
-                                  .map((musculo) => '• $musculo\n')
-                                  .join(),
-                              style: const TextStyle(
-                                fontSize: 17,
-                                fontStyle: FontStyle.italic,
-                                color: Colors.white,
-                              ),
-                              textAlign: TextAlign.justify,
-                            ),
-                            const Text(
-                              'TIPO DE EJERCICIO:',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                            Text(
-                              widget.ejercicio.tipo ?? 'Tipo no disponible',
-                              style: const TextStyle(
-                                fontSize: 17,
-                                fontStyle: FontStyle.italic,
-                                color: Colors.white,
-                              ),
-                              textAlign: TextAlign.justify,
-                            ),
-                          ],
+              AnimatedCrossFade(
+                duration: const Duration(milliseconds: 300),
+                crossFadeState: isExpanded
+                    ? CrossFadeState.showFirst
+                    : CrossFadeState.showSecond,
+                firstChild: FadeTransition(
+                  opacity: _animation,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const Text(
+                        'EJECUCIÓN:',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
                         ),
+                        textAlign: TextAlign.center,
                       ),
-                      secondChild:
-                          Container(), // Widget vacío cuando está cerrado
-                    ),
-                    Icon(
-                      isExpanded
-                          ? Icons.arrow_drop_up_sharp
-                          : Icons.arrow_drop_down_sharp,
-                      color: Colors.white,
-                    ),
-                  ],
+                      Text(
+                        widget.ejercicio.descripcion ??
+                            'Descripción no disponible',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontStyle: FontStyle.italic,
+                          color: Colors.white,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      IconButton(
+                        alignment: Alignment.centerRight,
+                        icon: const Icon(Icons.info_outline_rounded),
+                        color: Colors.black,
+                        onPressed: _showCommentsDialog,
+                      ),
+                      const SizedBox(height: 10),
+                      if (widget.ejercicio.musculos != null &&
+                          widget.ejercicio.musculos!.isNotEmpty)
+                        Text(
+                          'MÚSCULOS TRABAJADOS:',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      Text(
+                        widget.ejercicio.musculos!
+                            .map((musculo) => '• $musculo\n')
+                            .join(),
+                        style: const TextStyle(
+                          fontSize: 17,
+                          fontStyle: FontStyle.italic,
+                          color: Colors.white,
+                        ),
+                        textAlign: TextAlign.justify,
+                      ),
+                      const Text(
+                        'TIPO DE EJERCICIO:',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      Text(
+                        widget.ejercicio.tipo ?? 'Tipo no disponible',
+                        style: const TextStyle(
+                          fontSize: 17,
+                          fontStyle: FontStyle.italic,
+                          color: Colors.white,
+                        ),
+                        textAlign: TextAlign.justify,
+                      ),
+                    ],
+                  ),
                 ),
+                secondChild: Container(),
               ),
+              const SizedBox(height: 10),
+              Icon(
+                isExpanded
+                    ? Icons.arrow_drop_up_sharp
+                    : Icons.arrow_drop_down_sharp,
+                color: Colors.white,
+              ),
+              const SizedBox(height: 16),
             ],
           ),
         ),
@@ -223,11 +215,8 @@ class _CustomCardState extends State<CustomCard>
   void _showCommentsDialog() {
     String comentarios =
         widget.ejercicio.comentarios ?? 'No hay comentarios disponibles';
-
-    // Buscar la posición de "Errores frecuentes"
     int indexErroresFrecuentes = comentarios.indexOf('Errores frecuentes:');
 
-    // Puedes ajustar el estilo según tus preferencias
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -251,7 +240,7 @@ class _CustomCardState extends State<CustomCard>
                 if (indexErroresFrecuentes != -1)
                   TextSpan(
                     text:
-                        '${comentarios.substring(0, indexErroresFrecuentes)}\n',
+                    '${comentarios.substring(0, indexErroresFrecuentes)}\n',
                     style: const TextStyle(
                       fontSize: 17,
                       color: Colors.black,

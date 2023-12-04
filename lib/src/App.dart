@@ -9,6 +9,7 @@ import 'package:gym_app_tfg/src/views/exercise_list_view.dart';
 import 'package:gym_app_tfg/src/views/login_view.dart';
 import 'package:gym_app_tfg/src/views/main_view.dart';
 import 'package:gym_app_tfg/src/views/on_boarding.dart';
+import 'package:gym_app_tfg/src/custom/rotating_card_custom.dart';
 
 import 'package:gym_app_tfg/src/views/register_view.dart';
 import 'package:gym_app_tfg/src/views/settings.dart';
@@ -42,7 +43,6 @@ class App extends StatelessWidget {
         '/ExerciseList': (context) => ExerciseListScreen(ejercicios: []),
         '/CreateRoutine': (context) => const CrearRutinaView(ejercicios: []),
       },
-
     );
   }
 }

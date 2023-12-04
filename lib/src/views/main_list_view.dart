@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gym_app_tfg/src/custom/rotating_card_custom.dart';
 
 import '../firebase_objects/ejercicios_firebase.dart';
 import 'exercise_list_view.dart';
@@ -166,4 +167,5 @@ class _MainListViewState extends State<MainListView> {
       ),
     );
   }
+
 }
