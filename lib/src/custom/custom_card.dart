@@ -46,24 +46,27 @@ class _CustomCardState extends State<CustomCard>
         borderRadius: BorderRadius.circular(24.0),
         side: const BorderSide(),
       ),
-      child:Container(
+      child: Container(
         padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: List.generate(
                   widget.totalItems,
-                      (index) => Container(
+                  (index) => Container(
                     margin: const EdgeInsets.symmetric(horizontal: 4),
-                    width: index == widget.currentIndex - 1 ? 4 : 2, // Tamaño más grande para el elemento actual
-                    height: index == widget.currentIndex - 1 ? 4 : 2, // Tamaño más grande para el elemento actual
+                    width: index == widget.currentIndex - 1 ? 4 : 2,
+                    // Tamaño más grande para el elemento actual
+                    height: index == widget.currentIndex - 1 ? 4 : 2,
+                    // Tamaño más grande para el elemento actual
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: index == widget.currentIndex - 1
-                          ? Colors.white // Color más fuerte para el elemento actual
+                          ? Colors
+                              .white // Color más fuerte para el elemento actual
                           : Colors.grey,
                     ),
                   ),
@@ -89,16 +92,22 @@ class _CustomCardState extends State<CustomCard>
                   builder:
                       (BuildContext context, AsyncSnapshot<void> snapshot) {
                     if (snapshot.connectionState == ConnectionState.done) {
+                      // Obtener el alto de la pantalla
+                      double screenHeight = MediaQuery.of(context).size.height;
+
+                      // Establecer el tamaño deseado de la imagen en función del alto de la pantalla
+                      double imageSize = screenHeight > 800 ? 300.0 : 230.0;
+
                       return Container(
-                        width: 230,
-                        height: 230,
+                        width: imageSize,
+                        height: imageSize,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Image.network(
                           widget.ejercicio.imagen!,
-                          width: 230,
-                          height: 230,
+                          width: imageSize,
+                          height: imageSize,
                           fit: BoxFit.contain,
                         ),
                       );

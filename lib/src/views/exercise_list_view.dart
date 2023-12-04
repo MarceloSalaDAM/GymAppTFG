@@ -14,6 +14,7 @@ class ExerciseListScreen extends StatefulWidget {
 
 class _ExerciseListScreenState extends State<ExerciseListScreen> {
   late String selectedGroup;
+  late PageController _pageController; // Agregamos el controlador del PageView
 
   List<String> obtenerGrupos(List<Ejercicios> ejercicios) {
     Set<String> grupos = Set<String>();
@@ -29,6 +30,12 @@ class _ExerciseListScreenState extends State<ExerciseListScreen> {
   void initState() {
     super.initState();
     selectedGroup = obtenerGrupos(widget.ejercicios).first;
+    _pageController = PageController();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
@@ -82,6 +89,7 @@ class _ExerciseListScreenState extends State<ExerciseListScreen> {
                     onChanged: (value) {
                       setState(() {
                         selectedGroup = value!;
+                        _pageController.jumpToPage(0); // Reiniciamos el PageView al cambiar el filtro
                       });
                     },
                     items: obtenerGrupos(widget.ejercicios).map((grupo) {
@@ -100,6 +108,7 @@ class _ExerciseListScreenState extends State<ExerciseListScreen> {
                       height:
                       MediaQuery.of(context).size.height > 800 ? 450 : 390,
                       child: PageView.builder(
+                        controller: _pageController,
                         itemCount: widget.ejercicios
                             .where(
                                 (ejercicio) => ejercicio.grupo == selectedGroup)
@@ -164,4 +173,3 @@ class _ExerciseListScreenState extends State<ExerciseListScreen> {
     );
   }
 }
-
