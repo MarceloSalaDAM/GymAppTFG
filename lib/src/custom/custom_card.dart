@@ -23,7 +23,7 @@ class _CustomCardState extends State<CustomCard>
 
     _animationController = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 300),
     );
 
     _animation = CurvedAnimation(
@@ -38,18 +38,18 @@ class _CustomCardState extends State<CustomCard>
       color: Colors.blueGrey,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(24.0),
-        side: BorderSide(),
+        side: const BorderSide(),
       ),
       child: Container(
-        padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
+        padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                '${widget.ejercicio.nombre ?? 'Nombre no disponible'}',
-                style: TextStyle(
-                  fontSize: 25,
+                widget.ejercicio.nombre ?? 'Nombre no disponible',
+                style: const TextStyle(
+                  fontSize: 20,
                   fontWeight: FontWeight.bold,
                   color: Colors.black,
                 ),
@@ -66,27 +66,20 @@ class _CustomCardState extends State<CustomCard>
                       (BuildContext context, AsyncSnapshot<void> snapshot) {
                     if (snapshot.connectionState == ConnectionState.done) {
                       return Container(
-                        width: 250,
-                        height: 250,
+                        width: 220,
+                        height: 220,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey,
-                              offset: Offset(0.0, 2.0),
-                              blurRadius: 10.0,
-                            ),
-                          ],
                         ),
                         child: Image.network(
                           widget.ejercicio.imagen!,
-                          width: 230,
-                          height: 230,
-                          fit: BoxFit.cover,
+                          width: 220,
+                          height: 220,
+                          fit: BoxFit.contain,
                         ),
                       );
                     } else {
-                      return CircularProgressIndicator();
+                      return const CircularProgressIndicator();
                     }
                   },
                 ),
@@ -106,7 +99,7 @@ class _CustomCardState extends State<CustomCard>
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Text(
+                            const Text(
                               'EJECUCIÓN:',
                               style: TextStyle(
                                 fontSize: 20,
@@ -116,8 +109,8 @@ class _CustomCardState extends State<CustomCard>
                               textAlign: TextAlign.center,
                             ),
                             Text(
-                              '${widget.ejercicio.descripcion ?? 'Descripción no disponible'}',
-                              style: TextStyle(
+                              widget.ejercicio.descripcion ?? 'Descripción no disponible',
+                              style: const TextStyle(
                                 fontSize: 16,
                                 fontStyle: FontStyle.italic,
                                 color: Colors.white,
@@ -126,7 +119,7 @@ class _CustomCardState extends State<CustomCard>
                             ),
                             IconButton(
                               alignment: Alignment.centerRight,
-                              icon: Icon(Icons.info_outline_rounded),
+                              icon: const Icon(Icons.info_outline_rounded),
                               color: Colors.black,
                               onPressed: _showCommentsDialog,
                             ),
@@ -143,8 +136,8 @@ class _CustomCardState extends State<CustomCard>
                                 textAlign: TextAlign.center,
                               ),
                             Text(
-                              '${widget.ejercicio.musculos!.map((musculo) => '• $musculo\n').join()}',
-                              style: TextStyle(
+                              widget.ejercicio.musculos!.map((musculo) => '• $musculo\n').join(),
+                              style: const TextStyle(
                                 fontSize: 17,
                                 fontStyle: FontStyle.italic,
                                 color: Colors.white,
@@ -175,7 +168,6 @@ class _CustomCardState extends State<CustomCard>
                       secondChild:
                           Container(), // Widget vacío cuando está cerrado
                     ),
-                    const SizedBox(height: 10),
                     Icon(
                       isExpanded
                           ? Icons.arrow_drop_up_sharp

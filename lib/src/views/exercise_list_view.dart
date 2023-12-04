@@ -38,83 +38,110 @@ class _ExerciseListScreenState extends State<ExerciseListScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('EJERCICIOS'),
+        title: const Text(
+          'EJERCICIOS',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         backgroundColor: const Color(0XFF0f7991),
       ),
-      body: Stack(
-        fit: StackFit.expand,
+      body: ListView(
+        shrinkWrap: true,
+        physics: NeverScrollableScrollPhysics(),
         children: [
-          Positioned(
-            top: 30,
-            left: 20,
-            right: 20,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "FILTRAR POR GRUPO MUSCULAR",
-                  style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
+          Center(
+            child: Container(
+              width: MediaQuery.of(context).size.width * 0.9,
+              margin: const EdgeInsets.fromLTRB(25, 20, 25, 0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "FILTRAR POR GRUPO MUSCULAR",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 10),
-                DropdownButtonFormField<String>(
-                  value: selectedGroup,
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Colors
-                        .black, // Cambia el color de fondo del botón según tus necesidades
-                  ),
-                  style: TextStyle(color: Colors.white),
-                  icon: Icon(Icons.arrow_drop_down, color: Colors.white),
-                  // Cambia el color del icono según tus necesidades
-                  dropdownColor: Colors.black,
-                  // Cambia el color del menú desplegable según tus necesidades
-                  onChanged: (value) {
-                    setState(() {
-                      selectedGroup = value!;
-                    });
-                  },
-                  items: obtenerGrupos(widget.ejercicios).map((grupo) {
-                    return DropdownMenuItem<String>(
-                      value: grupo,
-                      child: Text(
-                        grupo,
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    );
-                  }).toList(),
-                ),
-              ],
-            ),
-          ),
-          Positioned.fill(
-            top: 120, // Ajusta según sea necesario
-            child: Center(
-              child: SingleChildScrollView(
-                child: Container(
-                  height: 500, // Ajusta el tamaño según tus necesidades
-                  margin: EdgeInsets.all(20),
-                  child: PageView.builder(
-                    itemCount: widget.ejercicios
-                        .where((ejercicio) => ejercicio.grupo == selectedGroup)
-                        .length,
-                    itemBuilder: (BuildContext context, int index) {
-                      final ejercicio = widget.ejercicios
-                          .where(
-                              (ejercicio) => ejercicio.grupo == selectedGroup)
-                          .toList()[index];
-
-                      return CustomCard(ejercicio: ejercicio);
+                  const SizedBox(height: 20),
+                  DropdownButtonFormField<String>(
+                    value: selectedGroup,
+                    decoration: const InputDecoration(
+                      filled: true,
+                      fillColor: Colors.black,
+                    ),
+                    style: const TextStyle(color: Colors.white, fontSize: 15),
+                    icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
+                    dropdownColor: Colors.black,
+                    onChanged: (value) {
+                      setState(() {
+                        selectedGroup = value!;
+                      });
                     },
+                    items: obtenerGrupos(widget.ejercicios).map((grupo) {
+                      return DropdownMenuItem<String>(
+                        value: grupo,
+                        child: Text(
+                          grupo,
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      );
+                    }).toList(),
                   ),
-                ),
+                  const SizedBox(height: 10),
+                  Container(
+                    height: 390,
+                    child: PageView.builder(
+                      itemCount: widget.ejercicios
+                          .where((ejercicio) => ejercicio.grupo == selectedGroup)
+                          .length,
+                      itemBuilder: (BuildContext context, int index) {
+                        final ejercicio = widget.ejercicios
+                            .where(
+                                (ejercicio) => ejercicio.grupo == selectedGroup)
+                            .toList()[index];
+
+                        return Container(
+                          margin: const EdgeInsets.symmetric(vertical: 10),
+                          child: CustomCard(
+                            ejercicio: ejercicio,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
         ],
+      ),
+      bottomNavigationBar: BottomAppBar(
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          height: 60,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  // Acción del primer botón
+                },
+                child: Text("Botón 1"),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  // Acción del segundo botón
+                },
+                child: Text("Botón 2"),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
