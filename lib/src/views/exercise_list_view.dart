@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:gym_app_tfg/src/custom/rotating_card_custom.dart';
-import '../custom/custom_card.dart';
 import '../firebase_objects/ejercicios_firebase.dart';
 
 class ExerciseListScreen extends StatefulWidget {
