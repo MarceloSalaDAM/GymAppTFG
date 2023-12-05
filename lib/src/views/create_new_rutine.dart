@@ -76,22 +76,10 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
         backgroundColor: const Color(0XFF0f7991),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(20.0), // Añade padding aquí
+        padding: const EdgeInsets.all(25.0), // Añade padding aquí
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              child: const Text(
-                "CONFIGURAR NUEVA RUTINA",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 25,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-            ),
-            const SizedBox(height: 10),
             Expanded(
               child: PageView(
                 controller: _pageController,
@@ -100,64 +88,88 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Row(
+                      const SizedBox(height: 5),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            'Días de la semana',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
+                          const Row(
+                            children: [
+                              Text(
+                                'Días de la semana',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 5),
+                          Card(
+                            elevation: 4.0,
+                            // Ajusta la elevación según tus preferencias
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                              // Opcional: Añade esquinas redondeadas al borde de la tarjeta
+                              side: const BorderSide(
+                                  color: Colors
+                                      .grey), // Opcional: Añade un borde alrededor de la tarjeta
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              // Ajusta el espaciado interno de la tarjeta según tus preferencias
+                              child: Wrap(
+                                spacing: 30.0,
+                                runSpacing: 2.0,
+                                children: [
+                                  for (var dia in [
+                                    "LUNES",
+                                    "MARTES",
+                                    "MIÉRCOLES",
+                                    "JUEVES",
+                                    "VIERNES",
+                                    "SÁBADO",
+                                    "DOMINGO",
+                                  ])
+                                    Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Checkbox(
+                                          activeColor: const Color(0XFF0f7991),
+                                          value:
+                                              selectedDiasSemana.contains(dia),
+                                          onChanged: (value) {
+                                            setState(() {
+                                              if (value != null) {
+                                                if (value) {
+                                                  selectedDiasSemana.add(dia);
+                                                } else {
+                                                  selectedDiasSemana
+                                                      .remove(dia);
+                                                }
+                                              }
+                                            });
+                                          },
+                                        ),
+                                        Text(
+                                          dia,
+                                          style: const TextStyle(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black,
+                                          ),
+                                          textAlign: TextAlign.left,
+                                        ),
+                                      ],
+                                    ),
+                                ],
+                              ),
                             ),
                           ),
                         ],
                       ),
+
                       const SizedBox(height: 10),
-                      Wrap(
-                        spacing: 8.0,
-                        runSpacing: 4.0,
-                        children: [
-                          for (var dia in [
-                            "LUNES",
-                            "MARTES",
-                            "MIÉRCOLES",
-                            "JUEVES",
-                            "VIERNES",
-                            "SÁBADO",
-                            "DOMINGO",
-                          ])
-                            Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Checkbox(
-                                  activeColor: const Color(0XFF0f7991),
-                                  value: selectedDiasSemana.contains(dia),
-                                  onChanged: (value) {
-                                    setState(() {
-                                      if (value != null) {
-                                        if (value) {
-                                          selectedDiasSemana.add(dia);
-                                        } else {
-                                          selectedDiasSemana.remove(dia);
-                                        }
-                                      }
-                                    });
-                                  },
-                                ),
-                                Text(
-                                  dia,
-                                  style: const TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
-                                  ),
-                                  textAlign: TextAlign.left,
-                                ),
-                              ],
-                            ),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
                       const Text(
                         'Grupo muscular por día',
                         style: TextStyle(
@@ -166,72 +178,80 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                           color: Colors.black,
                         ),
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 5),
                       // Nuevo Column para la lista de días
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           // Lista de días seleccionados
                           Container(
-                            height: 250,
+                            height: MediaQuery.of(context).size.height > 800
+                                ? 340
+                                : 220,
                             child: ListView.builder(
                               shrinkWrap: true,
                               itemCount: selectedDiasSemana.length,
                               itemBuilder: (BuildContext context, int index) {
                                 final dia = selectedDiasSemana[index];
-                                return ExpansionTile(
-                                  title: Text(
-                                    dia,
-                                    style: const TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black,
+                                return Card(
+                                  // Agrega el widget Card como contenedor
+                                  margin: EdgeInsets.symmetric(vertical: 8.0),
+                                  // Espacio alrededor de cada Card
+                                  child: ExpansionTile(
+                                    title: Text(
+                                      dia,
+                                      style: const TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black,
+                                      ),
                                     ),
-                                  ),
-                                  trailing: Icon(Icons.arrow_drop_down,
-                                      color: const Color(0XFF0f7991)),
-                                  children: <Widget>[
-                                    Wrap(
-                                      spacing: 8.0,
-                                      runSpacing: 0.0,
-                                      children: obtenerGrupos(widget.ejercicios)
-                                          .map((grupo) {
-                                        bool isSelected =
-                                            selectedGroupsMap[dia]!
-                                                .contains(grupo);
+                                    trailing: const Icon(Icons.arrow_drop_down,
+                                        color: Color(0XFF0f7991)),
+                                    children: <Widget>[
+                                      Wrap(
+                                        spacing: 8.0,
+                                        runSpacing: 0.0,
+                                        children:
+                                            obtenerGrupos(widget.ejercicios)
+                                                .map((grupo) {
+                                          bool isSelected =
+                                              selectedGroupsMap[dia]!
+                                                  .contains(grupo);
 
-                                        return ElevatedButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              if (isSelected) {
-                                                selectedGroupsMap[dia]!
-                                                    .remove(grupo);
-                                              } else {
-                                                selectedGroupsMap[dia]!
-                                                    .add(grupo);
-                                              }
-                                            });
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: isSelected
-                                                ? const Color(0XFF0f7991)
-                                                : Colors.grey,
-                                            minimumSize: const Size(0, 0),
-                                          ),
-                                          child: Text(
-                                            grupo,
-                                            style: TextStyle(
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.bold,
-                                              color: isSelected
-                                                  ? Colors.white
-                                                  : Colors.white,
+                                          return ElevatedButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                if (isSelected) {
+                                                  selectedGroupsMap[dia]!
+                                                      .remove(grupo);
+                                                } else {
+                                                  selectedGroupsMap[dia]!
+                                                      .add(grupo);
+                                                }
+                                              });
+                                            },
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: isSelected
+                                                  ? const Color(0XFF0f7991)
+                                                  : Colors.grey,
+                                              minimumSize: const Size(0, 0),
                                             ),
-                                          ),
-                                        );
-                                      }).toList(),
-                                    ),
-                                  ],
+                                            child: Text(
+                                              grupo,
+                                              style: TextStyle(
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.bold,
+                                                color: isSelected
+                                                    ? Colors.white
+                                                    : Colors.white,
+                                              ),
+                                            ),
+                                          );
+                                        }).toList(),
+                                      ),
+                                    ],
+                                  ),
                                 );
                               },
                             ),
@@ -244,61 +264,41 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                   Container(
                     key: Key('ContainerKey'),
                     color: Colors.blue,
-                    // Puedes cambiar el color o utilizar otro widget
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        DropdownButtonFormField<String>(
-                          value: selectedGroup,
-                          decoration: const InputDecoration(
-                            filled: true,
-                            fillColor: Colors.black,
-                          ),
-                          style: const TextStyle(
-                              color: Colors.white, fontSize: 15),
-                          icon: const Icon(Icons.arrow_drop_down,
-                              color: Colors.white),
-                          dropdownColor: Colors.black,
-                          onChanged: (value) {
-                            setState(() {
-                              selectedGroup = value!;
-                            });
-                          },
-                          items: obtenerGrupos(widget.ejercicios).map((grupo) {
-                            return DropdownMenuItem<String>(
-                              value: grupo,
-                              child: Text(
-                                grupo,
-                                style: const TextStyle(color: Colors.white),
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                        Expanded(
-                          child: ListView.builder(
-                            key: const Key('ListViewKey'),
-                            itemCount: widget.ejercicios
-                                .where((ejercicio) =>
-                                    ejercicio.grupo == selectedGroup)
-                                .length,
-                            itemBuilder: (BuildContext context, int index) {
-                              final ejercicio = widget.ejercicios
-                                  .where((ejercicio) =>
-                                      ejercicio.grupo == selectedGroup)
-                                  .toList()[index];
+                    child: ListView.builder(
+                      key: const Key('ListViewKey'),
+                      itemCount: selectedDiasSemana.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        final dia = selectedDiasSemana[index];
+                        final selectedGroups = selectedGroupsMap[dia] ?? <String>[]; // Asegúrate de que selectedGroups no sea nulo
 
-                              return ListTile(
-                                title: Text(
-                                    ejercicio.nombre ?? 'Nombre no disponible'),
-                                onTap: () {
-                                  // Agrega aquí la lógica para manejar el tap en el elemento
-                                },
-                              );
-                            },
-                          ),
-                        ),
-                        // Agrega aquí los elementos del nuevo contenido
-                      ],
+                        return Column(
+                          children: [
+                            ExpansionTile(
+                              title: Text(
+                                dia,
+                                style: const TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              trailing: const Icon(Icons.arrow_drop_down, color: Color(0XFF0f7991)),
+                              children: <Widget>[
+                                Wrap(
+                                  spacing: 8.0,
+                                  runSpacing: 0.0,
+                                  children: selectedGroups.map((grupo) {
+                                    return ListTile(
+                                      title: Text(grupo),
+                                      // Agrega otras propiedades de ListTile según sea necesario
+                                    );
+                                  }).toList(),
+                                ),
+                              ],
+                            ),
+                          ],
+                        );
+                      },
                     ),
                   ),
                 ],
@@ -312,7 +312,7 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
           padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
           height: 60,
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               IconButton(
                 onPressed: () {
@@ -322,7 +322,10 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                     curve: Curves.ease,
                   );
                 },
-                icon: Icon(Icons.arrow_right_alt),
+                icon: Icon(
+                  Icons.arrow_right_alt,
+                  size: 30,
+                ),
               ),
             ],
           ),

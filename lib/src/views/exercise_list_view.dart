@@ -37,6 +37,8 @@ class _ExerciseListScreenState extends State<ExerciseListScreen> {
     selectedGroup = grupos.isNotEmpty ? grupos.first : '';
     print('Selected Group: $selectedGroup');
 
+    _pageController = PageController(); // Add this line
+
   }
   @override
   void dispose() {
