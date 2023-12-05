@@ -287,11 +287,18 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                                 Wrap(
                                   spacing: 8.0,
                                   runSpacing: 0.0,
-                                  children: selectedGroups.map((grupo) {
-                                    return ListTile(
-                                      title: Text(grupo),
-                                      // Agrega otras propiedades de ListTile según sea necesario
-                                    );
+                                  children: selectedGroups.expand((grupo) {
+                                    // Filtra la lista de ejercicios para el grupo muscular seleccionado
+                                    final ejerciciosFiltrados = widget.ejercicios
+                                        .where((ejercicio) => ejercicio.grupo == grupo)
+                                        .toList();
+
+                                    return ejerciciosFiltrados.map((ejercicio) {
+                                      return ListTile(
+                                        title: Text(ejercicio.nombre ?? 'Nombre no disponible',),
+                                        // Puedes agregar más propiedades de ListTile según sea necesario
+                                      );
+                                    });
                                   }).toList(),
                                 ),
                               ],
