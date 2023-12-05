@@ -1,7 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:page_transition/page_transition.dart';
 import '../custom/alert_dialogs.dart';
 import '../firebase_objects/ejercicios_firebase.dart';
+import '../firebase_objects/usuarios_firebase.dart';
 import 'exercise_list_view.dart';
 
 class CrearRutinaView extends StatefulWidget {
@@ -15,6 +19,8 @@ class CrearRutinaView extends StatefulWidget {
 
 class _CrearRutinaViewState extends State<CrearRutinaView> {
   late PageController _pageController;
+  List<Map<String, dynamic>> ejerciciosTemporales = [];
+
   Map<String, Set<String>> selectedGroupsMap = {
     "LUNES": Set<String>(),
     "MARTES": Set<String>(),
@@ -369,30 +375,101 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                                             CrossAxisAlignment.start,
                                         children: [
                                           TextFormField(
+                                            keyboardType: TextInputType.phone,
+                                            inputFormatters: [
+                                              FilteringTextInputFormatter
+                                                  .digitsOnly,
+                                            ],
                                             controller: pesoController,
-                                            keyboardType: TextInputType.number,
                                             decoration: InputDecoration(
-                                                labelText: 'Peso (kg)'),
+                                              labelText: 'Peso (kg)',
+                                            ),
                                           ),
                                           TextFormField(
+                                            keyboardType: TextInputType.phone,
+                                            inputFormatters: [
+                                              FilteringTextInputFormatter
+                                                  .digitsOnly,
+                                            ],
                                             controller: repeticionesController,
-                                            keyboardType: TextInputType.number,
                                             decoration: InputDecoration(
-                                                labelText: 'Repeticiones'),
+                                              labelText: 'Repeticiones',
+                                            ),
                                           ),
+
                                           TextFormField(
+                                            keyboardType: TextInputType.phone,
+                                            inputFormatters: [
+                                              FilteringTextInputFormatter
+                                                  .digitsOnly,
+                                            ],
                                             controller: seriesController,
-                                            keyboardType: TextInputType.number,
                                             decoration: InputDecoration(
-                                                labelText: 'Series'),
+                                              labelText: 'Series',
+                                            ),
                                           ),
+
                                           const SizedBox(height: 8.0),
                                           // Espaciado entre campos editables y botón
                                           ElevatedButton(
                                             onPressed: () {
-                                              // Lógica para manejar el botón "Añadir"
-                                              // Puedes acceder a los valores con pesoController.text, repeticionesController.text, seriesController.text
-                                              // Agrega la lógica de almacenamiento o manejo según tus necesidades
+                                              // Obtén los valores de los TextFormFields
+                                              String pesoText =
+                                                  pesoController.text;
+                                              String repeticionesText =
+                                                  repeticionesController.text;
+                                              String seriesText =
+                                                  seriesController.text;
+
+                                              // Verifica que todos los campos estén llenos y contengan valores numéricos
+                                              if (pesoText.isNotEmpty &&
+                                                  repeticionesText.isNotEmpty &&
+                                                  seriesText.isNotEmpty) {
+                                                // Intenta convertir los valores a números
+                                                try {
+                                                  int peso =
+                                                      int.parse(pesoText);
+                                                  int repeticiones = int.parse(
+                                                      repeticionesText);
+                                                  int series =
+                                                      int.parse(seriesText);
+
+                                                  // Obtiene el nombre del ejercicio desde el filtro anterior
+                                                  String nombreEjercicio =
+                                                      ejercicio.nombre ??
+                                                          'Nombre no disponible';
+
+                                                  // Crea un mapa con los datos del ejercicio
+                                                  Map<String, dynamic>
+                                                      datosEjercicio = {
+                                                    'nombre': nombreEjercicio,
+                                                    'peso': peso,
+                                                    'repeticiones':
+                                                        repeticiones,
+                                                    'series': series,
+                                                  };
+
+                                                  // Agrega el ejercicio a la lista temporal
+                                                  ejerciciosTemporales
+                                                      .add(datosEjercicio);
+                                                  print(
+                                                      'Ejercicios Temporales: $ejerciciosTemporales');
+
+                                                  // Limpia los controladores después de agregar el ejercicio
+                                                  pesoController.clear();
+                                                  repeticionesController
+                                                      .clear();
+                                                  seriesController.clear();
+                                                } catch (e) {
+                                                  // Maneja el caso en que los valores no sean números válidos
+                                                  print(
+                                                      'Por favor, ingresa valores numéricos válidos para peso, repeticiones y series.');
+                                                }
+                                              } else {
+                                                // Muestra un mensaje de error o realiza alguna acción cuando los campos no están llenos
+                                                print(
+                                                    'Por favor, completa todos los campos.');
+                                              }
                                             },
                                             child: Text('Añadir'),
                                           ),
@@ -434,31 +511,30 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                                                 'Descripción del Ejercicio'),
                                       ),
                                       TextFormField(
-                                        // Campo para el peso del nuevo ejercicio
-                                        keyboardType: TextInputType.number,
+                                        keyboardType: TextInputType.phone,
                                         decoration: InputDecoration(
-                                            labelText: 'Peso (kg)'),
+                                          labelText: 'Peso (kg)',
+                                        ),
                                       ),
+
                                       TextFormField(
-                                        // Campo para las repeticiones del nuevo ejercicio
-                                        keyboardType: TextInputType.number,
+                                        keyboardType: TextInputType.phone,
                                         decoration: InputDecoration(
-                                            labelText: 'Repeticiones'),
+                                          labelText: 'Repeticiones',
+                                        ),
                                       ),
+
                                       TextFormField(
-                                        // Campo para las series del nuevo ejercicio
-                                        keyboardType: TextInputType.number,
+                                        keyboardType: TextInputType.phone,
                                         decoration: InputDecoration(
-                                            labelText: 'Series'),
+                                          labelText: 'Series',
+                                        ),
                                       ),
+
                                       const SizedBox(height: 8.0),
                                       // Espaciado entre campos editables y botón
                                       ElevatedButton(
-                                        onPressed: () {
-                                          // Lógica para manejar el botón "Añadir"
-                                          // Puedes acceder a los valores de los campos según sea necesario
-                                          // Agrega la lógica de almacenamiento o manejo según tus necesidades
-                                        },
+                                        onPressed: () {},
                                         child: Text('Añadir'),
                                       ),
                                     ],
@@ -500,10 +576,95 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                   size: 30,
                 ),
               ),
+              IconButton(
+                icon: Icon(Icons.save),
+                onPressed: () {
+                  // Lógica para guardar todas las rutinas
+                  // Puedes utilizar la lista ejerciciosTemporales
+                  // y guardarla en la subcolección 'rutinas' del usuario en Firebase
+                  guardarRutinasEnFirebase();
+                },
+              ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  void guardarRutinasEnFirebase() async {
+    try {
+      // Obtener el ID del usuario actual
+      String userId = FirebaseAuth.instance.currentUser!.uid;
+
+      // Crear una referencia a la colección 'rutinas' del usuario en Firestore
+      CollectionReference rutinasCollection = FirebaseFirestore.instance
+          .collection('usuarios')
+          .doc(userId)
+          .collection('rutinas');
+
+      // Crear un mapa que contenga los datos de la rutina
+      Map<String, dynamic> datosRutina = {
+        'dias': {},
+      };
+
+      // Añadir los grupos musculares seleccionados para cada día
+      for (var dia in selectedDiasSemana) {
+        // Filtrar los grupos musculares seleccionados para el día actual
+        var gruposSeleccionados = selectedGroupsMap[dia]?.toList() ?? [];
+
+        // Convertir la lista de grupos a un string separado por comas
+        String gruposString = gruposSeleccionados.join(',');
+
+        // Filtrar los ejercicios seleccionados para los grupos y día actual
+        var ejerciciosSeleccionados = ejerciciosTemporales
+            .where((ejercicio) =>
+                gruposSeleccionados.contains(ejercicio['grupo']) &&
+                selectedDiasSemana.contains(dia))
+            .map((ejercicio) => {
+                  'nombre': ejercicio['nombre'],
+                  'peso': ejercicio['peso'],
+                  'repeticiones': ejercicio['repeticiones'],
+                  'series': ejercicio['series'],
+                })
+            .toList();
+
+        // Obtener el array de ejercicios básicos para el grupo actual
+        var ejerciciosBasicos = obtenerEjerciciosBasicos();
+
+        // Añadir el grupo y el array de ejercicios al mapa del día
+        datosRutina['dias'][dia] = {
+          'grupo': gruposString,
+          'ejercicios': [...ejerciciosSeleccionados, ...ejerciciosBasicos],
+        };
+      }
+
+      // Añadir la rutina a la colección 'rutinas'
+      await rutinasCollection.add(datosRutina);
+
+      // Mostrar mensaje de éxito
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Rutina guardada exitosamente en Firebase.'),
+        ),
+      );
+    } catch (e) {
+      // Manejar cualquier error que pueda ocurrir durante el proceso
+      print('Error al guardar la rutina en Firebase: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Hubo un error al guardar la rutina en Firebase.'),
+        ),
+      );
+    }
+  }
+
+  List<Map<String, dynamic>> obtenerEjerciciosBasicos() {
+    // Definir ejercicios básicos, puedes personalizar esta lista según tus necesidades
+    return [
+      {'nombre': 'Flexiones', 'peso': 0, 'repeticiones': 15, 'series': 3},
+      {'nombre': 'Sentadillas', 'peso': 0, 'repeticiones': 12, 'series': 3},
+      // Agregar más ejercicios básicos según sea necesario
+    ];
   }
 }
