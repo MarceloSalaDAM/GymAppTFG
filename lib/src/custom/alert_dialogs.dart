@@ -1,10 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:gym_app_tfg/src/views/main_list_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../firebase_objects/ejercicios_firebase.dart';
 import '../views/create_new_rutine.dart';
 import '../views/login_view.dart';
+import '../views/main_view.dart';
 
 class AlertDialogManager {
   static Future<void> showRutinaDialog(
@@ -352,6 +354,85 @@ class AlertDialogManager {
       },
     );
   }
+
+  static Future<void> showExitConfirmation(BuildContext context) async {
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return WillPopScope(
+          // Evitar que se cierre el diálogo con el botón de retroceso del dispositivo
+          onWillPop: () async => false,
+          child: AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16.0),
+            ),
+            title: const Text(
+              'SALIR',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 20.0,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            content: const Text(
+                '¿Estás seguro de que deseas salir?\nPerderás los cambios'),
+            actions: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.black,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                    ),
+                    child: const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Text(
+                        'Cancelar',
+                        style: TextStyle(
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      // Elimina todas las rutas anteriores y navega a la página principal
+                      Navigator.popUntil(context, ModalRoute.withName('/Main'));
+                    },
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.black,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                    ),
+                    child: const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Text(
+                        'Aceptar',
+                        style: TextStyle(
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
 
   static Future<void> showLanguageDialog(BuildContext context) async {
     await showDialog(
