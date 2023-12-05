@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:page_transition/page_transition.dart';
 import '../firebase_objects/ejercicios_firebase.dart';
 
 class CrearRutinaView extends StatefulWidget {
@@ -11,6 +12,7 @@ class CrearRutinaView extends StatefulWidget {
 }
 
 class _CrearRutinaViewState extends State<CrearRutinaView> {
+  late PageController _pageController;
   late String selectedGroup;
   int selectedDias = 3;
   List<String> selectedDiasSemana = [
@@ -41,13 +43,18 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
     print('Grupos disponibles: $grupos');
     selectedGroup = grupos.isNotEmpty ? grupos.first : '';
     print('Selected Group: $selectedGroup');
+
+    _pageController = PageController();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    widget.ejercicios
-        .sort((a, b) => (a.nombre ?? '').compareTo(b.nombre ?? ''));
-
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -60,7 +67,7 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
         backgroundColor: const Color(0XFF0f7991),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(30.0),
+        padding: const EdgeInsets.all(20.0), // Añade padding aquí
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -75,144 +82,205 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                 ),
               ),
             ),
-            const SizedBox(height: 20),
-            const Text(
-              'Días a la semana:',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
-            ),
-            DropdownButtonFormField<int>(
-              value: selectedDias,
-              decoration: const InputDecoration(
-                filled: true,
-                fillColor: Colors.black,
-              ),
-              style: const TextStyle(color: Colors.white, fontSize: 15),
-              icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
-              dropdownColor: Colors.black,
-              onChanged: (value) {
-                setState(() {
-                  selectedDias = value!;
-                });
-              },
-              items:
-                  [1, 2, 3, 4, 5, 6, 7].map<DropdownMenuItem<int>>((int value) {
-                return DropdownMenuItem<int>(
-                  value: value,
-                  child: Text(value.toString()),
-                );
-              }).toList(),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    const Text(
-                      'Días de la semana',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                Wrap(
-                  spacing: 8.0,
-                  // Ajusta el espacio horizontal entre los elementos
-                  runSpacing: 4.0,
-                  // Ajusta el espacio vertical entre los elementos
-                  children: [
-                    for (var dia in [
-                      "LUNES",
-                      "MARTES",
-                      "MIÉRCOLES",
-                      "JUEVES",
-                      "VIERNES",
-                      "SÁBADO",
-                      "DOMINGO",
-                    ])
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
+            const SizedBox(height: 10),
+            Expanded(
+              child: PageView(
+                controller: _pageController,
+                children: [
+                  // Página 1: Contenido actual
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Row(
                         children: [
-                          Checkbox(
-                            activeColor: const Color(0XFF0f7991),
-                            value: selectedDiasSemana.contains(dia),
-                            onChanged: (value) {
-                              setState(() {
-                                if (value != null) {
-                                  if (value) {
-                                    selectedDiasSemana.add(dia);
-                                  } else {
-                                    selectedDiasSemana.remove(dia);
-                                  }
-                                }
-                              });
-                            },
-                          ),
                           Text(
-                            dia,
+                            'Días de la semana',
                             style: TextStyle(
-                              fontSize: 15,
+                              fontSize: 20,
                               fontWeight: FontWeight.bold,
                               color: Colors.black,
                             ),
-                            textAlign: TextAlign.left,
                           ),
                         ],
                       ),
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(height: 25),
-            DropdownButtonFormField<String>(
-              value: selectedGroup,
-              decoration: const InputDecoration(
-                filled: true,
-                fillColor: Colors.black,
-              ),
-              style: const TextStyle(color: Colors.white, fontSize: 15),
-              icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
-              dropdownColor: Colors.black,
-              onChanged: (value) {
-                setState(() {
-                  selectedGroup = value!;
-                });
-              },
-              items: obtenerGrupos(widget.ejercicios).map((grupo) {
-                return DropdownMenuItem<String>(
-                  value: grupo,
-                  child: Text(
-                    grupo,
-                    style: const TextStyle(color: Colors.white),
+                      const SizedBox(height: 10),
+                      Wrap(
+                        spacing: 8.0,
+                        runSpacing: 4.0,
+                        children: [
+                          for (var dia in [
+                            "LUNES",
+                            "MARTES",
+                            "MIÉRCOLES",
+                            "JUEVES",
+                            "VIERNES",
+                            "SÁBADO",
+                            "DOMINGO",
+                          ])
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Checkbox(
+                                  activeColor: const Color(0XFF0f7991),
+                                  value: selectedDiasSemana.contains(dia),
+                                  onChanged: (value) {
+                                    setState(() {
+                                      if (value != null) {
+                                        if (value) {
+                                          selectedDiasSemana.add(dia);
+                                        } else {
+                                          selectedDiasSemana.remove(dia);
+                                        }
+                                      }
+                                    });
+                                  },
+                                ),
+                                Text(
+                                  dia,
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
+                                  textAlign: TextAlign.left,
+                                ),
+                              ],
+                            ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      const Text(
+                        'Grupo muscular por día',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      // Nuevo Column para la lista de días
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Lista de días seleccionados
+                          Container(
+                            height: 250,
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: selectedDiasSemana.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                final dia = selectedDiasSemana[index];
+                                return ExpansionTile(
+                                  title: Text(
+                                    dia,
+                                    style: const TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                  trailing: Icon(Icons.arrow_drop_down,
+                                      color: const Color(0XFF0f7991)),
+                                  children: <Widget>[
+                                    Wrap(
+                                      spacing: 8.0,
+                                      runSpacing: 0.0,
+                                      children: obtenerGrupos(widget.ejercicios)
+                                          .map((grupo) {
+                                        return ElevatedButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              selectedGroup = grupo;
+                                            });
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor:
+                                                const Color(0XFF0f7991),
+                                            minimumSize: const Size(0,
+                                                0), // Puedes cambiar el color según tus preferencias
+                                          ),
+                                          child: Text(
+                                            grupo,
+                                            style: const TextStyle(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        );
+                                      }).toList(),
+                                    ),
+                                  ],
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                );
-              }).toList(),
-            ),
-            const SizedBox(height: 10),
-            Expanded(
-              child: ListView.builder(
-                itemCount: widget.ejercicios
-                    .where((ejercicio) => ejercicio.grupo == selectedGroup)
-                    .length,
-                itemBuilder: (BuildContext context, int index) {
-                  final ejercicio = widget.ejercicios
-                      .where((ejercicio) => ejercicio.grupo == selectedGroup)
-                      .toList()[index];
+                  // Página 2: Nuevo contenido (puedes personalizar según tus necesidades)
+                  Container(
+                    key: Key('ContainerKey'),
+                    color: Colors.blue,
+                    // Puedes cambiar el color o utilizar otro widget
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        DropdownButtonFormField<String>(
+                          value: selectedGroup,
+                          decoration: const InputDecoration(
+                            filled: true,
+                            fillColor: Colors.black,
+                          ),
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: 15),
+                          icon: const Icon(Icons.arrow_drop_down,
+                              color: Colors.white),
+                          dropdownColor: Colors.black,
+                          onChanged: (value) {
+                            setState(() {
+                              selectedGroup = value!;
+                            });
+                          },
+                          items: obtenerGrupos(widget.ejercicios).map((grupo) {
+                            return DropdownMenuItem<String>(
+                              value: grupo,
+                              child: Text(
+                                grupo,
+                                style: const TextStyle(color: Colors.white),
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                        Expanded(
+                          child: ListView.builder(
+                            key: const Key('ListViewKey'),
+                            itemCount: widget.ejercicios
+                                .where((ejercicio) =>
+                                    ejercicio.grupo == selectedGroup)
+                                .length,
+                            itemBuilder: (BuildContext context, int index) {
+                              final ejercicio = widget.ejercicios
+                                  .where((ejercicio) =>
+                                      ejercicio.grupo == selectedGroup)
+                                  .toList()[index];
 
-                  return ListTile(
-                    title: Text(ejercicio.nombre ?? 'Nombre no disponible'),
-                    onTap: () {
-                      // Agrega aquí la lógica para manejar el tap en el elemento
-                    },
-                  );
-                },
+                              return ListTile(
+                                title: Text(
+                                    ejercicio.nombre ?? 'Nombre no disponible'),
+                                onTap: () {
+                                  // Agrega aquí la lógica para manejar el tap en el elemento
+                                },
+                              );
+                            },
+                          ),
+                        ),
+                        // Agrega aquí los elementos del nuevo contenido
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -225,14 +293,15 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              SizedBox(
-                width: 200,
-              ),
               IconButton(
                 onPressed: () {
-                  // Acción del segundo botón
+                  // Navegar a la siguiente página
+                  _pageController.nextPage(
+                    duration: Duration(milliseconds: 500),
+                    curve: Curves.ease,
+                  );
                 },
-                icon: Icon(Icons.save_outlined),
+                icon: Icon(Icons.arrow_right_alt),
               ),
             ],
           ),

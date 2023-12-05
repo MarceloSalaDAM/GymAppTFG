@@ -45,7 +45,8 @@ dependencies:
   firebase_storage: 11.2.8
   shared_preferences: ^2.0.6
   intl: ^0.17.0
-
+  page_transition: ^2.0.0
+  multiselect_formfield: ^0.1.7
 
 
 
