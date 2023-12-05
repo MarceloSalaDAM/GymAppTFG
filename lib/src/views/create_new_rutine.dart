@@ -13,6 +13,15 @@ class CrearRutinaView extends StatefulWidget {
 
 class _CrearRutinaViewState extends State<CrearRutinaView> {
   late PageController _pageController;
+  Map<String, Set<String>> selectedGroupsMap = {
+    "LUNES": Set<String>(),
+    "MARTES": Set<String>(),
+    "MIÉRCOLES": Set<String>(),
+    "JUEVES": Set<String>(),
+    "VIERNES": Set<String>(),
+    "SÁBADO": Set<String>(),
+    "DOMINGO": Set<String>(),
+  };
   late String selectedGroup;
   int selectedDias = 3;
   List<String> selectedDiasSemana = [
@@ -187,24 +196,36 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                                       runSpacing: 0.0,
                                       children: obtenerGrupos(widget.ejercicios)
                                           .map((grupo) {
+                                        bool isSelected =
+                                            selectedGroupsMap[dia]!
+                                                .contains(grupo);
+
                                         return ElevatedButton(
                                           onPressed: () {
                                             setState(() {
-                                              selectedGroup = grupo;
+                                              if (isSelected) {
+                                                selectedGroupsMap[dia]!
+                                                    .remove(grupo);
+                                              } else {
+                                                selectedGroupsMap[dia]!
+                                                    .add(grupo);
+                                              }
                                             });
                                           },
                                           style: ElevatedButton.styleFrom(
-                                            backgroundColor:
-                                                const Color(0XFF0f7991),
-                                            minimumSize: const Size(0,
-                                                0), // Puedes cambiar el color según tus preferencias
+                                            backgroundColor: isSelected
+                                                ? const Color(0XFF0f7991)
+                                                : Colors.grey,
+                                            minimumSize: const Size(0, 0),
                                           ),
                                           child: Text(
                                             grupo,
-                                            style: const TextStyle(
+                                            style: TextStyle(
                                               fontSize: 15,
                                               fontWeight: FontWeight.bold,
-                                              color: Colors.white,
+                                              color: isSelected
+                                                  ? Colors.white
+                                                  : Colors.white,
                                             ),
                                           ),
                                         );
