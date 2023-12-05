@@ -2,10 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:page_transition/page_transition.dart';
 import '../custom/alert_dialogs.dart';
 import '../firebase_objects/ejercicios_firebase.dart';
-import '../firebase_objects/usuarios_firebase.dart';
 import 'exercise_list_view.dart';
 
 class CrearRutinaView extends StatefulWidget {
@@ -22,13 +20,13 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
   List<Map<String, dynamic>> ejerciciosTemporales = [];
 
   Map<String, Set<String>> selectedGroupsMap = {
-    "LUNES": Set<String>(),
-    "MARTES": Set<String>(),
-    "MIÉRCOLES": Set<String>(),
-    "JUEVES": Set<String>(),
-    "VIERNES": Set<String>(),
-    "SÁBADO": Set<String>(),
-    "DOMINGO": Set<String>(),
+    "LUNES": <String>{},
+    "MARTES": <String>{},
+    "MIÉRCOLES": <String>{},
+    "JUEVES": <String>{},
+    "VIERNES": <String>{},
+    "SÁBADO": <String>{},
+    "DOMINGO": <String>{},
   };
   late String selectedGroup;
   int selectedDias = 3;
@@ -43,7 +41,7 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
   ];
 
   List<String> obtenerGrupos(List<Ejercicios> ejercicios) {
-    Set<String> grupos = Set<String>();
+    Set<String> grupos = <String>{};
     for (var ejercicio in ejercicios) {
       if (ejercicio.grupo != null) {
         grupos.add(ejercicio.grupo!);
@@ -52,15 +50,60 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
     return grupos.toList()..sort();
   }
 
+  void agregarEjercicio(
+    String pesoText,
+    String repeticionesText,
+    String seriesText,
+    TextEditingController pesoController,
+    TextEditingController repeticionesController,
+    TextEditingController seriesController,
+    Ejercicios ejercicio,
+  ) {
+    // Verifica que todos los campos estén llenos y contengan valores numéricos
+    if (pesoText.isNotEmpty &&
+        repeticionesText.isNotEmpty &&
+        seriesText.isNotEmpty) {
+      // Intenta convertir los valores a números
+      try {
+        int peso = int.parse(pesoText);
+        int repeticiones = int.parse(repeticionesText);
+        int series = int.parse(seriesText);
+
+        // Obtiene el nombre del ejercicio desde el filtro anterior
+        String nombreEjercicio = ejercicio.nombre ?? 'Nombre no disponible';
+
+        // Crea un mapa con los datos del ejercicio
+        Map<String, dynamic> datosEjercicio = {
+          'nombre': nombreEjercicio,
+          'peso': peso,
+          'repeticiones': repeticiones,
+          'series': series,
+        };
+
+        // Agrega el ejercicio a la lista temporal
+        ejerciciosTemporales.add(datosEjercicio);
+        print('Ejercicios Temporales: $ejerciciosTemporales');
+
+        // Limpia los controladores después de agregar el ejercicio
+        pesoController.clear();
+        repeticionesController.clear();
+        seriesController.clear();
+      } catch (e) {
+        // Maneja el caso en que los valores no sean números válidos
+        print(
+            'Por favor, ingresa valores numéricos válidos para peso, repeticiones y series.');
+      }
+    } else {
+      // Muestra un mensaje de error o realiza alguna acción cuando los campos no están llenos
+      print('Por favor, completa todos los campos.');
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-    print('Ejercicios en CrearRutinaView: ${widget.ejercicios}');
     List<String> grupos = obtenerGrupos(widget.ejercicios);
-    print('Grupos disponibles: $grupos');
     selectedGroup = grupos.isNotEmpty ? grupos.first : '';
-    print('Selected Group: $selectedGroup');
-
     _pageController = PageController();
   }
 
@@ -76,7 +119,7 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
       appBar: AppBar(
         backgroundColor: const Color(0XFF0f7991),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () async {
             // Llama al método para mostrar el AlertDialog específico
             await AlertDialogManager.showExitConfirmation(context);
@@ -210,7 +253,8 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                                 final dia = selectedDiasSemana[index];
                                 return Card(
                                   // Agrega el widget Card como contenedor
-                                  margin: EdgeInsets.symmetric(vertical: 8.0),
+                                  margin:
+                                      const EdgeInsets.symmetric(vertical: 8.0),
                                   // Espacio alrededor de cada Card
                                   child: ExpansionTile(
                                     title: Text(
@@ -284,7 +328,7 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                       ),
                       borderRadius: BorderRadius.circular(24.0),
                     ),
-                    key: Key('ContainerKey'),
+                    key: const Key('ContainerKey'),
                     child: ListView.builder(
                       key: const Key('ListViewKey'),
                       itemCount: selectedDiasSemana.length,
@@ -381,7 +425,7 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                                                   .digitsOnly,
                                             ],
                                             controller: pesoController,
-                                            decoration: InputDecoration(
+                                            decoration: const InputDecoration(
                                               labelText: 'Peso (kg)',
                                             ),
                                           ),
@@ -392,7 +436,7 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                                                   .digitsOnly,
                                             ],
                                             controller: repeticionesController,
-                                            decoration: InputDecoration(
+                                            decoration: const InputDecoration(
                                               labelText: 'Repeticiones',
                                             ),
                                           ),
@@ -404,7 +448,7 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                                                   .digitsOnly,
                                             ],
                                             controller: seriesController,
-                                            decoration: InputDecoration(
+                                            decoration: const InputDecoration(
                                               labelText: 'Series',
                                             ),
                                           ),
@@ -413,65 +457,17 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                                           // Espaciado entre campos editables y botón
                                           ElevatedButton(
                                             onPressed: () {
-                                              // Obtén los valores de los TextFormFields
-                                              String pesoText =
-                                                  pesoController.text;
-                                              String repeticionesText =
-                                                  repeticionesController.text;
-                                              String seriesText =
-                                                  seriesController.text;
-
-                                              // Verifica que todos los campos estén llenos y contengan valores numéricos
-                                              if (pesoText.isNotEmpty &&
-                                                  repeticionesText.isNotEmpty &&
-                                                  seriesText.isNotEmpty) {
-                                                // Intenta convertir los valores a números
-                                                try {
-                                                  int peso =
-                                                      int.parse(pesoText);
-                                                  int repeticiones = int.parse(
-                                                      repeticionesText);
-                                                  int series =
-                                                      int.parse(seriesText);
-
-                                                  // Obtiene el nombre del ejercicio desde el filtro anterior
-                                                  String nombreEjercicio =
-                                                      ejercicio.nombre ??
-                                                          'Nombre no disponible';
-
-                                                  // Crea un mapa con los datos del ejercicio
-                                                  Map<String, dynamic>
-                                                      datosEjercicio = {
-                                                    'nombre': nombreEjercicio,
-                                                    'peso': peso,
-                                                    'repeticiones':
-                                                        repeticiones,
-                                                    'series': series,
-                                                  };
-
-                                                  // Agrega el ejercicio a la lista temporal
-                                                  ejerciciosTemporales
-                                                      .add(datosEjercicio);
-                                                  print(
-                                                      'Ejercicios Temporales: $ejerciciosTemporales');
-
-                                                  // Limpia los controladores después de agregar el ejercicio
-                                                  pesoController.clear();
-                                                  repeticionesController
-                                                      .clear();
-                                                  seriesController.clear();
-                                                } catch (e) {
-                                                  // Maneja el caso en que los valores no sean números válidos
-                                                  print(
-                                                      'Por favor, ingresa valores numéricos válidos para peso, repeticiones y series.');
-                                                }
-                                              } else {
-                                                // Muestra un mensaje de error o realiza alguna acción cuando los campos no están llenos
-                                                print(
-                                                    'Por favor, completa todos los campos.');
-                                              }
+                                              agregarEjercicio(
+                                                pesoController.text,
+                                                repeticionesController.text,
+                                                seriesController.text,
+                                                pesoController,
+                                                repeticionesController,
+                                                seriesController,
+                                                ejercicio,
+                                              );
                                             },
-                                            child: Text('Añadir'),
+                                            child: const Text('Añadir'),
                                           ),
                                         ],
                                       ),
@@ -481,9 +477,9 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                               );
                             }).toList(),
                             ExpansionTile(
-                              title: Text(
+                              title: const Text(
                                 'Crear Nuevo Ejercicio',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.black,
@@ -501,32 +497,32 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                                     children: [
                                       TextFormField(
                                         // Campo para el nombre del nuevo ejercicio
-                                        decoration: InputDecoration(
+                                        decoration: const InputDecoration(
                                             labelText: 'Nombre del Ejercicio'),
                                       ),
                                       TextFormField(
                                         // Campo para la descripción del nuevo ejercicio
-                                        decoration: InputDecoration(
+                                        decoration: const InputDecoration(
                                             labelText:
                                                 'Descripción del Ejercicio'),
                                       ),
                                       TextFormField(
                                         keyboardType: TextInputType.phone,
-                                        decoration: InputDecoration(
+                                        decoration: const InputDecoration(
                                           labelText: 'Peso (kg)',
                                         ),
                                       ),
 
                                       TextFormField(
                                         keyboardType: TextInputType.phone,
-                                        decoration: InputDecoration(
+                                        decoration: const InputDecoration(
                                           labelText: 'Repeticiones',
                                         ),
                                       ),
 
                                       TextFormField(
                                         keyboardType: TextInputType.phone,
-                                        decoration: InputDecoration(
+                                        decoration: const InputDecoration(
                                           labelText: 'Series',
                                         ),
                                       ),
@@ -535,7 +531,7 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                                       // Espaciado entre campos editables y botón
                                       ElevatedButton(
                                         onPressed: () {},
-                                        child: Text('Añadir'),
+                                        child: const Text('Añadir'),
                                       ),
                                     ],
                                   ),
@@ -567,22 +563,22 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                 onPressed: () {
                   // Navegar a la siguiente página
                   _pageController.nextPage(
-                    duration: Duration(milliseconds: 500),
+                    duration: const Duration(milliseconds: 500),
                     curve: Curves.ease,
                   );
                 },
-                icon: Icon(
+                icon: const Icon(
                   Icons.arrow_right_alt,
                   size: 30,
                 ),
               ),
               IconButton(
-                icon: Icon(Icons.save),
+                icon: const Icon(Icons.save),
                 onPressed: () {
                   // Lógica para guardar todas las rutinas
                   // Puedes utilizar la lista ejerciciosTemporales
                   // y guardarla en la subcolección 'rutinas' del usuario en Firebase
-                  guardarRutinasEnFirebase();
+                  guardarRutinasEnFirebase(ejerciciosTemporales);
                 },
               ),
             ],
@@ -592,7 +588,8 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
     );
   }
 
-  void guardarRutinasEnFirebase() async {
+  void guardarRutinasEnFirebase(
+      List<Map<String, dynamic>> ejerciciosTemporales) async {
     try {
       // Obtener el ID del usuario actual
       String userId = FirebaseAuth.instance.currentUser!.uid;
@@ -630,7 +627,7 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
             .toList();
 
         // Obtener el array de ejercicios básicos para el grupo actual
-        var ejerciciosBasicos = obtenerEjerciciosBasicos();
+        var ejerciciosBasicos = ejerciciosTemporales;
 
         // Añadir el grupo y el array de ejercicios al mapa del día
         datosRutina['dias'][dia] = {
@@ -644,7 +641,7 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
 
       // Mostrar mensaje de éxito
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('Rutina guardada exitosamente en Firebase.'),
         ),
       );
@@ -652,7 +649,7 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
       // Manejar cualquier error que pueda ocurrir durante el proceso
       print('Error al guardar la rutina en Firebase: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('Hubo un error al guardar la rutina en Firebase.'),
         ),
       );
