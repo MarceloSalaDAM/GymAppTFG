@@ -269,13 +269,82 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                       itemCount: selectedDiasSemana.length,
                       itemBuilder: (BuildContext context, int index) {
                         final dia = selectedDiasSemana[index];
-                        final selectedGroups = selectedGroupsMap[dia] ?? <String>[]; // Asegúrate de que selectedGroups no sea nulo
+                        final selectedExercises = widget.ejercicios
+                            .where((ejercicio) => selectedGroupsMap[dia]?.contains(ejercicio.grupo) ?? false)
+                            .toList();
 
                         return Column(
                           children: [
+                            // Título del día
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 8.0),
+                              child: Text(
+                                dia,
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
+
+                            // Lista de ejercicios asociados al día
+                            ...selectedExercises.map((ejercicio) {
+                              // Variables para almacenar los valores editables
+                              TextEditingController pesoController = TextEditingController();
+                              TextEditingController repeticionesController = TextEditingController();
+                              TextEditingController seriesController = TextEditingController();
+
+                              return ExpansionTile(
+                                title: Text(
+                                  ejercicio.nombre ?? 'Nombre no disponible',
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                trailing: const Icon(Icons.arrow_drop_down, color: Color(0XFF0f7991)),
+                                children: [
+                                  // Campos editables
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        TextFormField(
+                                          controller: pesoController,
+                                          keyboardType: TextInputType.number,
+                                          decoration: InputDecoration(labelText: 'Peso (kg)'),
+                                        ),
+                                        TextFormField(
+                                          controller: repeticionesController,
+                                          keyboardType: TextInputType.number,
+                                          decoration: InputDecoration(labelText: 'Repeticiones'),
+                                        ),
+                                        TextFormField(
+                                          controller: seriesController,
+                                          keyboardType: TextInputType.number,
+                                          decoration: InputDecoration(labelText: 'Series'),
+                                        ),
+                                        const SizedBox(height: 8.0), // Espaciado entre campos editables y botón
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            // Lógica para manejar el botón "Añadir"
+                                            // Puedes acceder a los valores con pesoController.text, repeticionesController.text, seriesController.text
+                                            // Agrega la lógica de almacenamiento o manejo según tus necesidades
+                                          },
+                                          child: Text('Añadir'),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }).toList(),
                             ExpansionTile(
                               title: Text(
-                                dia,
+                                'Crear Nuevo Ejercicio',
                                 style: const TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold,
@@ -283,26 +352,53 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                                 ),
                               ),
                               trailing: const Icon(Icons.arrow_drop_down, color: Color(0XFF0f7991)),
-                              children: <Widget>[
-                                Wrap(
-                                  spacing: 8.0,
-                                  runSpacing: 0.0,
-                                  children: selectedGroups.expand((grupo) {
-                                    // Filtra la lista de ejercicios para el grupo muscular seleccionado
-                                    final ejerciciosFiltrados = widget.ejercicios
-                                        .where((ejercicio) => ejercicio.grupo == grupo)
-                                        .toList();
-
-                                    return ejerciciosFiltrados.map((ejercicio) {
-                                      return ListTile(
-                                        title: Text(ejercicio.nombre ?? 'Nombre no disponible',),
-                                        // Puedes agregar más propiedades de ListTile según sea necesario
-                                      );
-                                    });
-                                  }).toList(),
+                              children: [
+                                // Campos editables para el nuevo ejercicio
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      TextFormField(
+                                        // Campo para el nombre del nuevo ejercicio
+                                        decoration: InputDecoration(labelText: 'Nombre del Ejercicio'),
+                                      ),
+                                      TextFormField(
+                                        // Campo para la descripción del nuevo ejercicio
+                                        decoration: InputDecoration(labelText: 'Descripción del Ejercicio'),
+                                      ),
+                                      TextFormField(
+                                        // Campo para el peso del nuevo ejercicio
+                                        keyboardType: TextInputType.number,
+                                        decoration: InputDecoration(labelText: 'Peso (kg)'),
+                                      ),
+                                      TextFormField(
+                                        // Campo para las repeticiones del nuevo ejercicio
+                                        keyboardType: TextInputType.number,
+                                        decoration: InputDecoration(labelText: 'Repeticiones'),
+                                      ),
+                                      TextFormField(
+                                        // Campo para las series del nuevo ejercicio
+                                        keyboardType: TextInputType.number,
+                                        decoration: InputDecoration(labelText: 'Series'),
+                                      ),
+                                      const SizedBox(height: 8.0), // Espaciado entre campos editables y botón
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          // Lógica para manejar el botón "Añadir"
+                                          // Puedes acceder a los valores de los campos según sea necesario
+                                          // Agrega la lógica de almacenamiento o manejo según tus necesidades
+                                        },
+                                        child: Text('Añadir'),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),
+
+
+                            const SizedBox(height: 8.0), // Espaciado entre ExpansionTiles
                           ],
                         );
                       },
