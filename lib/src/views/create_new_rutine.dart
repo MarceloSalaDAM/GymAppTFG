@@ -50,15 +50,18 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
     return grupos.toList()..sort();
   }
 
+  // Función agregarEjercicio ajustada
   void agregarEjercicio(
-    String pesoText,
-    String repeticionesText,
-    String seriesText,
-    TextEditingController pesoController,
-    TextEditingController repeticionesController,
-    TextEditingController seriesController,
-    Ejercicios ejercicio,
-  ) {
+      String pesoText,
+      String repeticionesText,
+      String seriesText,
+      TextEditingController pesoController,
+      TextEditingController repeticionesController,
+      TextEditingController seriesController,
+      Ejercicios ejercicio,
+      String dia,
+      String grupoMuscular,
+      ) {
     // Verifica que todos los campos estén llenos y contengan valores numéricos
     if (pesoText.isNotEmpty &&
         repeticionesText.isNotEmpty &&
@@ -72,12 +75,14 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
         // Obtiene el nombre del ejercicio desde el filtro anterior
         String nombreEjercicio = ejercicio.nombre ?? 'Nombre no disponible';
 
-        // Crea un mapa con los datos del ejercicio
+        // Crea un mapa con los datos del ejercicio, incluyendo día y grupo muscular
         Map<String, dynamic> datosEjercicio = {
           'nombre': nombreEjercicio,
           'peso': peso,
           'repeticiones': repeticiones,
           'series': series,
+          'dia': dia,
+          'grupoMuscular': grupoMuscular,
         };
 
         // Agrega el ejercicio a la lista temporal
@@ -98,7 +103,6 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
       print('Por favor, completa todos los campos.');
     }
   }
-
   @override
   void initState() {
     super.initState();
@@ -465,6 +469,9 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                                                 repeticionesController,
                                                 seriesController,
                                                 ejercicio,
+                                                selectedDiasSemana[index], // Aquí pasarías el día actual
+                                                ejercicio.grupo ??
+                                                    'No disponible',
                                               );
                                             },
                                             child: const Text('Añadir'),
@@ -654,14 +661,5 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
         ),
       );
     }
-  }
-
-  List<Map<String, dynamic>> obtenerEjerciciosBasicos() {
-    // Definir ejercicios básicos, puedes personalizar esta lista según tus necesidades
-    return [
-      {'nombre': 'Flexiones', 'peso': 0, 'repeticiones': 15, 'series': 3},
-      {'nombre': 'Sentadillas', 'peso': 0, 'repeticiones': 12, 'series': 3},
-      // Agregar más ejercicios básicos según sea necesario
-    ];
   }
 }
