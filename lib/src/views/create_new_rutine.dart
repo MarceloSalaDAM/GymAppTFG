@@ -16,10 +16,23 @@ class CrearRutinaView extends StatefulWidget {
 }
 
 class _CrearRutinaViewState extends State<CrearRutinaView> {
+  double selectedWeight = 0.0;
+  double minWeight = 0.0;
+  double maxWeight = 200.0;
+  double weightInterval = 1.25;
+  TextEditingController repeticionesController = TextEditingController();
+  TextEditingController seriesController = TextEditingController();
   late PageController _pageController;
-  List<Map<String, dynamic>> ejerciciosTemporales = [];
+  late String idRutina;
+
   String selectedDay =
       " "; // Set a default day, you can change it based on your needs
+
+  // Mantén los valores actuales de los controladores en el estado del widget
+  late String pesoValue;
+  late String repeticionesValue;
+  late String seriesValue;
+
   Map<String, Set<String>> selectedGroupsMap = {
     "LUNES": <String>{},
     "MARTES": <String>{},
@@ -30,7 +43,6 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
     "DOMINGO": <String>{},
   };
   late String selectedGroup;
-  int selectedDias = 3;
   List<String> selectedDiasSemana = [
     "LUNES",
     "MARTES",
@@ -69,60 +81,65 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
     return grupos.toList()..sort();
   }
 
-  /*// Función agregarEjercicio ajustada
-  void agregarEjercicio(
-    String pesoText,
-    String repeticionesText,
-    String seriesText,
-    TextEditingController pesoController,
-    TextEditingController repeticionesController,
-    TextEditingController seriesController,
-    Ejercicios ejercicio,
-    String grupoMuscular,
-    String selectedDay, // Add the selected day parameter
-  ) {
-    // Verifica que todos los campos estén llenos y contengan valores numéricos
-    if (pesoText.isNotEmpty &&
-        repeticionesText.isNotEmpty &&
-        seriesText.isNotEmpty) {
-      // Intenta convertir los valores a números
-      try {
-        int peso = int.parse(pesoText);
-        int repeticiones = int.parse(repeticionesText);
-        int series = int.parse(seriesText);
+  void guardarPrimeraParteRutinaEnFirebase() async {
+    try {
+      // Obtener el ID del usuario actual
+      String userId = FirebaseAuth.instance.currentUser!.uid;
 
-        // Obtiene el nombre del ejercicio desde el filtro anterior
-        String nombreEjercicio = ejercicio.nombre ?? 'Nombre no disponible';
+      // Crear una referencia a la colección 'rutinas' del usuario en Firestore
+      CollectionReference rutinasCollection = FirebaseFirestore.instance
+          .collection('usuarios')
+          .doc(userId)
+          .collection('rutinas');
 
-        // Crea un mapa con los datos del ejercicio, incluyendo día y grupo muscular
-        Map<String, dynamic> datosEjercicio = {
-          'nombre': nombreEjercicio,
-          'peso': peso,
-          'repeticiones': repeticiones,
-          'series': series,
-          'grupoMuscular': grupoMuscular,
-          'dia': selectedDay,
+      // Crear un mapa que contenga los datos de la primera parte de la rutina
+      Map<String, dynamic> datosPrimeraParteRutina = {
+        'dias': {},
+      };
+
+      // Añadir los grupos musculares seleccionados para cada día
+      for (var dia in selectedDiasSemana) {
+        // Filtrar los grupos musculares seleccionados para el día actual
+        var gruposSeleccionados = selectedGroupsMap[dia]?.toList() ?? [];
+
+        // Convertir la lista de grupos a un string separado por comas
+        String gruposString = gruposSeleccionados.join(',');
+
+        // Añadir el grupo al mapa del día
+        datosPrimeraParteRutina['dias'][dia] = {
+          'grupo': gruposString,
         };
-
-        // Agrega el ejercicio a la lista temporal
-        ejerciciosTemporales.add(datosEjercicio);
-        print('Ejercicios Temporales: $ejerciciosTemporales');
-
-        // Limpia los controladores después de agregar el ejercicio
-        pesoController.clear();
-        repeticionesController.clear();
-        seriesController.clear();
-      } catch (e) {
-        // Maneja el caso en que los valores no sean números válidos
-        print(
-            'Por favor, ingresa valores numéricos válidos para peso, repeticiones y series.');
       }
-    } else {
-      // Muestra un mensaje de error o realiza alguna acción cuando los campos no están llenos
-      print('Por favor, completa todos los campos.');
+      // Añadir la primera parte de la rutina a la colección 'rutinas'
+      var result = await rutinasCollection.add(datosPrimeraParteRutina);
+      print("DATOS PRIMERA PARTE RUTINA----------->" +
+          datosPrimeraParteRutina.toString());
+
+      // Almacenar el ID de la rutina recién creada
+      idRutina = result.id;
+
+      // Mostrar mensaje de éxito
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Primera parte de la rutina guardada en Firebase.'),
+        ),
+      );
+      _pageController.nextPage(
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.ease,
+      );
+    } catch (e) {
+      // Manejar cualquier error que pueda ocurrir durante el proceso
+      print('Error al guardar la primera parte de la rutina en Firebase: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+              'Hubo un error al guardar la primera parte de la rutina en Firebase.'),
+        ),
+      );
     }
   }
-*/
+
   @override
   void initState() {
     super.initState();
@@ -388,13 +405,6 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                             ),
                             // Lista de ejercicios asociados al día
                             ...selectedExercises.map((ejercicio) {
-                              // Variables para almacenar los valores editables
-                              TextEditingController pesoController =
-                                  TextEditingController();
-                              TextEditingController repeticionesController =
-                                  TextEditingController();
-                              TextEditingController seriesController =
-                                  TextEditingController();
                               return GestureDetector(
                                 // Puedes ajustar la duración según tus preferencias
                                 onLongPress: () {
@@ -429,7 +439,7 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                                 },
 
                                 child: Padding(
-                                  padding: const EdgeInsets.all(16.0),
+                                  padding: const EdgeInsets.all(5.0),
                                   child: ExpansionTile(
                                     title: Column(
                                       crossAxisAlignment:
@@ -475,42 +485,86 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
                                           children: [
-                                            TextFormField(
-                                              keyboardType: TextInputType.phone,
-                                              inputFormatters: [
-                                                FilteringTextInputFormatter
-                                                    .digitsOnly,
-                                              ],
-                                              controller: pesoController,
-                                              decoration: const InputDecoration(
-                                                labelText: 'Peso (kg)',
+                                            const Padding(
+                                              padding:
+                                                  EdgeInsets.symmetric(
+                                                      vertical: 8.0),
+                                              child: Text(
+                                                'Peso (kg)',
                                               ),
                                             ),
-                                            TextFormField(
-                                              keyboardType: TextInputType.phone,
-                                              inputFormatters: [
-                                                FilteringTextInputFormatter
-                                                    .digitsOnly,
-                                              ],
-                                              controller:
-                                                  repeticionesController,
+                                            Slider(
+                                              value: selectedWeight,
+                                              min: minWeight,
+                                              max: maxWeight,
+                                              divisions:
+                                                  (maxWeight - minWeight) ~/
+                                                          weightInterval,
+                                              onChanged: (value) {
+                                                setState(() {
+                                                  selectedWeight =
+                                                      (value / weightInterval)
+                                                              .round() *
+                                                          weightInterval;
+                                                });
+                                              },
+                                              label: selectedWeight.toString(),
+                                            ),
+                                            const SizedBox(height: 2.0),
+// DropdownButton para Repeticiones
+                                            DropdownButtonFormField<int>(
+                                              value: repeticionesController
+                                                      .text.isNotEmpty
+                                                  ? int.parse(
+                                                      repeticionesController
+                                                          .text)
+                                                  : null,
+                                              onChanged: (value) {
+                                                setState(() {
+                                                  repeticionesController.text =
+                                                      value.toString();
+                                                });
+                                              },
+                                              items: List.generate(
+                                                      30, (index) => index + 1)
+                                                  .map<DropdownMenuItem<int>>(
+                                                      (int value) {
+                                                return DropdownMenuItem<int>(
+                                                  value: value,
+                                                  child: Text(value.toString()),
+                                                );
+                                              }).toList(),
                                               decoration: const InputDecoration(
                                                 labelText: 'Repeticiones',
                                               ),
                                             ),
-                                            TextFormField(
-                                              keyboardType: TextInputType.phone,
-                                              inputFormatters: [
-                                                FilteringTextInputFormatter
-                                                    .digitsOnly,
-                                              ],
-                                              controller: seriesController,
+                                            DropdownButtonFormField<int>(
+                                              value: seriesController
+                                                      .text.isNotEmpty
+                                                  ? int.parse(
+                                                      seriesController.text)
+                                                  : null,
+                                              onChanged: (value) {
+                                                setState(() {
+                                                  seriesController.text =
+                                                      value.toString();
+                                                });
+                                              },
+                                              items: List.generate(
+                                                      10, (index) => index + 1)
+                                                  .map<DropdownMenuItem<int>>(
+                                                      (int value) {
+                                                return DropdownMenuItem<int>(
+                                                  value: value,
+                                                  child: Text(value.toString()),
+                                                );
+                                              }).toList(),
                                               decoration: const InputDecoration(
                                                 labelText: 'Series',
                                               ),
                                             ),
+
                                             const SizedBox(height: 8.0),
-                                            // Espaciado entre campos editables y botón
                                           ],
                                         ),
                                       ),
@@ -519,68 +573,84 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                                 ),
                               );
                             }).toList(),
-                            ExpansionTile(
-                              title: const Text(
-                                'Crear Nuevo Ejercicio',
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
+                            /* Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: ExpansionTile(
+                                title: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Checkbox(
+                                          value:
+                                          isSelectedExercise(ejercicio),
+                                          onChanged: (value) {
+                                            setState(() {
+                                              toggleSelectedExercise(
+                                                  ejercicio);
+                                            });
+                                          },
+                                        ),
+                                        const SizedBox(width: 8.0), // Espaciado entre el checkbox y el texto
+                                        const Flexible( // Usa Flexible o Expanded aquí
+                                          child: Text(
+                                            'Crear Nuevo Ejercicio',
+                                            style: TextStyle(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
                                 ),
-                              ),
-                              trailing: const Icon(Icons.arrow_drop_down,
-                                  color: Color(0XFF0f7991)),
-                              children: [
-                                // Campos editables para el nuevo ejercicio
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      TextFormField(
-                                        // Campo para el nombre del nuevo ejercicio
-                                        decoration: const InputDecoration(
-                                            labelText: 'Nombre del Ejercicio'),
-                                      ),
-                                      TextFormField(
-                                        // Campo para la descripción del nuevo ejercicio
-                                        decoration: const InputDecoration(
-                                            labelText:
-                                                'Descripción del Ejercicio'),
-                                      ),
-                                      TextFormField(
-                                        keyboardType: TextInputType.phone,
-                                        decoration: const InputDecoration(
-                                          labelText: 'Peso (kg)',
+                                trailing: const Icon(Icons.arrow_drop_down, color: Color(0XFF0f7991)),
+                                children: [
+                                  // Campos editables para el nuevo ejercicio
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        TextFormField(
+                                          // Campo para el nombre del nuevo ejercicio
+                                          decoration: const InputDecoration(
+                                            labelText: 'Nombre del Ejercicio',
+                                          ),
                                         ),
-                                      ),
-
-                                      TextFormField(
-                                        keyboardType: TextInputType.phone,
-                                        decoration: const InputDecoration(
-                                          labelText: 'Repeticiones',
+                                        TextFormField(
+                                          // Campo para la descripción del nuevo ejercicio
+                                          decoration: const InputDecoration(
+                                            labelText: 'Descripción del Ejercicio',
+                                          ),
                                         ),
-                                      ),
-
-                                      TextFormField(
-                                        keyboardType: TextInputType.phone,
-                                        decoration: const InputDecoration(
-                                          labelText: 'Series',
+                                        TextFormField(
+                                          keyboardType: TextInputType.phone,
+                                          decoration: const InputDecoration(
+                                            labelText: 'Peso (kg)',
+                                          ),
                                         ),
-                                      ),
-
-                                      const SizedBox(height: 8.0),
-                                      // Espaciado entre campos editables y botón
-                                      ElevatedButton(
-                                        onPressed: () {},
-                                        child: const Text('Añadir'),
-                                      ),
-                                    ],
+                                        TextFormField(
+                                          keyboardType: TextInputType.phone,
+                                          decoration: const InputDecoration(
+                                            labelText: 'Repeticiones',
+                                          ),
+                                        ),
+                                        TextFormField(
+                                          keyboardType: TextInputType.phone,
+                                          decoration: const InputDecoration(
+                                            labelText: 'Series',
+                                          ),
+                                        ),
+                                        const SizedBox(height: 8.0),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
+                                ],
+                              ),
+                            ),*/
 
                             const SizedBox(height: 8.0),
                             // Espaciado entre ExpansionTiles
@@ -600,7 +670,7 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
           padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
           height: 60,
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               IconButton(
                 onPressed: () {
@@ -618,133 +688,20 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                   size: 30,
                 ),
               ),
+              IconButton(
+                onPressed: () async {
+                  //await guardarSegundaParteRutinaEnFirebase();
+                  // Aquí puedes realizar cualquier otra acción después de guardar en Firebase
+                },
+                icon: const Icon(
+                  Icons.golf_course,
+                  size: 30,
+                ),
+              )
             ],
           ),
         ),
       ),
     );
   }
-
-  void guardarPrimeraParteRutinaEnFirebase() async {
-    try {
-      // Obtener el ID del usuario actual
-      String userId = FirebaseAuth.instance.currentUser!.uid;
-
-      // Crear una referencia a la colección 'rutinas' del usuario en Firestore
-      CollectionReference rutinasCollection = FirebaseFirestore.instance
-          .collection('usuarios')
-          .doc(userId)
-          .collection('rutinas');
-
-      // Crear un mapa que contenga los datos de la primera parte de la rutina
-      Map<String, dynamic> datosPrimeraParteRutina = {
-        'dias': {},
-      };
-
-      // Añadir los grupos musculares seleccionados para cada día
-      for (var dia in selectedDiasSemana) {
-        // Filtrar los grupos musculares seleccionados para el día actual
-        var gruposSeleccionados = selectedGroupsMap[dia]?.toList() ?? [];
-
-        // Convertir la lista de grupos a un string separado por comas
-        String gruposString = gruposSeleccionados.join(',');
-
-        // Añadir el grupo al mapa del día
-        datosPrimeraParteRutina['dias'][dia] = {
-          'grupo': gruposString,
-        };
-      }
-
-      // Añadir la primera parte de la rutina a la colección 'rutinas'
-      await rutinasCollection.add(datosPrimeraParteRutina);
-
-      // Mostrar mensaje de éxito
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Primera parte de la rutina guardada en Firebase.'),
-        ),
-      );
-      _pageController.nextPage(
-        duration: const Duration(milliseconds: 500),
-        curve: Curves.ease,
-      );
-    } catch (e) {
-      // Manejar cualquier error que pueda ocurrir durante el proceso
-      print('Error al guardar la primera parte de la rutina en Firebase: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-              'Hubo un error al guardar la primera parte de la rutina en Firebase.'),
-        ),
-      );
-    }
-  }
-
-/*void guardarRutinasEnFirebase(
-      List<Map<String, dynamic>> ejerciciosTemporales) async {
-    try {
-      // Obtener el ID del usuario actual
-      String userId = FirebaseAuth.instance.currentUser!.uid;
-
-      // Crear una referencia a la colección 'rutinas' del usuario en Firestore
-      CollectionReference rutinasCollection = FirebaseFirestore.instance
-          .collection('usuarios')
-          .doc(userId)
-          .collection('rutinas');
-
-      // Crear un mapa que contenga los datos de la rutina
-      Map<String, dynamic> datosRutina = {
-        'dias': {},
-      };
-
-      // Añadir los grupos musculares seleccionados para cada día
-      for (var dia in selectedDiasSemana) {
-        // Filtrar los grupos musculares seleccionados para el día actual
-        var gruposSeleccionados = selectedGroupsMap[dia]?.toList() ?? [];
-
-        // Convertir la lista de grupos a un string separado por comas
-        String gruposString = gruposSeleccionados.join(',');
-
-        // Filtrar los ejercicios seleccionados para los grupos y día actual
-        var ejerciciosSeleccionados = ejerciciosTemporales
-            .where((ejercicio) =>
-                gruposSeleccionados.contains(ejercicio['grupo']) &&
-                selectedDiasSemana.contains(dia))
-            .map((ejercicio) => {
-                  'nombre': ejercicio['nombre'],
-                  'peso': ejercicio['peso'],
-                  'repeticiones': ejercicio['repeticiones'],
-                  'series': ejercicio['series'],
-                })
-            .toList();
-
-        // Obtener el array de ejercicios básicos para el grupo actual
-        var ejerciciosBasicos = ejerciciosTemporales;
-
-        // Añadir el grupo y el array de ejercicios al mapa del día
-        datosRutina['dias'][dia] = {
-          'grupo': gruposString,
-          'ejercicios': [...ejerciciosSeleccionados, ...ejerciciosBasicos],
-        };
-      }
-
-      // Añadir la rutina a la colección 'rutinas'
-      await rutinasCollection.add(datosRutina);
-
-      // Mostrar mensaje de éxito
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Rutina guardada exitosamente en Firebase.'),
-        ),
-      );
-    } catch (e) {
-      // Manejar cualquier error que pueda ocurrir durante el proceso
-      print('Error al guardar la rutina en Firebase: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Hubo un error al guardar la rutina en Firebase.'),
-        ),
-      );
-    }
-  }*/
 }
