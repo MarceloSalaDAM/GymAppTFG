@@ -141,6 +141,59 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
     }
   }
 
+  void guardarSegundaParteRutinaEnFirebase() async {
+    try {
+      // Obtener el ID del usuario actual
+      String userId = FirebaseAuth.instance.currentUser!.uid;
+
+      // Crear una referencia a la colección 'rutinas' del usuario en Firestore
+      CollectionReference rutinasCollection = FirebaseFirestore.instance
+          .collection('usuarios')
+          .doc(userId)
+          .collection('rutinas');
+
+      // Crear un mapa que contiene los datos de la segunda parte de la rutina
+      Map<String, dynamic> datosSegundaParteRutina = {};
+
+      // Añadir los valores seleccionados para cada día y ejercicio
+      valoresSeleccionados.forEach((dia, ejercicios) {
+        datosSegundaParteRutina[dia] = [];
+        ejercicios.forEach((ejercicio, valores) {
+          datosSegundaParteRutina[dia].add({
+            'nombre': ejercicio,
+            'peso': valores['peso'],
+            'repeticiones': valores['repeticiones'],
+            'series': valores['series'],
+          });
+        });
+      });
+
+      // Actualizar el documento de la rutina en Firebase con la segunda parte
+      await rutinasCollection.doc(idRutina).update({
+        'segunda_parte': datosSegundaParteRutina,
+      });
+
+      print(
+          "DATOS RECOPLIADOS--------->>>" + datosSegundaParteRutina.toString());
+      // Mostrar mensaje de éxito
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Segunda parte de la rutina guardada en Firebase.'),
+        ),
+      );
+    } catch (e) {
+      // Manejar cualquier error que pueda ocurrir durante el proceso
+      print('Error al guardar la segunda parte de la rutina en Firebase: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Hubo un error al guardar la segunda parte de la rutina en Firebase.',
+          ),
+        ),
+      );
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -383,7 +436,9 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                         final dia = selectedDiasSemana[index];
                         final selectedExercises = widget.ejercicios
                             .where((ejercicio) =>
-                        selectedGroupsMap[dia]?.contains(ejercicio.grupo) ?? false)
+                                selectedGroupsMap[dia]
+                                    ?.contains(ejercicio.grupo) ??
+                                false)
                             .toList();
 
                         return Column(
@@ -405,27 +460,33 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                             // Lista de ejercicios asociados al día
                             ...selectedExercises.map((ejercicio) {
                               Map<String, dynamic> ejercicioValues =
-                                  valoresSeleccionados[dia]?[ejercicio.nombre] ?? {};
+                                  valoresSeleccionados[dia]
+                                          ?[ejercicio.nombre] ??
+                                      {};
                               return Padding(
                                 padding: const EdgeInsets.all(5.0),
                                 child: ExpansionTile(
                                   title: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Row(
                                         children: [
                                           Checkbox(
-                                            value: isSelectedExercise(ejercicio),
+                                            value:
+                                                isSelectedExercise(ejercicio),
                                             onChanged: (value) {
                                               setState(() {
-                                                toggleSelectedExercise(ejercicio);
+                                                toggleSelectedExercise(
+                                                    ejercicio);
                                               });
                                             },
                                           ),
                                           const SizedBox(width: 8.0),
                                           Flexible(
                                             child: Text(
-                                              ejercicio.nombre ?? 'Nombre no disponible',
+                                              ejercicio.nombre ??
+                                                  'Nombre no disponible',
                                               style: const TextStyle(
                                                 fontSize: 15,
                                                 fontWeight: FontWeight.bold,
@@ -443,43 +504,60 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                                     Padding(
                                       padding: const EdgeInsets.all(8.0),
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           const Padding(
-                                            padding: EdgeInsets.symmetric(vertical: 8.0),
+                                            padding: EdgeInsets.symmetric(
+                                                vertical: 8.0),
                                             child: Text(
                                               'Peso (kg)',
                                             ),
                                           ),
                                           Slider(
-                                            value: ejercicioValues['peso'] ?? 0.0,
+                                            value:
+                                                ejercicioValues['peso'] ?? 0.0,
                                             min: minWeight,
                                             max: maxWeight,
-                                            divisions: (maxWeight - minWeight) ~/ weightInterval,
+                                            divisions:
+                                                (maxWeight - minWeight) ~/
+                                                    weightInterval,
                                             onChanged: (value) {
                                               setState(() {
                                                 ejercicioValues['peso'] =
-                                                    (value / weightInterval).round() *
+                                                    (value / weightInterval)
+                                                            .round() *
                                                         weightInterval;
-                                                actualizarValores(dia, ejercicio.nombre,
+                                                actualizarValores(
+                                                    dia,
+                                                    ejercicio.nombre,
                                                     ejercicioValues);
                                               });
                                             },
-                                            label: (ejercicioValues['peso'] ?? 0.0).toString(),
+                                            label:
+                                                (ejercicioValues['peso'] ?? 0.0)
+                                                    .toString(),
                                           ),
                                           const SizedBox(height: 2.0),
                                           // DropdownButton para Repeticiones
                                           DropdownButtonFormField<int>(
-                                            value: ejercicioValues['repeticiones'] ?? null,
+                                            value: ejercicioValues[
+                                                    'repeticiones'] ??
+                                                null,
                                             onChanged: (value) {
                                               setState(() {
-                                                ejercicioValues['repeticiones'] = value;
-                                                actualizarValores(dia, ejercicio.nombre,
+                                                ejercicioValues[
+                                                    'repeticiones'] = value;
+                                                actualizarValores(
+                                                    dia,
+                                                    ejercicio.nombre,
                                                     ejercicioValues);
                                               });
                                             },
-                                            items: List.generate(30, (index) => index + 1)
-                                                .map<DropdownMenuItem<int>>((int value) {
+                                            items: List.generate(
+                                                    30, (index) => index + 1)
+                                                .map<DropdownMenuItem<int>>(
+                                                    (int value) {
                                               return DropdownMenuItem<int>(
                                                 value: value,
                                                 child: Text(value.toString()),
@@ -491,16 +569,22 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                                           ),
                                           // DropdownButton para Series
                                           DropdownButtonFormField<int>(
-                                            value: ejercicioValues['series'] ?? null,
+                                            value: ejercicioValues['series'] ??
+                                                null,
                                             onChanged: (value) {
                                               setState(() {
-                                                ejercicioValues['series'] = value;
-                                                actualizarValores(dia, ejercicio.nombre,
+                                                ejercicioValues['series'] =
+                                                    value;
+                                                actualizarValores(
+                                                    dia,
+                                                    ejercicio.nombre,
                                                     ejercicioValues);
                                               });
                                             },
-                                            items: List.generate(10, (index) => index + 1)
-                                                .map<DropdownMenuItem<int>>((int value) {
+                                            items: List.generate(
+                                                    10, (index) => index + 1)
+                                                .map<DropdownMenuItem<int>>(
+                                                    (int value) {
                                               return DropdownMenuItem<int>(
                                                 value: value,
                                                 child: Text(value.toString()),
@@ -523,7 +607,6 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                       },
                     ),
                   )
-
                 ],
               ),
             ),
@@ -555,7 +638,7 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
               ),
               IconButton(
                 onPressed: () async {
-                  //await guardarSegundaParteRutinaEnFirebase();
+                  guardarSegundaParteRutinaEnFirebase();
                   // Aquí puedes realizar cualquier otra acción después de guardar en Firebase
                 },
                 icon: const Icon(
@@ -569,13 +652,23 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
       ),
     );
   }
-  void actualizarValores(String dia, String ejercicio, Map<String, dynamic> valores) {
-    setState(() {
-      if (!valoresSeleccionados.containsKey(dia)) {
-        valoresSeleccionados[dia] = {};
-      }
-      valoresSeleccionados[dia]![ejercicio] = valores;
-    });
-  }
 
+  void actualizarValores(
+      String dia, String ejercicio, Map<String, dynamic> valores) {
+    {
+      setState(() {
+        if (!valoresSeleccionados.containsKey(dia)) {
+          valoresSeleccionados[dia] = {};
+        }
+        if (!valoresSeleccionados[dia]!.containsKey(ejercicio)) {
+          valoresSeleccionados[dia]![ejercicio] = {};
+        }
+        valoresSeleccionados[dia]![ejercicio]!['nombre'] = ejercicio;
+        valoresSeleccionados[dia]![ejercicio]!['peso'] = valores['peso'];
+        valoresSeleccionados[dia]![ejercicio]!['repeticiones'] =
+            valores['repeticiones'];
+        valoresSeleccionados[dia]![ejercicio]!['series'] = valores['series'];
+      });
+    }
+  }
 }
