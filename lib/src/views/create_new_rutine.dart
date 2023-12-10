@@ -168,10 +168,9 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
         });
       });
 
-      // Actualizar el documento de la rutina en Firebase con la segunda parte
-      await rutinasCollection.doc(idRutina).update({
-        'segunda_parte': datosSegundaParteRutina,
-      });
+      var result = await rutinasCollection.add(datosSegundaParteRutina);
+
+
 
       print(
           "DATOS RECOPLIADOS--------->>>" + datosSegundaParteRutina.toString());
@@ -623,7 +622,7 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
               IconButton(
                 onPressed: () {
                   // Lógica para guardar la primera parte de la rutina
-                  guardarPrimeraParteRutinaEnFirebase();
+                  //guardarPrimeraParteRutinaEnFirebase();
 
                   // Navegar a la Page 2
                   _pageController.nextPage(
