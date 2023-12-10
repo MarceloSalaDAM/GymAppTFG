@@ -20,6 +20,7 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
   double minWeight = 0.0;
   double maxWeight = 200.0;
   double weightInterval = 1.25;
+  Map<String, Map<String, Map<String, dynamic>>> valoresSeleccionados = {};
   TextEditingController repeticionesController = TextEditingController();
   TextEditingController seriesController = TextEditingController();
   late PageController _pageController;
@@ -382,9 +383,7 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                         final dia = selectedDiasSemana[index];
                         final selectedExercises = widget.ejercicios
                             .where((ejercicio) =>
-                                selectedGroupsMap[dia]
-                                    ?.contains(ejercicio.grupo) ??
-                                false)
+                        selectedGroupsMap[dia]?.contains(ejercicio.grupo) ?? false)
                             .toList();
 
                         return Column(
@@ -405,260 +404,126 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                             ),
                             // Lista de ejercicios asociados al día
                             ...selectedExercises.map((ejercicio) {
-                              return GestureDetector(
-                                // Puedes ajustar la duración según tus preferencias
-                                onLongPress: () {
-                                  // Obtén el nombre del ejercicio sobre el cual se ha realizado el toque largo
-                                  String ejercicioSeleccionado = ejercicio
-                                          .nombre ??
-                                      'Nombre no disponible'; // Reemplaza esto con la lógica real
-
-                                  // Filtra la lista de ejercicios para encontrar el ejercicio seleccionado
-                                  var ejercicioElegido =
-                                      widget.ejercicios.firstWhere(
-                                    (ejercicio) =>
-                                        ejercicio.nombre ==
-                                        ejercicioSeleccionado,
-                                  );
-
-                                  if (ejercicioElegido != null) {
-                                    // Navega a la pantalla de ExerciseListScreen con el ejercicio seleccionado
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            ExerciseListScreen(
-                                          ejercicios: [ejercicioElegido],
-                                        ),
-                                      ),
-                                    );
-                                  } else {
-                                    // Manejar el caso en que no se encuentre el ejercicio
-                                    print(
-                                        'No se encontró el ejercicio seleccionado: $ejercicioSeleccionado');
-                                  }
-                                },
-
-                                child: Padding(
-                                  padding: const EdgeInsets.all(5.0),
-                                  child: ExpansionTile(
-                                    title: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Checkbox(
-                                              value:
-                                                  isSelectedExercise(ejercicio),
-                                              onChanged: (value) {
-                                                setState(() {
-                                                  toggleSelectedExercise(
-                                                      ejercicio);
-                                                });
-                                              },
-                                            ),
-                                            const SizedBox(width: 8.0),
-                                            // Espaciado entre el checkbox y el texto
-                                            Flexible(
-                                              // Usa Flexible o Expanded aquí
-                                              child: Text(
-                                                ejercicio.nombre ??
-                                                    'Nombre no disponible',
-                                                style: const TextStyle(
-                                                  fontSize: 15,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.black,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                    trailing: const Icon(Icons.arrow_drop_down,
-                                        color: Color(0XFF0f7991)),
+                              Map<String, dynamic> ejercicioValues =
+                                  valoresSeleccionados[dia]?[ejercicio.nombre] ?? {};
+                              return Padding(
+                                padding: const EdgeInsets.all(5.0),
+                                child: ExpansionTile(
+                                  title: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      // Campos editables
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            const Padding(
-                                              padding:
-                                                  EdgeInsets.symmetric(
-                                                      vertical: 8.0),
-                                              child: Text(
-                                                'Peso (kg)',
+                                      Row(
+                                        children: [
+                                          Checkbox(
+                                            value: isSelectedExercise(ejercicio),
+                                            onChanged: (value) {
+                                              setState(() {
+                                                toggleSelectedExercise(ejercicio);
+                                              });
+                                            },
+                                          ),
+                                          const SizedBox(width: 8.0),
+                                          Flexible(
+                                            child: Text(
+                                              ejercicio.nombre ?? 'Nombre no disponible',
+                                              style: const TextStyle(
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.black,
                                               ),
                                             ),
-                                            Slider(
-                                              value: selectedWeight,
-                                              min: minWeight,
-                                              max: maxWeight,
-                                              divisions:
-                                                  (maxWeight - minWeight) ~/
-                                                          weightInterval,
-                                              onChanged: (value) {
-                                                setState(() {
-                                                  selectedWeight =
-                                                      (value / weightInterval)
-                                                              .round() *
-                                                          weightInterval;
-                                                });
-                                              },
-                                              label: selectedWeight.toString(),
-                                            ),
-                                            const SizedBox(height: 2.0),
-// DropdownButton para Repeticiones
-                                            DropdownButtonFormField<int>(
-                                              value: repeticionesController
-                                                      .text.isNotEmpty
-                                                  ? int.parse(
-                                                      repeticionesController
-                                                          .text)
-                                                  : null,
-                                              onChanged: (value) {
-                                                setState(() {
-                                                  repeticionesController.text =
-                                                      value.toString();
-                                                });
-                                              },
-                                              items: List.generate(
-                                                      30, (index) => index + 1)
-                                                  .map<DropdownMenuItem<int>>(
-                                                      (int value) {
-                                                return DropdownMenuItem<int>(
-                                                  value: value,
-                                                  child: Text(value.toString()),
-                                                );
-                                              }).toList(),
-                                              decoration: const InputDecoration(
-                                                labelText: 'Repeticiones',
-                                              ),
-                                            ),
-                                            DropdownButtonFormField<int>(
-                                              value: seriesController
-                                                      .text.isNotEmpty
-                                                  ? int.parse(
-                                                      seriesController.text)
-                                                  : null,
-                                              onChanged: (value) {
-                                                setState(() {
-                                                  seriesController.text =
-                                                      value.toString();
-                                                });
-                                              },
-                                              items: List.generate(
-                                                      10, (index) => index + 1)
-                                                  .map<DropdownMenuItem<int>>(
-                                                      (int value) {
-                                                return DropdownMenuItem<int>(
-                                                  value: value,
-                                                  child: Text(value.toString()),
-                                                );
-                                              }).toList(),
-                                              decoration: const InputDecoration(
-                                                labelText: 'Series',
-                                              ),
-                                            ),
-
-                                            const SizedBox(height: 8.0),
-                                          ],
-                                        ),
+                                          ),
+                                        ],
                                       ),
                                     ],
                                   ),
-                                ),
-                              );
-                            }).toList(),
-                            /* Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: ExpansionTile(
-                                title: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  trailing: const Icon(Icons.arrow_drop_down,
+                                      color: Color(0XFF0f7991)),
                                   children: [
-                                    Row(
-                                      children: [
-                                        Checkbox(
-                                          value:
-                                          isSelectedExercise(ejercicio),
-                                          onChanged: (value) {
-                                            setState(() {
-                                              toggleSelectedExercise(
-                                                  ejercicio);
-                                            });
-                                          },
-                                        ),
-                                        const SizedBox(width: 8.0), // Espaciado entre el checkbox y el texto
-                                        const Flexible( // Usa Flexible o Expanded aquí
-                                          child: Text(
-                                            'Crear Nuevo Ejercicio',
-                                            style: TextStyle(
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.black,
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          const Padding(
+                                            padding: EdgeInsets.symmetric(vertical: 8.0),
+                                            child: Text(
+                                              'Peso (kg)',
                                             ),
                                           ),
-                                        ),
-                                      ],
+                                          Slider(
+                                            value: ejercicioValues['peso'] ?? 0.0,
+                                            min: minWeight,
+                                            max: maxWeight,
+                                            divisions: (maxWeight - minWeight) ~/ weightInterval,
+                                            onChanged: (value) {
+                                              setState(() {
+                                                ejercicioValues['peso'] =
+                                                    (value / weightInterval).round() *
+                                                        weightInterval;
+                                                actualizarValores(dia, ejercicio.nombre,
+                                                    ejercicioValues);
+                                              });
+                                            },
+                                            label: (ejercicioValues['peso'] ?? 0.0).toString(),
+                                          ),
+                                          const SizedBox(height: 2.0),
+                                          // DropdownButton para Repeticiones
+                                          DropdownButtonFormField<int>(
+                                            value: ejercicioValues['repeticiones'] ?? null,
+                                            onChanged: (value) {
+                                              setState(() {
+                                                ejercicioValues['repeticiones'] = value;
+                                                actualizarValores(dia, ejercicio.nombre,
+                                                    ejercicioValues);
+                                              });
+                                            },
+                                            items: List.generate(30, (index) => index + 1)
+                                                .map<DropdownMenuItem<int>>((int value) {
+                                              return DropdownMenuItem<int>(
+                                                value: value,
+                                                child: Text(value.toString()),
+                                              );
+                                            }).toList(),
+                                            decoration: const InputDecoration(
+                                              labelText: 'Repeticiones',
+                                            ),
+                                          ),
+                                          // DropdownButton para Series
+                                          DropdownButtonFormField<int>(
+                                            value: ejercicioValues['series'] ?? null,
+                                            onChanged: (value) {
+                                              setState(() {
+                                                ejercicioValues['series'] = value;
+                                                actualizarValores(dia, ejercicio.nombre,
+                                                    ejercicioValues);
+                                              });
+                                            },
+                                            items: List.generate(10, (index) => index + 1)
+                                                .map<DropdownMenuItem<int>>((int value) {
+                                              return DropdownMenuItem<int>(
+                                                value: value,
+                                                child: Text(value.toString()),
+                                              );
+                                            }).toList(),
+                                            decoration: const InputDecoration(
+                                              labelText: 'Series',
+                                            ),
+                                          ),
+                                          const SizedBox(height: 8.0),
+                                        ],
+                                      ),
                                     ),
                                   ],
                                 ),
-                                trailing: const Icon(Icons.arrow_drop_down, color: Color(0XFF0f7991)),
-                                children: [
-                                  // Campos editables para el nuevo ejercicio
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        TextFormField(
-                                          // Campo para el nombre del nuevo ejercicio
-                                          decoration: const InputDecoration(
-                                            labelText: 'Nombre del Ejercicio',
-                                          ),
-                                        ),
-                                        TextFormField(
-                                          // Campo para la descripción del nuevo ejercicio
-                                          decoration: const InputDecoration(
-                                            labelText: 'Descripción del Ejercicio',
-                                          ),
-                                        ),
-                                        TextFormField(
-                                          keyboardType: TextInputType.phone,
-                                          decoration: const InputDecoration(
-                                            labelText: 'Peso (kg)',
-                                          ),
-                                        ),
-                                        TextFormField(
-                                          keyboardType: TextInputType.phone,
-                                          decoration: const InputDecoration(
-                                            labelText: 'Repeticiones',
-                                          ),
-                                        ),
-                                        TextFormField(
-                                          keyboardType: TextInputType.phone,
-                                          decoration: const InputDecoration(
-                                            labelText: 'Series',
-                                          ),
-                                        ),
-                                        const SizedBox(height: 8.0),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),*/
-
-                            const SizedBox(height: 8.0),
-                            // Espaciado entre ExpansionTiles
+                              );
+                            }).toList(),
                           ],
                         );
                       },
                     ),
-                  ),
+                  )
+
                 ],
               ),
             ),
@@ -704,4 +569,13 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
       ),
     );
   }
+  void actualizarValores(String dia, String ejercicio, Map<String, dynamic> valores) {
+    setState(() {
+      if (!valoresSeleccionados.containsKey(dia)) {
+        valoresSeleccionados[dia] = {};
+      }
+      valoresSeleccionados[dia]![ejercicio] = valores;
+    });
+  }
+
 }

@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Ejercicios {
-  final String? nombre;
+  final String nombre;
   final String? descripcion;
   final String? grupo;
   final String? tipo;
