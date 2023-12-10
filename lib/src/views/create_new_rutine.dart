@@ -18,7 +18,8 @@ class CrearRutinaView extends StatefulWidget {
 class _CrearRutinaViewState extends State<CrearRutinaView> {
   late PageController _pageController;
   List<Map<String, dynamic>> ejerciciosTemporales = [];
-
+  String selectedDay =
+      " "; // Set a default day, you can change it based on your needs
   Map<String, Set<String>> selectedGroupsMap = {
     "LUNES": <String>{},
     "MARTES": <String>{},
@@ -40,6 +41,24 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
     "DOMINGO"
   ];
 
+  List<Ejercicios> selectedExercises = [];
+
+  // Función para verificar si un ejercicio está seleccionado
+  bool isSelectedExercise(Ejercicios ejercicio) {
+    return selectedExercises.contains(ejercicio);
+  }
+
+  // Función para alternar la selección de un ejercicio
+  void toggleSelectedExercise(Ejercicios ejercicio) {
+    setState(() {
+      if (isSelectedExercise(ejercicio)) {
+        selectedExercises.remove(ejercicio);
+      } else {
+        selectedExercises.add(ejercicio);
+      }
+    });
+  }
+
   List<String> obtenerGrupos(List<Ejercicios> ejercicios) {
     Set<String> grupos = <String>{};
     for (var ejercicio in ejercicios) {
@@ -50,18 +69,18 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
     return grupos.toList()..sort();
   }
 
-  // Función agregarEjercicio ajustada
+  /*// Función agregarEjercicio ajustada
   void agregarEjercicio(
-      String pesoText,
-      String repeticionesText,
-      String seriesText,
-      TextEditingController pesoController,
-      TextEditingController repeticionesController,
-      TextEditingController seriesController,
-      Ejercicios ejercicio,
-      String dia,
-      String grupoMuscular,
-      ) {
+    String pesoText,
+    String repeticionesText,
+    String seriesText,
+    TextEditingController pesoController,
+    TextEditingController repeticionesController,
+    TextEditingController seriesController,
+    Ejercicios ejercicio,
+    String grupoMuscular,
+    String selectedDay, // Add the selected day parameter
+  ) {
     // Verifica que todos los campos estén llenos y contengan valores numéricos
     if (pesoText.isNotEmpty &&
         repeticionesText.isNotEmpty &&
@@ -81,8 +100,8 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
           'peso': peso,
           'repeticiones': repeticiones,
           'series': series,
-          'dia': dia,
           'grupoMuscular': grupoMuscular,
+          'dia': selectedDay,
         };
 
         // Agrega el ejercicio a la lista temporal
@@ -103,6 +122,7 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
       print('Por favor, completa todos los campos.');
     }
   }
+*/
   @override
   void initState() {
     super.initState();
@@ -145,6 +165,7 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
             Expanded(
               child: PageView(
                 controller: _pageController,
+                physics: const NeverScrollableScrollPhysics(),
                 children: [
                   // Página 1: Contenido actual
                   Column(
@@ -205,9 +226,13 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                                               if (value != null) {
                                                 if (value) {
                                                   selectedDiasSemana.add(dia);
+                                                  selectedDay =
+                                                      dia; // Update the selected day
                                                 } else {
                                                   selectedDiasSemana
                                                       .remove(dia);
+                                                  selectedDay =
+                                                      " "; // Reset the selected day if none is selected
                                                 }
                                               }
                                             });
@@ -403,83 +428,94 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                                   }
                                 },
 
-                                child: ExpansionTile(
-                                  title: Text(
-                                    ejercicio.nombre ?? 'Nombre no disponible',
-                                    style: const TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: ExpansionTile(
+                                    title: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Checkbox(
+                                              value:
+                                                  isSelectedExercise(ejercicio),
+                                              onChanged: (value) {
+                                                setState(() {
+                                                  toggleSelectedExercise(
+                                                      ejercicio);
+                                                });
+                                              },
+                                            ),
+                                            const SizedBox(width: 8.0),
+                                            // Espaciado entre el checkbox y el texto
+                                            Flexible(
+                                              // Usa Flexible o Expanded aquí
+                                              child: Text(
+                                                ejercicio.nombre ??
+                                                    'Nombre no disponible',
+                                                style: const TextStyle(
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
                                     ),
-                                  ),
-                                  trailing: const Icon(Icons.arrow_drop_down,
-                                      color: Color(0XFF0f7991)),
-                                  children: [
-                                    // Campos editables
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          TextFormField(
-                                            keyboardType: TextInputType.phone,
-                                            inputFormatters: [
-                                              FilteringTextInputFormatter
-                                                  .digitsOnly,
-                                            ],
-                                            controller: pesoController,
-                                            decoration: const InputDecoration(
-                                              labelText: 'Peso (kg)',
+                                    trailing: const Icon(Icons.arrow_drop_down,
+                                        color: Color(0XFF0f7991)),
+                                    children: [
+                                      // Campos editables
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            TextFormField(
+                                              keyboardType: TextInputType.phone,
+                                              inputFormatters: [
+                                                FilteringTextInputFormatter
+                                                    .digitsOnly,
+                                              ],
+                                              controller: pesoController,
+                                              decoration: const InputDecoration(
+                                                labelText: 'Peso (kg)',
+                                              ),
                                             ),
-                                          ),
-                                          TextFormField(
-                                            keyboardType: TextInputType.phone,
-                                            inputFormatters: [
-                                              FilteringTextInputFormatter
-                                                  .digitsOnly,
-                                            ],
-                                            controller: repeticionesController,
-                                            decoration: const InputDecoration(
-                                              labelText: 'Repeticiones',
+                                            TextFormField(
+                                              keyboardType: TextInputType.phone,
+                                              inputFormatters: [
+                                                FilteringTextInputFormatter
+                                                    .digitsOnly,
+                                              ],
+                                              controller:
+                                                  repeticionesController,
+                                              decoration: const InputDecoration(
+                                                labelText: 'Repeticiones',
+                                              ),
                                             ),
-                                          ),
-
-                                          TextFormField(
-                                            keyboardType: TextInputType.phone,
-                                            inputFormatters: [
-                                              FilteringTextInputFormatter
-                                                  .digitsOnly,
-                                            ],
-                                            controller: seriesController,
-                                            decoration: const InputDecoration(
-                                              labelText: 'Series',
+                                            TextFormField(
+                                              keyboardType: TextInputType.phone,
+                                              inputFormatters: [
+                                                FilteringTextInputFormatter
+                                                    .digitsOnly,
+                                              ],
+                                              controller: seriesController,
+                                              decoration: const InputDecoration(
+                                                labelText: 'Series',
+                                              ),
                                             ),
-                                          ),
-
-                                          const SizedBox(height: 8.0),
-                                          // Espaciado entre campos editables y botón
-                                          ElevatedButton(
-                                            onPressed: () {
-                                              agregarEjercicio(
-                                                pesoController.text,
-                                                repeticionesController.text,
-                                                seriesController.text,
-                                                pesoController,
-                                                repeticionesController,
-                                                seriesController,
-                                                ejercicio,
-                                                selectedDiasSemana[index], // Aquí pasarías el día actual
-                                                ejercicio.grupo ??
-                                                    'No disponible',
-                                              );
-                                            },
-                                            child: const Text('Añadir'),
-                                          ),
-                                        ],
+                                            const SizedBox(height: 8.0),
+                                            // Espaciado entre campos editables y botón
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               );
                             }).toList(),
@@ -568,25 +604,19 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
             children: [
               IconButton(
                 onPressed: () {
-                  // Navegar a la siguiente página
+                  // Lógica para guardar la primera parte de la rutina
+                  guardarPrimeraParteRutinaEnFirebase();
+
+                  // Navegar a la Page 2
                   _pageController.nextPage(
                     duration: const Duration(milliseconds: 500),
                     curve: Curves.ease,
                   );
                 },
                 icon: const Icon(
-                  Icons.arrow_right_alt,
+                  Icons.save,
                   size: 30,
                 ),
-              ),
-              IconButton(
-                icon: const Icon(Icons.save),
-                onPressed: () {
-                  // Lógica para guardar todas las rutinas
-                  // Puedes utilizar la lista ejerciciosTemporales
-                  // y guardarla en la subcolección 'rutinas' del usuario en Firebase
-                  guardarRutinasEnFirebase(ejerciciosTemporales);
-                },
               ),
             ],
           ),
@@ -595,7 +625,62 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
     );
   }
 
-  void guardarRutinasEnFirebase(
+  void guardarPrimeraParteRutinaEnFirebase() async {
+    try {
+      // Obtener el ID del usuario actual
+      String userId = FirebaseAuth.instance.currentUser!.uid;
+
+      // Crear una referencia a la colección 'rutinas' del usuario en Firestore
+      CollectionReference rutinasCollection = FirebaseFirestore.instance
+          .collection('usuarios')
+          .doc(userId)
+          .collection('rutinas');
+
+      // Crear un mapa que contenga los datos de la primera parte de la rutina
+      Map<String, dynamic> datosPrimeraParteRutina = {
+        'dias': {},
+      };
+
+      // Añadir los grupos musculares seleccionados para cada día
+      for (var dia in selectedDiasSemana) {
+        // Filtrar los grupos musculares seleccionados para el día actual
+        var gruposSeleccionados = selectedGroupsMap[dia]?.toList() ?? [];
+
+        // Convertir la lista de grupos a un string separado por comas
+        String gruposString = gruposSeleccionados.join(',');
+
+        // Añadir el grupo al mapa del día
+        datosPrimeraParteRutina['dias'][dia] = {
+          'grupo': gruposString,
+        };
+      }
+
+      // Añadir la primera parte de la rutina a la colección 'rutinas'
+      await rutinasCollection.add(datosPrimeraParteRutina);
+
+      // Mostrar mensaje de éxito
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Primera parte de la rutina guardada en Firebase.'),
+        ),
+      );
+      _pageController.nextPage(
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.ease,
+      );
+    } catch (e) {
+      // Manejar cualquier error que pueda ocurrir durante el proceso
+      print('Error al guardar la primera parte de la rutina en Firebase: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+              'Hubo un error al guardar la primera parte de la rutina en Firebase.'),
+        ),
+      );
+    }
+  }
+
+/*void guardarRutinasEnFirebase(
       List<Map<String, dynamic>> ejerciciosTemporales) async {
     try {
       // Obtener el ID del usuario actual
@@ -661,5 +746,5 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
         ),
       );
     }
-  }
+  }*/
 }
