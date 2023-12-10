@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../custom/alert_dialogs.dart';
 import '../firebase_objects/ejercicios_firebase.dart';
-import 'exercise_list_view.dart';
 
 class CrearRutinaView extends StatefulWidget {
   final List<Ejercicios> ejercicios;
@@ -16,24 +15,16 @@ class CrearRutinaView extends StatefulWidget {
 }
 
 class _CrearRutinaViewState extends State<CrearRutinaView> {
+  int currentPageIndex = 0;
   double selectedWeight = 0.0;
   double minWeight = 0.0;
   double maxWeight = 200.0;
   double weightInterval = 1.25;
   Map<String, Map<String, Map<String, dynamic>>> valoresSeleccionados = {};
-  TextEditingController repeticionesController = TextEditingController();
-  TextEditingController seriesController = TextEditingController();
   late PageController _pageController;
-  late String idRutina;
-
-  String selectedDay =
-      " "; // Set a default day, you can change it based on your needs
-
-  // Mantén los valores actuales de los controladores en el estado del widget
-  late String pesoValue;
-  late String repeticionesValue;
-  late String seriesValue;
-
+  String selectedDay = " ";
+  late String selectedGroup;
+  List<Ejercicios> selectedExercises = [];
   Map<String, Set<String>> selectedGroupsMap = {
     "LUNES": <String>{},
     "MARTES": <String>{},
@@ -43,7 +34,6 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
     "SÁBADO": <String>{},
     "DOMINGO": <String>{},
   };
-  late String selectedGroup;
   List<String> selectedDiasSemana = [
     "LUNES",
     "MARTES",
@@ -53,8 +43,6 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
     "SÁBADO",
     "DOMINGO"
   ];
-
-  List<Ejercicios> selectedExercises = [];
 
   // Función para verificar si un ejercicio está seleccionado
   bool isSelectedExercise(Ejercicios ejercicio) {
@@ -82,66 +70,7 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
     return grupos.toList()..sort();
   }
 
-  void guardarPrimeraParteRutinaEnFirebase() async {
-    try {
-      // Obtener el ID del usuario actual
-      String userId = FirebaseAuth.instance.currentUser!.uid;
-
-      // Crear una referencia a la colección 'rutinas' del usuario en Firestore
-      CollectionReference rutinasCollection = FirebaseFirestore.instance
-          .collection('usuarios')
-          .doc(userId)
-          .collection('rutinas');
-
-      // Crear un mapa que contenga los datos de la primera parte de la rutina
-      Map<String, dynamic> datosPrimeraParteRutina = {
-        'dias': {},
-      };
-
-      // Añadir los grupos musculares seleccionados para cada día
-      for (var dia in selectedDiasSemana) {
-        // Filtrar los grupos musculares seleccionados para el día actual
-        var gruposSeleccionados = selectedGroupsMap[dia]?.toList() ?? [];
-
-        // Convertir la lista de grupos a un string separado por comas
-        String gruposString = gruposSeleccionados.join(',');
-
-        // Añadir el grupo al mapa del día
-        datosPrimeraParteRutina['dias'][dia] = {
-          'grupo': gruposString,
-        };
-      }
-      // Añadir la primera parte de la rutina a la colección 'rutinas'
-      var result = await rutinasCollection.add(datosPrimeraParteRutina);
-      print("DATOS PRIMERA PARTE RUTINA----------->" +
-          datosPrimeraParteRutina.toString());
-
-      // Almacenar el ID de la rutina recién creada
-      idRutina = result.id;
-
-      // Mostrar mensaje de éxito
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Primera parte de la rutina guardada en Firebase.'),
-        ),
-      );
-      _pageController.nextPage(
-        duration: const Duration(milliseconds: 500),
-        curve: Curves.ease,
-      );
-    } catch (e) {
-      // Manejar cualquier error que pueda ocurrir durante el proceso
-      print('Error al guardar la primera parte de la rutina en Firebase: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-              'Hubo un error al guardar la primera parte de la rutina en Firebase.'),
-        ),
-      );
-    }
-  }
-
-  void guardarSegundaParteRutinaEnFirebase() async {
+  void guardarRutinaEnFirebase() async {
     try {
       // Obtener el ID del usuario actual
       String userId = FirebaseAuth.instance.currentUser!.uid;
@@ -168,25 +97,25 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
         });
       });
 
-      var result = await rutinasCollection.add(datosSegundaParteRutina);
-
-
+      rutinasCollection.add(datosSegundaParteRutina);
 
       print(
           "DATOS RECOPLIADOS--------->>>" + datosSegundaParteRutina.toString());
+
       // Mostrar mensaje de éxito
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Segunda parte de la rutina guardada en Firebase.'),
+          content: Text('RUTINA GUARDADA CON ÉXITO'),
         ),
       );
     } catch (e) {
       // Manejar cualquier error que pueda ocurrir durante el proceso
       print('Error al guardar la segunda parte de la rutina en Firebase: $e');
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
-            'Hubo un error al guardar la segunda parte de la rutina en Firebase.',
+            'ERROR AL GUARDAR LA RUTINA',
           ),
         ),
       );
@@ -199,6 +128,11 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
     List<String> grupos = obtenerGrupos(widget.ejercicios);
     selectedGroup = grupos.isNotEmpty ? grupos.first : '';
     _pageController = PageController();
+    _pageController.addListener(() {
+      setState(() {
+        currentPageIndex = _pageController.page?.round() ?? 0;
+      });
+    });
   }
 
   @override
@@ -228,7 +162,7 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(25.0), // Añade padding aquí
+        padding: const EdgeInsets.all(25.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -237,7 +171,6 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                 controller: _pageController,
                 physics: const NeverScrollableScrollPhysics(),
                 children: [
-                  // Página 1: Contenido actual
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -260,17 +193,12 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                           const SizedBox(height: 5),
                           Card(
                             elevation: 4.0,
-                            // Ajusta la elevación según tus preferencias
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8.0),
-                              // Opcional: Añade esquinas redondeadas al borde de la tarjeta
-                              side: const BorderSide(
-                                  color: Colors
-                                      .grey), // Opcional: Añade un borde alrededor de la tarjeta
+                              side: const BorderSide(color: Colors.grey),
                             ),
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
-                              // Ajusta el espaciado interno de la tarjeta según tus preferencias
                               child: Wrap(
                                 spacing: 30.0,
                                 runSpacing: 2.0,
@@ -325,7 +253,6 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                           ),
                         ],
                       ),
-
                       const SizedBox(height: 10),
                       const Text(
                         'Grupo muscular por día',
@@ -336,7 +263,6 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                         ),
                       ),
                       const SizedBox(height: 5),
-                      // Nuevo Column para la lista de días
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -418,7 +344,6 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                       ),
                     ],
                   ),
-                  // Página 2: Nuevo contenido (puedes personalizar según tus necesidades)
                   Container(
                     padding: const EdgeInsets.all(16.0),
                     decoration: BoxDecoration(
@@ -484,8 +409,7 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                                           const SizedBox(width: 8.0),
                                           Flexible(
                                             child: Text(
-                                              ejercicio.nombre ??
-                                                  'Nombre no disponible',
+                                              ejercicio.nombre,
                                               style: const TextStyle(
                                                 fontSize: 15,
                                                 fontWeight: FontWeight.bold,
@@ -540,9 +464,8 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                                           const SizedBox(height: 2.0),
                                           // DropdownButton para Repeticiones
                                           DropdownButtonFormField<int>(
-                                            value: ejercicioValues[
-                                                    'repeticiones'] ??
-                                                null,
+                                            value:
+                                                ejercicioValues['repeticiones'],
                                             onChanged: (value) {
                                               setState(() {
                                                 ejercicioValues[
@@ -568,8 +491,7 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                                           ),
                                           // DropdownButton para Series
                                           DropdownButtonFormField<int>(
-                                            value: ejercicioValues['series'] ??
-                                                null,
+                                            value: ejercicioValues['series'],
                                             onChanged: (value) {
                                               setState(() {
                                                 ejercicioValues['series'] =
@@ -619,32 +541,50 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              IconButton(
-                onPressed: () {
-                  // Lógica para guardar la primera parte de la rutina
-                  //guardarPrimeraParteRutinaEnFirebase();
+              // Botón para avanzar a la Page 2 (visible en Page 1)
+              if (currentPageIndex == 0)
+                IconButton(
+                  onPressed: () {
+                    // Navegar a la Page 2
+                    _pageController.nextPage(
+                      duration: const Duration(milliseconds: 500),
+                      curve: Curves.ease,
+                    );
+                  },
+                  icon: const Icon(
+                    Icons.arrow_circle_right_rounded,
+                    size: 30,
+                  ),
+                ),
 
-                  // Navegar a la Page 2
-                  _pageController.nextPage(
-                    duration: const Duration(milliseconds: 500),
-                    curve: Curves.ease,
-                  );
-                },
-                icon: const Icon(
-                  Icons.save,
-                  size: 30,
+              // Botón para volver a la Page 1 (visible en Page 2)
+              if (currentPageIndex == 1)
+                IconButton(
+                  onPressed: () {
+                    // Navegar a la Page 1
+                    _pageController.previousPage(
+                      duration: const Duration(milliseconds: 500),
+                      curve: Curves.ease,
+                    );
+                  },
+                  icon: const Icon(
+                    Icons.arrow_back_rounded,
+                    size: 30,
+                  ),
                 ),
-              ),
-              IconButton(
-                onPressed: () async {
-                  guardarSegundaParteRutinaEnFirebase();
-                  // Aquí puedes realizar cualquier otra acción después de guardar en Firebase
-                },
-                icon: const Icon(
-                  Icons.golf_course,
-                  size: 30,
+
+              // Botón para guardar (visible en Page 2)
+              if (currentPageIndex == 1)
+                IconButton(
+                  onPressed: () async {
+                    guardarRutinaEnFirebase();
+                    Navigator.popUntil(context, ModalRoute.withName('/Main'));
+                  },
+                  icon: const Icon(
+                    Icons.save_outlined,
+                    size: 30,
+                  ),
                 ),
-              )
             ],
           ),
         ),
