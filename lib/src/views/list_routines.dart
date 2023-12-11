@@ -3,8 +3,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../firebase_objects/rutinas_firebase.dart';
+import 'details_routine.dart';
 
 class RutinasUsuarioView extends StatefulWidget {
+  const RutinasUsuarioView({super.key});
+
   @override
   _RutinasUsuarioViewState createState() => _RutinasUsuarioViewState();
 }
@@ -59,7 +62,7 @@ class _RutinasUsuarioViewState extends State<RutinasUsuarioView> {
         ),
       ),
       body: ListView.builder(
-        padding: EdgeInsets.fromLTRB(5, 10, 5, 10),
+        padding: const EdgeInsets.fromLTRB(5, 10, 5, 10),
         itemCount: rutinas.length,
         itemBuilder: (context, index) {
           return _buildRutinaTile(rutinas[index], index);
@@ -71,20 +74,20 @@ class _RutinasUsuarioViewState extends State<RutinasUsuarioView> {
   Widget _buildRutinaTile(Rutina rutina, int index) {
     return Card(
       color: Colors.blueGrey,
-      shape: RoundedRectangleBorder(
-        side: const BorderSide(),
+      shape: const RoundedRectangleBorder(
+        side: BorderSide(),
       ),
       elevation: 4.0,
-      margin: EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
+      margin: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
       child: ExpansionTile(
         title: Text(
           rutina.nombreRutina ?? 'SIN NOMBRE',
-          style: TextStyle(
+          style: const TextStyle(
               fontSize: 25, fontWeight: FontWeight.w900, color: Colors.white),
         ),
         children: [
           ListTile(
-            title: Text(
+            title: const Text(
               'Descripción:',
               style: TextStyle(
                   fontSize: 20,
@@ -93,7 +96,7 @@ class _RutinasUsuarioViewState extends State<RutinasUsuarioView> {
             ),
             subtitle: Text(
               '${rutina.descripcionRutina}',
-              style: TextStyle(
+              style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w500,
                   color: Colors.black),
@@ -112,7 +115,7 @@ class _RutinasUsuarioViewState extends State<RutinasUsuarioView> {
       List<Widget> ejerciciosTiles = [];
 
       tiles.add(Container(
-        margin: EdgeInsets.fromLTRB(25, 0, 25, 0),
+        margin: const EdgeInsets.fromLTRB(25, 0, 25, 0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -120,7 +123,7 @@ class _RutinasUsuarioViewState extends State<RutinasUsuarioView> {
               width: double.infinity,
               child: Text(
                 nombreDia,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 25,
                   fontWeight: FontWeight.w900,
                   color: Colors.white,
@@ -145,15 +148,15 @@ class _RutinasUsuarioViewState extends State<RutinasUsuarioView> {
     return Column(
       children: [
         Container(
-          margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
-          padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+          margin: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+          padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
           decoration: BoxDecoration(
             border: Border.all(
               color: Colors.black,
               width: 2,
               style: BorderStyle.solid,
             ),
-            borderRadius: BorderRadius.all(Radius.circular(18.0)),
+            borderRadius: const BorderRadius.all(Radius.circular(18.0)),
           ),
           child: Column(
             children: tiles,
@@ -161,19 +164,24 @@ class _RutinasUsuarioViewState extends State<RutinasUsuarioView> {
         ),
         Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
           IconButton(
-            icon: Icon(Icons.remove_red_eye),
+            icon: const Icon(Icons.remove_red_eye),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => DetallesRutinaView(rutina: rutina),
+                ),
+              );
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.edit_calendar_sharp),
             onPressed: () {
               // Lógica que se ejecutará al hacer clic en el botón de ojo
             },
           ),
           IconButton(
-            icon: Icon(Icons.edit_calendar_sharp),
-            onPressed: () {
-              // Lógica que se ejecutará al hacer clic en el botón de ojo
-            },
-          ),
-          IconButton(
-            icon: Icon(Icons.delete_forever),
+            icon: const Icon(Icons.delete_forever),
             onPressed: () {
               print("ID de la rutina a eliminar: ${rutina.id}");
 

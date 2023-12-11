@@ -3,8 +3,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:gym_app_tfg/src/firebase_objects/rutinas_firebase.dart';
 import 'package:gym_app_tfg/src/views/create_new_rutine.dart';
 import 'package:gym_app_tfg/src/views/details_profile_view.dart';
+import 'package:gym_app_tfg/src/views/details_routine.dart';
 import 'package:gym_app_tfg/src/views/exercise_list_view.dart';
 import 'package:gym_app_tfg/src/views/list_routines.dart';
 import 'package:gym_app_tfg/src/views/login_view.dart';
@@ -44,6 +46,10 @@ class App extends StatelessWidget {
         '/ExerciseList': (context) => ExerciseListScreen(ejercicios: []),
         '/CreateRoutine': (context) => CrearRutinaView(ejercicios: []),
         '/ListRoutine': (context) => RutinasUsuarioView(),
+        '/DetailsRoutine': (context) => DetallesRutinaView(rutina: Rutina(id: '', dias: {}),),
+
+
+
       },
     );
   }

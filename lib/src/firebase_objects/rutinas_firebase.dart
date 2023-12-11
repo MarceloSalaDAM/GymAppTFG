@@ -10,9 +10,9 @@ class Rutina {
 
   Rutina({
     required this.id,
-    required this.nombreRutina,
-    required this.descripcionRutina,
-    required this.grupo,
+     this.nombreRutina,
+     this.descripcionRutina,
+     this.grupo,
     required this.dias,
   });
 
