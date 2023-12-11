@@ -82,7 +82,15 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
           .collection('rutinas');
 
       // Crear un mapa que contiene los datos de la segunda parte de la rutina
-      Map<String, dynamic> datosSegundaParteRutina = {};
+      Map<String, dynamic> datosSegundaParteRutina = {
+        'gruposMusculares': {},
+      };
+
+      // Agregar grupos musculares seleccionados
+      selectedDiasSemana.forEach((dia) {
+        datosSegundaParteRutina['gruposMusculares'][dia] =
+            selectedGroupsMap[dia]!.toList();
+      });
 
       // Añadir los valores seleccionados para cada día y ejercicio
       valoresSeleccionados.forEach((dia, ejercicios) {
@@ -93,7 +101,6 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
             'peso': valores['peso'],
             'repeticiones': valores['repeticiones'],
             'series': valores['series'],
-            'grupoMuscular': valores['grupoMuscular'],
           });
         });
       });
