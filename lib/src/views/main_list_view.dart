@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:gym_app_tfg/src/custom/rotating_card_custom.dart';
-import 'package:gym_app_tfg/src/views/view_routines.dart';
 
 import '../firebase_objects/ejercicios_firebase.dart';
 import 'exercise_list_view.dart';
+import 'list_routines.dart';
 
 class MainListView extends StatefulWidget {
   final List<Ejercicios> ejercicios;
@@ -174,9 +173,8 @@ class _MainListViewState extends State<MainListView> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ListaRutinas(),
+        builder: (context) => RutinasUsuarioView(),
       ),
     );
   }
-
 }

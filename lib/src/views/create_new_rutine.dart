@@ -81,38 +81,44 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
           .doc(userId)
           .collection('rutinas');
 
-      // Crear un mapa que contiene los datos de la segunda parte de la rutina
-      Map<String, dynamic> datosSegundaParteRutina = {
-        'gruposMusculares': {},
+      // Crear un mapa que contiene los datos de la primera parte de la rutina
+      Map<String, dynamic> datosPrimeraParteRutina = {
+        'dias': {},
       };
 
-      // Agregar grupos musculares seleccionados
-      selectedDiasSemana.forEach((dia) {
-        datosSegundaParteRutina['gruposMusculares'][dia] =
-            selectedGroupsMap[dia]!.toList();
-      });
+      // Añadir los grupos musculares seleccionados para cada día
+      for (var dia in selectedDiasSemana) {
+        // Filtrar los grupos musculares seleccionados para el día actual
+        var gruposSeleccionados = selectedGroupsMap[dia]?.toList() ?? [];
 
-      // Añadir los valores seleccionados para cada día y ejercicio
-      valoresSeleccionados.forEach((dia, ejercicios) {
-        datosSegundaParteRutina[dia] = [];
-        ejercicios.forEach((ejercicio, valores) {
-          datosSegundaParteRutina[dia].add({
+        // Convertir la lista de grupos a un string separado por comas
+        String gruposString = gruposSeleccionados.join(',');
+
+        // Añadir el grupo al mapa del día
+        datosPrimeraParteRutina['dias'][dia] = {
+          'grupo': gruposString,
+          'ejercicios': [],
+        };
+
+        // Añadir los valores seleccionados para cada día y ejercicio
+        valoresSeleccionados[dia]?.forEach((ejercicio, valores) {
+          datosPrimeraParteRutina['dias'][dia]['ejercicios'].add({
             'nombre': ejercicio,
             'peso': valores['peso'],
             'repeticiones': valores['repeticiones'],
             'series': valores['series'],
           });
         });
-      });
+      }
 
       // Agregar nombre y descripción directamente al mapa
-      datosSegundaParteRutina['nombre'] = nombre;
-      datosSegundaParteRutina['descripcion'] = descripcion;
+      datosPrimeraParteRutina['nombre'] = nombre;
+      datosPrimeraParteRutina['descripcion'] = descripcion;
 
-      rutinasCollection.add(datosSegundaParteRutina);
+      // Agregar los datos a Firestore
+      rutinasCollection.add(datosPrimeraParteRutina);
 
-      print(
-          "DATOS RECOPLIADOS--------->>>" + datosSegundaParteRutina.toString());
+      print("DATOS RECOPLIADOS--------->>>" + datosPrimeraParteRutina.toString());
 
       // Mostrar mensaje de éxito
       ScaffoldMessenger.of(context).showSnackBar(
@@ -122,7 +128,7 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
       );
     } catch (e) {
       // Manejar cualquier error que pueda ocurrir durante el proceso
-      print('Error al guardar la segunda parte de la rutina en Firebase: $e');
+      print('Error al guardar la rutina en Firebase: $e');
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -133,6 +139,8 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
       );
     }
   }
+
+
 
   @override
   void initState() {

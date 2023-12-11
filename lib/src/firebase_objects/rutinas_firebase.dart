@@ -1,36 +1,34 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Rutina {
-  final String? nombre;
-  final String descripcion;
-  final List<Map<String, dynamic>> dias;
+  final String nombreRutina;
+  final String descripcionRutina;
+  final String? grupo;
+  final Map<String, dynamic> dias;
 
   Rutina({
-    required this.nombre,
-    required this.descripcion,
+    required this.nombreRutina,
+    required this.descripcionRutina,
+    required this.grupo,
     required this.dias,
   });
 
-  factory Rutina.fromFirestore(
-      DocumentSnapshot<Map<String, dynamic>> snapshot,
-      SnapshotOptions? options,
-      ) {
-    final data = snapshot.data();
-    final List<Map<String, dynamic>> dias = List<Map<String, dynamic>>.from(
-      data?['dias'] ?? [],
-    );
+  factory Rutina.fromFirestore(DocumentSnapshot snapshot) {
+    final data = snapshot.data() as Map<String, dynamic>? ?? {};
 
     return Rutina(
-      nombre: data?['nombre'] ?? '', // Use an empty string if nombre is null
-      descripcion: data?['descripcion'] ?? '',
-      dias: dias,
+      nombreRutina: data['nombre'] ?? '',
+      descripcionRutina: data['descripcion'] ?? '',
+      grupo: data['grupo'] ?? '',
+      dias: data['dias'] ?? {},
     );
   }
 
   Map<String, dynamic> toFirestore() {
     return {
-      if (nombre != null) "nombre": nombre,
-      if (descripcion != null) "descripcion": descripcion,
+      "nombre": nombreRutina,
+      "descripcion": descripcionRutina,
+      "grupo": grupo,
       "dias": dias,
     };
   }
