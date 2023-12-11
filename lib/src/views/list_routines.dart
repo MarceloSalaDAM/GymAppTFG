@@ -49,18 +49,26 @@ class _RutinasUsuarioViewState extends State<RutinasUsuarioView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Rutinas del Usuario'),
+        backgroundColor: const Color(0XFF0f7991),
+        title: const Text(
+          'TUS RUTINAS',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
       body: ListView.builder(
+        padding: EdgeInsets.fromLTRB(5, 10, 5, 10),
         itemCount: rutinas.length,
         itemBuilder: (context, index) {
-          return _buildRutinaTile(rutinas[index]);
+          return _buildRutinaTile(rutinas[index], index);
         },
       ),
     );
   }
 
-  Widget _buildRutinaTile(Rutina rutina) {
+  Widget _buildRutinaTile(Rutina rutina, int index) {
     return Card(
       color: Colors.blueGrey,
       shape: RoundedRectangleBorder(
@@ -70,7 +78,7 @@ class _RutinasUsuarioViewState extends State<RutinasUsuarioView> {
       margin: EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
       child: ExpansionTile(
         title: Text(
-          rutina.nombreRutina,
+          rutina.nombreRutina ?? 'SIN NOMBRE',
           style: TextStyle(
               fontSize: 25, fontWeight: FontWeight.w900, color: Colors.white),
         ),
@@ -91,35 +99,17 @@ class _RutinasUsuarioViewState extends State<RutinasUsuarioView> {
                   color: Colors.black),
             ),
           ),
-          _buildDiasList(rutina.dias),
+          _buildDiasList(rutina.dias, rutina),
         ],
       ),
     );
   }
 
-  Widget _buildDiasList(Map<String, dynamic> dias) {
+  Widget _buildDiasList(Map<String, dynamic> dias, Rutina rutina) {
     List<Widget> tiles = [];
-    final eyeIcon = Icon(
-        Icons.remove_red_eye); // Icono genérico para todas las ExpansionTile
 
     dias.forEach((nombreDia, infoDia) {
       List<Widget> ejerciciosTiles = [];
-
-      /*if (infoDia['ejercicios'] != null) {
-      for (var ejercicio in infoDia['ejercicios']) {
-        ejerciciosTiles.add(
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Nombre: ${ejercicio['nombre']}'),
-              Text('Repeticiones: ${ejercicio['repeticiones']}'),
-              Text('Series: ${ejercicio['series']}'),
-              // Agrega más detalles según sea necesario
-            ],
-          ),
-        );
-      }
-    }*/
 
       tiles.add(Container(
         margin: EdgeInsets.fromLTRB(25, 0, 25, 0),
@@ -143,39 +133,144 @@ class _RutinasUsuarioViewState extends State<RutinasUsuarioView> {
             if (infoDia['grupo'] != null)
               Text(
                 '${infoDia['grupo']}',
-                style: TextStyle(fontWeight: FontWeight.w700,fontSize: 18),
+                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
               ),
             const SizedBox(height: 5),
-            // Puedes agregar más detalles sobre el día aquí
             ...ejerciciosTiles,
           ],
         ),
       ));
     });
 
-    return Container(
-      margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
-      padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
-      decoration: BoxDecoration(
-        border: Border.all(
-          color: Colors.black,
-          width: 2,
-          style: BorderStyle.solid,
+    return Column(
+      children: [
+        Container(
+          margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
+          padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: Colors.black,
+              width: 2,
+              style: BorderStyle.solid,
+            ),
+            borderRadius: BorderRadius.all(Radius.circular(18.0)),
+          ),
+          child: Column(
+            children: tiles,
+          ),
         ),
-        borderRadius: BorderRadius.all(Radius.circular(18.0)),
-      ),
-      child: Column(
-        children: [
-          ...tiles,
+        Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
           IconButton(
-            icon: eyeIcon,
+            icon: Icon(Icons.remove_red_eye),
             onPressed: () {
               // Lógica que se ejecutará al hacer clic en el botón de ojo
-              // Puedes abrir un nuevo widget o realizar alguna otra acción
             },
           ),
-        ],
-      ),
+          IconButton(
+            icon: Icon(Icons.edit_calendar_sharp),
+            onPressed: () {
+              // Lógica que se ejecutará al hacer clic en el botón de ojo
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.delete_forever),
+            onPressed: () {
+              print("ID de la rutina a eliminar: ${rutina.id}");
+
+              // Lógica para eliminar la rutina
+              _showDeleteConfirmationDialog(rutina);
+            },
+          ),
+        ]),
+      ],
+    );
+  }
+
+  // Función para mostrar un cuadro de diálogo de confirmación antes de eliminar
+  Future<void> _showDeleteConfirmationDialog(Rutina rutina) async {
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return WillPopScope(
+          // Evitar que se cierre el diálogo con el botón de retroceso del dispositivo
+          onWillPop: () async => false,
+          child: AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16.0),
+            ),
+            title: const Text(
+              'ELIMINAR RUTINA',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 20.0,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            content:
+                const Text('¿Estás seguro de que deseas borrar la rutina?'),
+            actions: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.black,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                    ),
+                    child: const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Text(
+                        'CANCELAR',
+                        style: TextStyle(
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      try {
+                        // Lógica para eliminar la rutina
+                        await rutina.deleteFromFirestore();
+                        // Actualizar la vista
+                        setState(() {
+                          rutinas.remove(rutina);
+                        });
+                        Navigator.of(context).pop();
+                      } catch (e) {
+                        print("Error al eliminar la rutina: $e");
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.black,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                    ),
+                    child: const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Text(
+                        'ELIMINAR',
+                        style: TextStyle(
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
