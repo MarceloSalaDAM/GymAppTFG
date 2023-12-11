@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gym_app_tfg/src/custom/rotating_card_custom.dart';
+import 'package:gym_app_tfg/src/views/view_routines.dart';
 
 import '../firebase_objects/ejercicios_firebase.dart';
 import 'exercise_list_view.dart';
@@ -116,6 +117,7 @@ class _MainListViewState extends State<MainListView> {
                     ),
                     child: InkWell(
                       onTap: () {
+                        _showRoutinesListScreen(context);
                       },
                       child: const Padding(
                         padding: EdgeInsets.all(10.0), // Adjust the padding
@@ -164,6 +166,15 @@ class _MainListViewState extends State<MainListView> {
       context,
       MaterialPageRoute(
         builder: (context) => ExerciseListScreen(ejercicios: widget.ejercicios),
+      ),
+    );
+  }
+
+  void _showRoutinesListScreen(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ListaRutinas(),
       ),
     );
   }

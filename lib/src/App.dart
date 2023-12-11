@@ -14,6 +14,7 @@ import 'package:gym_app_tfg/src/custom/rotating_card_custom.dart';
 import 'package:gym_app_tfg/src/views/register_view.dart';
 import 'package:gym_app_tfg/src/views/settings.dart';
 import 'package:gym_app_tfg/src/views/splash_view.dart';
+import 'package:gym_app_tfg/src/views/view_routines.dart';
 
 class App extends StatelessWidget {
   App({Key? key}) : super(key: key);
@@ -42,6 +43,7 @@ class App extends StatelessWidget {
         '/DetailsProfile': (context) => const DetailsProfileView(),
         '/ExerciseList': (context) => ExerciseListScreen(ejercicios: []),
         '/CreateRoutine': (context) => CrearRutinaView(ejercicios: []),
+        '/ListRoutine': (context) => ListaRutinas(),
       },
     );
   }

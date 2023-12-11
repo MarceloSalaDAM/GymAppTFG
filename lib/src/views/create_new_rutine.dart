@@ -70,7 +70,7 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
     return grupos.toList()..sort();
   }
 
-  void guardarRutinaEnFirebase() async {
+  void guardarRutinaEnFirebase(String nombre, String descripcion) async {
     try {
       // Obtener el ID del usuario actual
       String userId = FirebaseAuth.instance.currentUser!.uid;
@@ -93,9 +93,14 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
             'peso': valores['peso'],
             'repeticiones': valores['repeticiones'],
             'series': valores['series'],
+            'grupoMuscular': valores['grupoMuscular'],
           });
         });
       });
+
+      // Agregar nombre y descripción directamente al mapa
+      datosSegundaParteRutina['nombre'] = nombre;
+      datosSegundaParteRutina['descripcion'] = descripcion;
 
       rutinasCollection.add(datosSegundaParteRutina);
 
@@ -543,7 +548,7 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
             children: [
               // Botón para avanzar a la Page 2 (visible en Page 1)
               if (currentPageIndex == 0)
-                IconButton(
+                ElevatedButton.icon(
                   onPressed: () {
                     // Navegar a la Page 2
                     _pageController.nextPage(
@@ -554,6 +559,13 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                   icon: const Icon(
                     Icons.arrow_circle_right_rounded,
                     size: 30,
+                  ),
+                  label: const Text(
+                    "CONTINUAR",
+                    style: TextStyle(fontSize: 18),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0XFF0f7991),
                   ),
                 ),
 
@@ -575,14 +587,20 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
 
               // Botón para guardar (visible en Page 2)
               if (currentPageIndex == 1)
-                IconButton(
-                  onPressed: () async {
-                    guardarRutinaEnFirebase();
-                    Navigator.popUntil(context, ModalRoute.withName('/Main'));
+                ElevatedButton.icon(
+                  onPressed: () {
+                    mostrarDialogoGuardarRutina(context);
                   },
                   icon: const Icon(
                     Icons.save_outlined,
                     size: 30,
+                  ),
+                  label: const Text(
+                    "GUARDAR RUTINA",
+                    style: TextStyle(fontSize: 18),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0XFF0f7991),
                   ),
                 ),
             ],
@@ -609,5 +627,91 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
         valoresSeleccionados[dia]![ejercicio]!['series'] = valores['series'];
       });
     }
+  }
+
+  void mostrarDialogoGuardarRutina(BuildContext context) {
+    String nombre = '';
+    String descripcion = '';
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16.0),
+          ),
+          title: Text('Guardar Rutina'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                onChanged: (value) {
+                  nombre = value;
+                },
+                decoration: InputDecoration(
+                  labelText: 'Nombre de la rutina',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                onChanged: (value) {
+                  descripcion = value;
+                },
+                decoration: InputDecoration(
+                  labelText: 'Descripción de la rutina',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            ElevatedButton(
+              onPressed: () {
+                guardarRutinaEnFirebase(nombre, descripcion);
+                Navigator.popUntil(context, ModalRoute.withName('/Main'));
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.black,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+              ),
+              child: const Padding(
+                padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                child: Text(
+                  'GUARDAR',
+                  style: TextStyle(
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.black,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+              ),
+              child: const Padding(
+                padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                child: Text(
+                  'CANCELAR',
+                  style: TextStyle(
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 }
