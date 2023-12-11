@@ -10,15 +10,14 @@ class DetallesRutinaView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Detalles de la Rutina'),
+        title: Text('${rutina.nombreRutina}'),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+      body: Container(
+        color: Colors.red,
+        padding: EdgeInsets.all(16.0),
+        margin: EdgeInsets.all(25.0),
+        child: ListView(
           children: [
-            Text('ID: ${rutina.id}'),
-            Text('Nombre: ${rutina.nombreRutina}'),
-            Text('Descripción: ${rutina.descripcionRutina}'),
             _buildDiasList(rutina.dias),
           ],
         ),
@@ -33,14 +32,30 @@ class DetallesRutinaView extends StatelessWidget {
       List<Widget> ejerciciosTiles = [];
 
       if (infoDia['ejercicios'] != null) {
+        ejerciciosTiles.add(
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Ejercicios',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18.0,
+                ),
+              ),
+            ],
+          ),
+        );
+
         for (var ejercicio in infoDia['ejercicios']) {
           ejerciciosTiles.add(
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Nombre: ${ejercicio['nombre']}'),
-                Text('Repeticiones: ${ejercicio['repeticiones']}'),
-                Text('Series: ${ejercicio['series']}'),
+                Text('• ${ejercicio['nombre']}'),
+                Text('\t\t\tPeso: ${ejercicio['peso']} kg'),
+                Text('\t\t\tRepeticiones: ${ejercicio['repeticiones']}'),
+                Text('\t\t\tSeries: ${ejercicio['series']}'),
                 // Agrega más detalles según sea necesario
               ],
             ),
@@ -48,19 +63,28 @@ class DetallesRutinaView extends StatelessWidget {
         }
       }
 
+
       tiles.add(
-        ExpansionTile(
-          title: Text(nombreDia),
-          children: ejerciciosTiles,
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              nombreDia,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 25.0,
+              ),
+            ),
+            SizedBox(height: 8.0),
+            ...ejerciciosTiles,
+            Divider(), // Un divisor opcional entre los días
+          ],
         ),
       );
     });
 
-    return Container(
-      color: Colors.red,
-      child: Column(
-        children: tiles,
-      ),
+    return Column(
+      children: tiles,
     );
   }
 }
