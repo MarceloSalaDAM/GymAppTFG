@@ -166,7 +166,7 @@ class _MainViewAppState extends State<MainViewApp> {
                   await AlertDialogManager.showRutinaDialog(
                       context, ejercicios);
                 },
-                backgroundColor: const Color(0xFF0c5363),
+                backgroundColor: const Color(0XFF0f7991),
                 child: const Icon(Icons.add, size: 40),
               ),
             )

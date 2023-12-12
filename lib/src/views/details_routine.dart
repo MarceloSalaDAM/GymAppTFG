@@ -159,7 +159,7 @@ class DetallesRutinaView extends StatelessWidget {
             ...ejerciciosTiles,
             const SizedBox(height: 8.0),
             const Text(
-              '⏱ Los descansos son muy importantes para realizar un buen\n\t\t\t\t\t\tentrenamiento',
+              '⏱ Los descansos son muy importantes para realizar un buen entrenamiento',
               style: TextStyle(
                 color: Color(0XFF0f7991),
                 fontWeight: FontWeight.bold,

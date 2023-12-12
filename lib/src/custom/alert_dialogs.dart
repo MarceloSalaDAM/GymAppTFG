@@ -118,7 +118,7 @@ class AlertDialogManager {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        '¡Bienvenido a FLEXIFY!Queremos personalizar tu experiencia según tu nivel actual. Por favor, elige uno de los siguientes niveles:',
+                        '¡Bienvenido a EasyFit!Queremos personalizar tu experiencia según tu nivel actual. Por favor, elige uno de los siguientes niveles:',
                         style: TextStyle(fontSize: 16.0),
                       ),
                       SizedBox(height: 16.0),
@@ -229,7 +229,7 @@ class AlertDialogManager {
             borderRadius: BorderRadius.circular(16.0),
           ),
           title: const Text(
-            'SOBRE FLEXIFY',
+            'SOBRE EASYFIT',
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 20.0,
@@ -237,7 +237,7 @@ class AlertDialogManager {
             textAlign: TextAlign.center,
           ),
           content: const SingleChildScrollView(
-            child: Text('¡Bienvenido a Flexify!\n'
+            child: Text('¡Bienvenido a EasyFit!\n'
                 'Gracias por elegir nuestra aplicación para acompañarte en tu viaje hacia un estilo de vida más saludable y activo.'
                 '\nQueremos que aproveches al máximo todas las funciones que hemos desarrollado para ti.\n\n '
                 '¿Cómo funciona la aplicación?\n'
@@ -245,7 +245,7 @@ class AlertDialogManager {
                 'Explora la sección de ejercicios, sigue tu progreso y ajusta tu perfil en la sección de configuración.\n\n'
                 '¿Necesitas ayuda o tienes preguntas?\n'
                 'Estamos aquí para ayudarte en cada paso del camino. Si tienes alguna pregunta, inquietud o simplemente necesitas orientación,\n'
-                'no dudes en consultarnos a traves de e-mail: flexify.support@gmail.com'),
+                'no dudes en consultarnos a traves de e-mail: easyfit.support@gmail.com'),
           ),
           actions: <Widget>[
             ElevatedButton(

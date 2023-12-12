@@ -204,22 +204,7 @@ class _DetailsProfileViewState extends State<DetailsProfileView> {
         children: [
           // Botón adicional solo si _isEditing es true
           if (_isEditing)
-            MaterialButton(
-              height: 25,
-              color: Colors.red,
-              // Puedes ajustar el color según tus necesidades
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(7.0),
-              ),
-              padding: const EdgeInsets.all(8.0),
-              textColor: Colors.white,
-              splashColor: Colors.white,
-              child: const Padding(
-                padding: EdgeInsets.all(0),
-                child: Icon(
-                  Icons.cancel, // Reemplaza con el icono que desees
-                ),
-              ),
+            ElevatedButton.icon(
               onPressed: () {
                 showDialog(
                   context: context,
@@ -247,25 +232,25 @@ class _DetailsProfileViewState extends State<DetailsProfileView> {
                   },
                 );
               },
-            ),
-          // Spacer para agregar espacio entre los dos botones
-          const Spacer(),
-          // Botón existente
-          MaterialButton(
-            height: 25,
-            color: const Color(0xFF0c5363),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(7.0),
-            ),
-            padding: const EdgeInsets.all(8.0),
-            textColor: Colors.white,
-            splashColor: Colors.white,
-            child: Padding(
-              padding: const EdgeInsets.all(0),
-              child: Icon(
-                _isEditing ? Icons.save_alt : Icons.edit,
+              icon: const Icon(
+                Icons.cancel,
+                size: 30,
+              ),
+              label: const Text(
+                "CANCELAR",
+                style: TextStyle(fontSize: 18),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                minimumSize:
+                    const Size(140, 50), // Ajusta el tamaño según sea necesario
               ),
             ),
+
+// Spacer para agregar espacio entre los dos botones
+          const Spacer(),
+
+          ElevatedButton.icon(
             onPressed: () {
               if (_isEditing) {
                 acceptPressed(
@@ -280,6 +265,19 @@ class _DetailsProfileViewState extends State<DetailsProfileView> {
                 _isEditing = !_isEditing;
               });
             },
+            icon: Icon(
+              _isEditing ? Icons.save_alt : Icons.edit,
+              size: 30,
+            ),
+            label: Text(
+              _isEditing ? 'GUARDAR' : 'EDITAR',
+              style: const TextStyle(fontSize: 18),
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0XFF0f7991),
+              minimumSize:
+                  const Size(140, 50), // Ajusta el tamaño según sea necesario
+            ),
           ),
         ],
       ),
@@ -288,8 +286,6 @@ class _DetailsProfileViewState extends State<DetailsProfileView> {
 
   @override
   Widget build(BuildContext context) {
-    bool isDataLoaded = _initialNombre != null;
-
     return Scaffold(
       body: Stack(
         children: [
