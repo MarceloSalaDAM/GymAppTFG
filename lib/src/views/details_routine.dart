@@ -10,16 +10,26 @@ class DetallesRutinaView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('${rutina.nombreRutina}'),
+        backgroundColor: const Color(0XFF0f7991),
+        title: Text(
+          '${rutina.nombreRutina}',
+          style: const TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
       body: Container(
-        color: Colors.red,
-        padding: EdgeInsets.all(16.0),
+        color: Colors.black,
         margin: EdgeInsets.all(25.0),
-        child: ListView(
-          children: [
-            _buildDiasList(rutina.dias),
-          ],
+        child: Card(
+          elevation: 4.0,
+          child: ListView(
+            padding: EdgeInsets.all(10.0),
+            children: [
+              _buildDiasList(rutina.dias),
+            ],
+          ),
         ),
       ),
     );
@@ -33,16 +43,17 @@ class DetallesRutinaView extends StatelessWidget {
 
       if (infoDia['ejercicios'] != null) {
         ejerciciosTiles.add(
-          Column(
+          const Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 'Ejercicios',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: 18.0,
+                  fontSize: 20.0,
                 ),
               ),
+              SizedBox(height: 10),
             ],
           ),
         );
@@ -52,17 +63,73 @@ class DetallesRutinaView extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('• ${ejercicio['nombre']}'),
-                Text('\t\t\tPeso: ${ejercicio['peso']} kg'),
-                Text('\t\t\tRepeticiones: ${ejercicio['repeticiones']}'),
-                Text('\t\t\tSeries: ${ejercicio['series']}'),
-                // Agrega más detalles según sea necesario
+                Text(
+                  '• ${ejercicio['nombre']}',
+                  style: const TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Row(
+                  children: [
+                    const Text(
+                      '\t\t\tSeries: ',
+                      style: TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w500,
+                          fontStyle: FontStyle.italic),
+                    ),
+                    Text(
+                      '${ejercicio['series']}',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    const Text(
+                      '\t\t\tRepeticiones: ',
+                      style: TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w500,
+                          fontStyle: FontStyle.italic),
+                    ),
+                    Text(
+                      '${ejercicio['repeticiones']}',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    const Text(
+                      '\t\t\tPeso: ',
+                      style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w500,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                    Text(
+                      '${ejercicio['peso']} kg',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
           );
         }
       }
-
 
       tiles.add(
         Column(
@@ -70,14 +137,38 @@ class DetallesRutinaView extends StatelessWidget {
           children: [
             Text(
               nombreDia,
-              style: TextStyle(
+              style: const TextStyle(
                 fontWeight: FontWeight.bold,
-                fontSize: 25.0,
+                fontSize: 27.0,
               ),
             ),
-            SizedBox(height: 8.0),
+            const SizedBox(height: 8.0),
+            const Row(
+              children: [
+                Text(
+                  ' ⚠ No olvides calentar antes de comenzar',
+                  style: TextStyle(
+                    color: Color(0XFF0f7991),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 10.0,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8.0),
             ...ejerciciosTiles,
-            Divider(), // Un divisor opcional entre los días
+            const SizedBox(height: 8.0),
+            const Text(
+              '⏱ Los descansos son muy importantes para realizar un buen\n\t\t\t\t\t\tentrenamiento',
+              style: TextStyle(
+                color: Color(0XFF0f7991),
+                fontWeight: FontWeight.bold,
+                fontSize: 10.0,
+              ),
+            ),
+            const Divider(
+              height: 25,
+            ),
           ],
         ),
       );
