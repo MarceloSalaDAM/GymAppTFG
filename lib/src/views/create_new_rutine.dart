@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../custom/alert_dialogs.dart';
 import '../firebase_objects/ejercicios_firebase.dart';
+import 'exercise_list_view.dart';
 
 class CrearRutinaView extends StatefulWidget {
   final List<Ejercicios> ejercicios;
@@ -368,190 +369,256 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                       ),
                     ],
                   ),
-                  Container(
-                    padding: const EdgeInsets.all(16.0),
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.black,
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Mantén pulsado sobre el ejercicio para ver más información',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
-                      borderRadius: BorderRadius.circular(24.0),
-                    ),
-                    key: const Key('ContainerKey'),
-                    child: ListView.builder(
-                      key: const Key('ListViewKey'),
-                      itemCount: selectedDiasSemana.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        final dia = selectedDiasSemana[index];
-                        final selectedExercises = widget.ejercicios
-                            .where((ejercicio) =>
-                                selectedGroupsMap[dia]
-                                    ?.contains(ejercicio.grupo) ??
-                                false)
-                            .toList();
-
-                        return Column(
-                          children: [
-                            Container(
+                      const SizedBox(height: 15),
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.all(16.0),
+                          decoration: BoxDecoration(
+                            border: Border.all(
                               color: Colors.black,
-                              width: double.infinity,
-                              height: 40,
-                              alignment: Alignment.center,
-                              child: Text(
-                                dia,
-                                style: const TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
                             ),
-                            // Lista de ejercicios asociados al día
-                            ...selectedExercises.map((ejercicio) {
-                              Map<String, dynamic> ejercicioValues =
-                                  valoresSeleccionados[dia]
-                                          ?[ejercicio.nombre] ??
-                                      {};
-                              return Padding(
-                                padding: const EdgeInsets.all(5.0),
-                                child: ExpansionTile(
-                                  title: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Checkbox(
-                                            value:
-                                                isSelectedExercise(ejercicio),
-                                            onChanged: (value) {
-                                              setState(() {
-                                                toggleSelectedExercise(
-                                                    ejercicio);
-                                              });
-                                            },
-                                          ),
-                                          const SizedBox(width: 8.0),
-                                          Flexible(
-                                            child: Text(
-                                              ejercicio.nombre,
-                                              style: const TextStyle(
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.black,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                  trailing: const Icon(Icons.arrow_drop_down,
-                                      color: Color(0XFF0f7991)),
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          const Padding(
-                                            padding: EdgeInsets.symmetric(
-                                                vertical: 8.0),
-                                            child: Text(
-                                              'Peso (kg)',
-                                            ),
-                                          ),
-                                          Slider(
-                                            value:
-                                                ejercicioValues['peso'] ?? 0.0,
-                                            min: minWeight,
-                                            max: maxWeight,
-                                            divisions:
-                                                (maxWeight - minWeight) ~/
-                                                    weightInterval,
-                                            onChanged: (value) {
-                                              setState(() {
-                                                ejercicioValues['peso'] =
-                                                    (value / weightInterval)
-                                                            .round() *
-                                                        weightInterval;
-                                                actualizarValores(
-                                                    dia,
-                                                    ejercicio.nombre,
-                                                    ejercicioValues);
-                                              });
-                                            },
-                                            label:
-                                                (ejercicioValues['peso'] ?? 0.0)
-                                                    .toString(),
-                                          ),
-                                          const SizedBox(height: 2.0),
-                                          // DropdownButton para Repeticiones
-                                          DropdownButtonFormField<int>(
-                                            value:
-                                                ejercicioValues['repeticiones'],
-                                            onChanged: (value) {
-                                              setState(() {
-                                                ejercicioValues[
-                                                    'repeticiones'] = value;
-                                                actualizarValores(
-                                                    dia,
-                                                    ejercicio.nombre,
-                                                    ejercicioValues);
-                                              });
-                                            },
-                                            items: List.generate(
-                                                    30, (index) => index + 1)
-                                                .map<DropdownMenuItem<int>>(
-                                                    (int value) {
-                                              return DropdownMenuItem<int>(
-                                                value: value,
-                                                child: Text(value.toString()),
-                                              );
-                                            }).toList(),
-                                            decoration: const InputDecoration(
-                                              labelText: 'Repeticiones',
-                                            ),
-                                          ),
-                                          // DropdownButton para Series
-                                          DropdownButtonFormField<int>(
-                                            value: ejercicioValues['series'],
-                                            onChanged: (value) {
-                                              setState(() {
-                                                ejercicioValues['series'] =
-                                                    value;
-                                                actualizarValores(
-                                                    dia,
-                                                    ejercicio.nombre,
-                                                    ejercicioValues);
-                                              });
-                                            },
-                                            items: List.generate(
-                                                    10, (index) => index + 1)
-                                                .map<DropdownMenuItem<int>>(
-                                                    (int value) {
-                                              return DropdownMenuItem<int>(
-                                                value: value,
-                                                child: Text(value.toString()),
-                                              );
-                                            }).toList(),
-                                            decoration: const InputDecoration(
-                                              labelText: 'Series',
-                                            ),
-                                          ),
-                                          const SizedBox(height: 8.0),
-                                        ],
+                            borderRadius: BorderRadius.circular(24.0),
+                          ),
+                          key: const Key('ContainerKey'),
+                          child: ListView.builder(
+                            key: const Key('ListViewKey'),
+                            itemCount: selectedDiasSemana.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              final dia = selectedDiasSemana[index];
+                              final selectedExercises = widget.ejercicios
+                                  .where((ejercicio) =>
+                                      selectedGroupsMap[dia]
+                                          ?.contains(ejercicio.grupo) ??
+                                      false)
+                                  .toList();
+
+                              return Column(
+                                children: [
+                                  Container(
+                                    color: Colors.black,
+                                    width: double.infinity,
+                                    height: 40,
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                      dia,
+                                      style: const TextStyle(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
                                       ),
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                  // Lista de ejercicios asociados al día
+                                  ...selectedExercises.map((ejercicio) {
+                                    Map<String, dynamic> ejercicioValues =
+                                        valoresSeleccionados[dia]
+                                                ?[ejercicio.nombre] ??
+                                            {};
+                                    return Padding(
+                                      padding: const EdgeInsets.all(5.0),
+                                      child: InkWell(
+                                        onLongPress: () {
+                                          // Obtén el nombre del ejercicio sobre el cual se ha realizado el toque largo
+                                          String ejercicioSeleccionado =
+                                              ejercicio.nombre;
+                                          // Filtra la lista de ejercicios para encontrar el ejercicio seleccionado
+                                          var ejercicioElegido =
+                                              widget.ejercicios.firstWhere(
+                                            (ejercicio) =>
+                                                ejercicio.nombre ==
+                                                ejercicioSeleccionado,
+                                          ); // Reemplaza esto con la lógica real
+                                          if (ejercicioElegido != null) {
+                                            // Navega a la pantalla de ExerciseListScreen con el ejercicio seleccionado
+                                            Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    ExerciseListScreen(
+                                                  ejercicios: [
+                                                    ejercicioElegido
+                                                  ],
+                                                ),
+                                              ),
+                                            );
+                                          } else {
+                                            // Manejar el caso en que no se encuentre el ejercicio
+                                            print(
+                                                'No se encontró el ejercicio seleccionado: $ejercicioSeleccionado');
+                                          }
+                                        },
+                                        child: ExpansionTile(
+                                          title: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  Checkbox(
+                                                    value: isSelectedExercise(
+                                                        ejercicio),
+                                                    onChanged: (value) {
+                                                      setState(() {
+                                                        toggleSelectedExercise(
+                                                            ejercicio);
+                                                      });
+                                                    },
+                                                  ),
+                                                  const SizedBox(width: 8.0),
+                                                  Flexible(
+                                                    child: Text(
+                                                      ejercicio.nombre,
+                                                      style: const TextStyle(
+                                                        fontSize: 15,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color: Colors.black,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                          trailing: const Icon(
+                                              Icons.arrow_drop_down,
+                                              color: Color(0XFF0f7991)),
+                                          children: [
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  const Padding(
+                                                    padding:
+                                                        EdgeInsets.symmetric(
+                                                            vertical: 8.0),
+                                                    child: Text(
+                                                      'Peso (kg)',
+                                                    ),
+                                                  ),
+                                                  Slider(
+                                                    value: ejercicioValues[
+                                                            'peso'] ??
+                                                        0.0,
+                                                    min: minWeight,
+                                                    max: maxWeight,
+                                                    divisions: (maxWeight -
+                                                            minWeight) ~/
+                                                        weightInterval,
+                                                    onChanged: (value) {
+                                                      setState(() {
+                                                        ejercicioValues[
+                                                            'peso'] = (value /
+                                                                    weightInterval)
+                                                                .round() *
+                                                            weightInterval;
+                                                        actualizarValores(
+                                                            dia,
+                                                            ejercicio.nombre,
+                                                            ejercicioValues);
+                                                      });
+                                                    },
+                                                    label: (ejercicioValues[
+                                                                'peso'] ??
+                                                            0.0)
+                                                        .toString(),
+                                                  ),
+                                                  const SizedBox(height: 2.0),
+                                                  // DropdownButton para Repeticiones
+                                                  DropdownButtonFormField<int>(
+                                                    value: ejercicioValues[
+                                                        'repeticiones'],
+                                                    onChanged: (value) {
+                                                      setState(() {
+                                                        ejercicioValues[
+                                                                'repeticiones'] =
+                                                            value;
+                                                        actualizarValores(
+                                                            dia,
+                                                            ejercicio.nombre,
+                                                            ejercicioValues);
+                                                      });
+                                                    },
+                                                    items: List.generate(
+                                                        30,
+                                                        (index) =>
+                                                            index + 1).map<
+                                                        DropdownMenuItem<
+                                                            int>>((int value) {
+                                                      return DropdownMenuItem<
+                                                          int>(
+                                                        value: value,
+                                                        child: Text(
+                                                            value.toString()),
+                                                      );
+                                                    }).toList(),
+                                                    decoration:
+                                                        const InputDecoration(
+                                                      labelText: 'Repeticiones',
+                                                    ),
+                                                  ),
+                                                  // DropdownButton para Series
+                                                  DropdownButtonFormField<int>(
+                                                    value: ejercicioValues[
+                                                        'series'],
+                                                    onChanged: (value) {
+                                                      setState(() {
+                                                        ejercicioValues[
+                                                            'series'] = value;
+                                                        actualizarValores(
+                                                            dia,
+                                                            ejercicio.nombre,
+                                                            ejercicioValues);
+                                                      });
+                                                    },
+                                                    items: List.generate(
+                                                        10,
+                                                        (index) =>
+                                                            index + 1).map<
+                                                        DropdownMenuItem<
+                                                            int>>((int value) {
+                                                      return DropdownMenuItem<
+                                                          int>(
+                                                        value: value,
+                                                        child: Text(
+                                                            value.toString()),
+                                                      );
+                                                    }).toList(),
+                                                    decoration:
+                                                        const InputDecoration(
+                                                      labelText: 'Series',
+                                                    ),
+                                                  ),
+                                                  const SizedBox(height: 8.0),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  }).toList(),
+                                ],
                               );
-                            }).toList(),
-                          ],
-                        );
-                      },
-                    ),
-                  )
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
