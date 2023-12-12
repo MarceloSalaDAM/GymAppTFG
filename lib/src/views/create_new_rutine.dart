@@ -118,7 +118,8 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
       // Agregar los datos a Firestore
       rutinasCollection.add(datosPrimeraParteRutina);
 
-      print("DATOS RECOPLIADOS--------->>>" + datosPrimeraParteRutina.toString());
+      print(
+          "DATOS RECOPLIADOS--------->>>" + datosPrimeraParteRutina.toString());
 
       // Mostrar mensaje de éxito
       ScaffoldMessenger.of(context).showSnackBar(
@@ -139,8 +140,6 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
       );
     }
   }
-
-
 
   @override
   void initState() {
@@ -166,13 +165,7 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0XFF0f7991),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () async {
-            // Llama al método para mostrar el AlertDialog específico
-            await AlertDialogManager.showExitConfirmation(context);
-          },
-        ),
+        automaticallyImplyLeading: false,
         title: const Text(
           'CREAR RUTINA',
           style: TextStyle(
@@ -180,6 +173,17 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
             fontWeight: FontWeight.bold,
           ),
         ),
+
+        // Mostrar el icono solo en la Page 1 (currentPageIndex == 1)
+        leading: currentPageIndex == 0
+            ? IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () async {
+                  // Llama al método para mostrar el AlertDialog específico
+                  await AlertDialogManager.showExitConfirmation(context);
+                },
+              )
+            : null,
       ),
       body: Padding(
         padding: const EdgeInsets.all(25.0),
