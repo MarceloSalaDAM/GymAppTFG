@@ -22,26 +22,33 @@ class _DetailsProfileViewState extends State<DetailsProfileView> {
   String selectedPeso = '40';
   String? _imagePath;
   late TextEditingController nombreController;
-  bool _isLoading = true;
   bool _isEditing = false;
   bool _isImageLoading = false;
+  bool _isLoading = true;
 
-  late String _initialNombre;
-  late String _initialEdad;
-  late String _initialGenero;
-  late String _initialEstatura;
-  late String _initialPeso;
+  late String _initialNombre = '';
+  late String _initialEdad = '';
+  late String _initialGenero = '';
+  late String _initialEstatura = '';
+  late String _initialPeso = '';
 
   @override
   void initState() {
     super.initState();
     nombreController = TextEditingController();
-    loadUserData();
+    Future.delayed(Duration(seconds: 1), () {
+      loadUserData();
+    });
   }
 
   Future<void> loadUserData() async {
     String? idUser = FirebaseAuth.instance.currentUser?.uid;
     final docRef = db.collection("usuarios").doc(idUser);
+
+    // Establecer _isLoading en true antes de cargar los datos
+    setState(() {
+      _isLoading = true;
+    });
 
     DocumentSnapshot docsnap = await docRef.get();
 
@@ -54,13 +61,15 @@ class _DetailsProfileViewState extends State<DetailsProfileView> {
         selectedEstatura = userData['estatura'];
         selectedPeso = userData['peso'];
         _imagePath = userData['imageURL'];
-        _isLoading = false;
 
         _initialNombre = nombreController.text;
         _initialEdad = selectedEdad;
         _initialGenero = selectedGenero;
         _initialEstatura = selectedEstatura;
         _initialPeso = selectedPeso;
+
+        // Establecer _isLoading en false después de cargar los datos
+        _isLoading = false;
       });
     }
   }
@@ -279,230 +288,140 @@ class _DetailsProfileViewState extends State<DetailsProfileView> {
 
   @override
   Widget build(BuildContext context) {
+    bool isDataLoaded = _initialNombre != null;
+
     return Scaffold(
-      body: FutureBuilder(
-        // Simula un retraso de 3 segundos antes de mostrar los datos
-        future: Future.delayed(const Duration(seconds: 2)),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            // Muestra la pantalla de carga
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          } else {
-            // Muestra los datos después del retraso
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Container(
-                  width: double.infinity,
-                  height: 150,
-                  decoration: const BoxDecoration(
-                    color: Colors.grey,
-                    border: Border(
-                      bottom: BorderSide(color: Colors.black, width: 2),
-                      top: BorderSide(color: Colors.black, width: 2),
-                    ),
+      body: Stack(
+        children: [
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Container(
+                width: double.infinity,
+                height: 150,
+                decoration: const BoxDecoration(
+                  color: Colors.grey,
+                  border: Border(
+                    bottom: BorderSide(color: Colors.black, width: 2),
+                    top: BorderSide(color: Colors.black, width: 2),
                   ),
-                  child: Container(
-                    margin: const EdgeInsets.fromLTRB(0, 3, 0, 3),
-                    width: 140.0,
-                    height: 140.0,
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.grey,
-                    ),
-                    child: Center(
-                      child: InkWell(
-                        onTap: _isEditing ? _cargarFoto : null,
-                        child: Container(
-                          width: 140.0,
-                          height: 140.0,
-                          decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                          ),
-                          child: ClipOval(
-                            child: _isImageLoading
-                                ? const CircularProgressIndicator()
-                                : _imagePath != null
-                                    ? Image.network(
-                                        _imagePath!,
-                                        fit: BoxFit.cover,
-                                      )
-                                    : const Center(
-                                        child: Icon(
-                                          Icons.add_a_photo,
-                                          size: 60,
-                                          color: Colors.white,
-                                        ),
+                ),
+                child: Container(
+                  margin: const EdgeInsets.fromLTRB(0, 3, 0, 3),
+                  width: 140.0,
+                  height: 140.0,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.grey,
+                  ),
+                  child: Center(
+                    child: InkWell(
+                      onTap: _isEditing ? _cargarFoto : null,
+                      child: Container(
+                        width: 140.0,
+                        height: 140.0,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                        ),
+                        child: ClipOval(
+                          child: _isImageLoading
+                              ? const CircularProgressIndicator()
+                              : _imagePath != null
+                                  ? Image.network(
+                                      _imagePath!,
+                                      fit: BoxFit.cover,
+                                    )
+                                  : const Center(
+                                      child: Icon(
+                                        Icons.add_a_photo,
+                                        size: 60,
+                                        color: Colors.white,
                                       ),
-                          ),
+                                    ),
                         ),
                       ),
                     ),
                   ),
                 ),
-                Expanded(
-                  child: _isLoading
-                      ? FutureBuilder(
-                          // Simula un retraso de 2 segundos antes de mostrar los datos
-                          future: Future.delayed(const Duration(seconds: 2)),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return Center(
-                                child: CircularProgressIndicator(),
-                              );
-                            } else {
-                              return SingleChildScrollView(
-                                child: Container(
-                                  padding: const EdgeInsets.all(20.0),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      _buildTextField('NOMBRE',
-                                          nombreController.text, _isEditing),
-                                      const SizedBox(height: 20),
-                                      _isEditing
-                                          ? _buildEditableField(
-                                              'GENERO',
-                                              ['Hombre', 'Mujer', 'Otro'],
-                                              selectedGenero, (newValue) {
-                                              setState(() {
-                                                selectedGenero = newValue!;
-                                              });
-                                            })
-                                          : _buildNonEditableField(
-                                              'GENERO', selectedGenero),
-                                      const SizedBox(height: 20),
-                                      _isEditing
-                                          ? _buildEditableField(
-                                              'EDAD',
-                                              List.generate(
-                                                  55,
-                                                  (index) =>
-                                                      (16 + index).toString()),
-                                              selectedEdad, (newValue) {
-                                              setState(() {
-                                                selectedEdad = newValue!;
-                                              });
-                                            })
-                                          : _buildNonEditableField(
-                                              'EDAD', selectedEdad),
-                                      const SizedBox(height: 5),
-                                      _isEditing
-                                          ? _buildEditableField(
-                                              'ESTATURA (cm)',
-                                              List.generate(
-                                                  221,
-                                                  (index) =>
-                                                      (100 + index).toString()),
-                                              selectedEstatura, (newValue) {
-                                              setState(() {
-                                                selectedEstatura = newValue!;
-                                              });
-                                            })
-                                          : _buildNonEditableField(
-                                              'ESTATURA (cm)',
-                                              selectedEstatura),
-                                      const SizedBox(height: 5),
-                                      _isEditing
-                                          ? _buildEditableField(
-                                              'PESO (kg)',
-                                              List.generate(
-                                                  160,
-                                                  (index) =>
-                                                      (40 + index).toString()),
-                                              selectedPeso, (newValue) {
-                                              setState(() {
-                                                selectedPeso = newValue!;
-                                              });
-                                            })
-                                          : _buildNonEditableField(
-                                              'PESO (kg)', selectedPeso),
-                                      const SizedBox(height: 20),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            }
-                          },
-                        )
-                      : SingleChildScrollView(
-                          child: Container(
-                            padding: const EdgeInsets.all(20.0),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                _buildTextField('NOMBRE', nombreController.text,
-                                    _isEditing),
-                                const SizedBox(height: 20),
-                                _isEditing
-                                    ? _buildEditableField(
-                                        'GENERO',
-                                        ['Hombre', 'Mujer', 'Otro'],
-                                        selectedGenero, (newValue) {
-                                        setState(() {
-                                          selectedGenero = newValue!;
-                                        });
-                                      })
-                                    : _buildNonEditableField(
-                                        'GENERO', selectedGenero),
-                                const SizedBox(height: 20),
-                                _isEditing
-                                    ? _buildEditableField(
-                                        'EDAD',
-                                        List.generate(55,
-                                            (index) => (16 + index).toString()),
-                                        selectedEdad, (newValue) {
-                                        setState(() {
-                                          selectedEdad = newValue!;
-                                        });
-                                      })
-                                    : _buildNonEditableField(
-                                        'EDAD', selectedEdad),
-                                const SizedBox(height: 5),
-                                _isEditing
-                                    ? _buildEditableField(
-                                        'ESTATURA (cm)',
-                                        List.generate(
-                                            221,
-                                            (index) =>
-                                                (100 + index).toString()),
-                                        selectedEstatura, (newValue) {
-                                        setState(() {
-                                          selectedEstatura = newValue!;
-                                        });
-                                      })
-                                    : _buildNonEditableField(
-                                        'ESTATURA (cm)', selectedEstatura),
-                                const SizedBox(height: 5),
-                                _isEditing
-                                    ? _buildEditableField(
-                                        'PESO (kg)',
-                                        List.generate(160,
-                                            (index) => (40 + index).toString()),
-                                        selectedPeso, (newValue) {
-                                        setState(() {
-                                          selectedPeso = newValue!;
-                                        });
-                                      })
-                                    : _buildNonEditableField(
-                                        'PESO (kg)', selectedPeso),
-                                const SizedBox(height: 20),
-                              ],
-                            ),
-                          ),
-                        ),
+              ),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Container(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        _buildTextField(
+                            'NOMBRE', nombreController.text, _isEditing),
+                        const SizedBox(height: 20),
+                        _isEditing
+                            ? _buildEditableField(
+                                'GENERO',
+                                ['Hombre', 'Mujer', 'Otro'],
+                                selectedGenero, (newValue) {
+                                setState(() {
+                                  selectedGenero = newValue!;
+                                });
+                              })
+                            : _buildNonEditableField('GENERO', selectedGenero),
+                        const SizedBox(height: 20),
+                        _isEditing
+                            ? _buildEditableField(
+                                'EDAD',
+                                List.generate(
+                                    55, (index) => (16 + index).toString()),
+                                selectedEdad, (newValue) {
+                                setState(() {
+                                  selectedEdad = newValue!;
+                                });
+                              })
+                            : _buildNonEditableField('EDAD', selectedEdad),
+                        const SizedBox(height: 5),
+                        _isEditing
+                            ? _buildEditableField(
+                                'ESTATURA (cm)',
+                                List.generate(
+                                    221, (index) => (100 + index).toString()),
+                                selectedEstatura, (newValue) {
+                                setState(() {
+                                  selectedEstatura = newValue!;
+                                });
+                              })
+                            : _buildNonEditableField(
+                                'ESTATURA (cm)', selectedEstatura),
+                        const SizedBox(height: 5),
+                        _isEditing
+                            ? _buildEditableField(
+                                'PESO (kg)',
+                                List.generate(
+                                    160, (index) => (40 + index).toString()),
+                                selectedPeso, (newValue) {
+                                setState(() {
+                                  selectedPeso = newValue!;
+                                });
+                              })
+                            : _buildNonEditableField('PESO (kg)', selectedPeso),
+                        const SizedBox(height: 20),
+                      ],
+                    ),
+                  ),
                 ),
-                Visibility(
-                  visible: !_isLoading,
-                  child: _buildBottomNavigationBar(),
-                ),
-              ],
-            );
-          }
-        },
+              ),
+              Visibility(
+                visible: !_isLoading,
+                child: _buildBottomNavigationBar(),
+              ),
+            ],
+          ),
+          // Widget de carga
+          if (_isLoading)
+            Container(
+              color: Colors.white,
+              child: const Center(
+                child: CircularProgressIndicator(),
+              ),
+            ),
+        ],
       ),
       backgroundColor: Colors.white,
     );
