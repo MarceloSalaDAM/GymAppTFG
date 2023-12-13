@@ -43,61 +43,6 @@ class _ExerciseListScreenState extends State<ExerciseListScreen> {
     print('Selected Group: $selectedGroup');
   }
 
-  Future<void> handleFavoriteAction(Ejercicios ejercicio) async {
-    String? userId = FirebaseAuth.instance.currentUser?.uid;
-
-    if (userId != null) {
-      final userRef =
-      FirebaseFirestore.instance.collection('usuarios').doc(userId);
-      final favoritosRef = userRef.collection('ejercicios_favoritos');
-
-      // Comprobar si el ejercicio ya está en favoritos
-      final snapshot = await favoritosRef.doc(ejercicio.uid!).get();
-
-      setState(() {
-        if (snapshot.exists) {
-          // El ejercicio está en favoritos, así que lo eliminamos
-          ejerciciosFavoritos.remove(ejercicio);
-          favoritosRef.doc(ejercicio.uid!).delete();
-        } else {
-          // El ejercicio no está en favoritos, así que lo añadimos
-          ejerciciosFavoritos.add(ejercicio);
-          favoritosRef.doc(ejercicio.uid!).set({
-            'nombre': ejercicio.nombre,
-            'grupo': ejercicio.grupo,
-            // Agrega más campos según sea necesario
-          });
-        }
-        ejercicioActual = ejercicio;
-
-      });
-    }
-
-    // Mostrar SnackBar
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          ejerciciosFavoritos.contains(ejercicio)
-              ? 'Ejercicio agregado a favoritos'
-              : 'Ejercicio eliminado de favoritos',
-        ),
-        duration: Duration(seconds: 2),
-      ),
-    );
-
-    // Print para verificar la lista después de cada toggle
-    print('Ejercicio Favorito: ${ejercicio.nombre}');
-  }
-
-  void onPageChanged(int index) {
-    final ejercicio = widget.ejercicios
-        .where((ejercicio) => ejercicio.grupo == selectedGroup)
-        .toList()[index];
-    setState(() {
-      ejercicioActual = ejercicio;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     widget.ejercicios
@@ -173,7 +118,7 @@ class _ExerciseListScreenState extends State<ExerciseListScreen> {
                           controller: _pageController,
                           itemCount: widget.ejercicios
                               .where((ejercicio) =>
-                          ejercicio.grupo == selectedGroup)
+                                  ejercicio.grupo == selectedGroup)
                               .length,
                           itemBuilder: (BuildContext context, int index) {
                             return Container(
@@ -181,17 +126,16 @@ class _ExerciseListScreenState extends State<ExerciseListScreen> {
                               child: RotatingCard(
                                 ejercicio: widget.ejercicios
                                     .where((ejercicio) =>
-                                ejercicio.grupo == selectedGroup)
+                                        ejercicio.grupo == selectedGroup)
                                     .toList()[index],
                                 currentIndex: index + 1,
                                 totalItems: widget.ejercicios
                                     .where((ejercicio) =>
-                                ejercicio.grupo == selectedGroup)
+                                        ejercicio.grupo == selectedGroup)
                                     .length,
                               ),
                             );
                           },
-                          onPageChanged: onPageChanged,
                         ),
                       ),
                     ),
@@ -213,18 +157,8 @@ class _ExerciseListScreenState extends State<ExerciseListScreen> {
                 width: 200,
               ),
               IconButton(
-                onPressed: () {
-                  print('Button pressed');
-                  // Accede al ejercicio actual desde la variable global
-                  if (ejercicioActual != null) {
-                    print('Ejercicio actual is not null');
-                    handleFavoriteAction(ejercicioActual!);
-                  } else {
-                    print(
-                        'Ejercicio actual is null. Cannot handle favorite action.');
-                  }
-                },
-                icon: Icon(Icons.favorite),
+                onPressed: () {},
+                icon: Icon(Icons.favorite_border),
               ),
               const SizedBox(
                 width: 10,
