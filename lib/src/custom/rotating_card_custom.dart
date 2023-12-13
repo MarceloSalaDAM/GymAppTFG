@@ -33,7 +33,8 @@ class _RotatingCardState extends State<RotatingCard>
       duration: Duration(milliseconds: 500),
     );
 
-    _animation = Tween<double>(begin: 0, end: 180).animate(_animationController);
+    _animation =
+        Tween<double>(begin: 0, end: 180).animate(_animationController);
   }
 
   @override
@@ -63,13 +64,13 @@ class _RotatingCardState extends State<RotatingCard>
                       ),
                       child: isFront
                           ? FrontCard(
-                        ejercicio: widget.ejercicio,
-                        currentIndex: widget.currentIndex,
-                        totalItems: widget.totalItems,
-                      )
+                              ejercicio: widget.ejercicio,
+                              currentIndex: widget.currentIndex,
+                              totalItems: widget.totalItems,
+                            )
                           : BackCard(
-                        ejercicio: widget.ejercicio,
-                      ),
+                              ejercicio: widget.ejercicio,
+                            ),
                     ),
                   );
                 },
@@ -119,7 +120,7 @@ class FrontCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: List.generate(
               totalItems,
-                  (index) => Container(
+              (index) => Container(
                 margin: const EdgeInsets.symmetric(horizontal: 4),
                 width: index == currentIndex - 1 ? 4 : 2,
                 height: index == currentIndex - 1 ? 4 : 2,
@@ -218,9 +219,7 @@ class BackCard extends StatelessWidget {
                     ejercicio.musculos!.isNotEmpty)
                   _buildRotatedText(
                     'MÚSCULOS TRABAJADOS:',
-                    ejercicio.musculos!
-                        .map((musculo) => '• $musculo\n')
-                        .join(),
+                    ejercicio.musculos!.map((musculo) => '• $musculo\n').join(),
                   ),
                 const SizedBox(height: 10),
                 _buildRotatedText(
@@ -293,43 +292,51 @@ class BackCard extends StatelessWidget {
             ),
             textAlign: TextAlign.center,
           ),
-          content: RichText(
-            text: TextSpan(
-              style: DefaultTextStyle.of(context).style,
+          content: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (indexErroresFrecuentes != -1)
-                  TextSpan(
-                    text:
-                    '${comentarios.substring(0, indexErroresFrecuentes)}\n',
-                    style: const TextStyle(
-                      fontSize: 17,
-                      color: Colors.black,
-                    ),
-                  ),
-                if (indexErroresFrecuentes != -1)
-                  const WidgetSpan(
-                    child: Padding(
-                      padding: EdgeInsets.only(left: 4.0),
-                      child: Icon(
-                        Icons.warning,
-                        color: Colors.red,
+                RichText(
+                  text: TextSpan(
+                    style: DefaultTextStyle.of(context).style,
+                    children: [
+                      if (indexErroresFrecuentes != -1)
+                        TextSpan(
+                          text:
+                              '${comentarios.substring(0, indexErroresFrecuentes)}\n',
+                          style: const TextStyle(
+                            fontSize: 17,
+                            color: Colors.black,
+                          ),
+                        ),
+                      if (indexErroresFrecuentes != -1)
+                        const WidgetSpan(
+                          child: Padding(
+                            padding: EdgeInsets.only(left: 4.0),
+                            child: Icon(
+                              Icons.warning,
+                              color: Colors.red,
+                            ),
+                          ),
+                        ),
+                      if (indexErroresFrecuentes != -1)
+                        const TextSpan(
+                          text: 'Errores frecuentes',
+                          style: TextStyle(
+                            fontSize: 21,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.red,
+                          ),
+                        ),
+                      TextSpan(
+                        text:
+                            comentarios.substring(indexErroresFrecuentes + 18),
+                        style: const TextStyle(
+                          fontSize: 17,
+                          color: Colors.black,
+                        ),
                       ),
-                    ),
-                  ),
-                if (indexErroresFrecuentes != -1)
-                  const TextSpan(
-                    text: 'Errores frecuentes',
-                    style: TextStyle(
-                      fontSize: 21,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.red,
-                    ),
-                  ),
-                TextSpan(
-                  text: comentarios.substring(indexErroresFrecuentes + 18),
-                  style: const TextStyle(
-                    fontSize: 17,
-                    color: Colors.black,
+                    ],
                   ),
                 ),
               ],
@@ -363,15 +370,3 @@ class BackCard extends StatelessWidget {
     );
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
