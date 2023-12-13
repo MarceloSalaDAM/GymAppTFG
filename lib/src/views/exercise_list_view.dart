@@ -48,29 +48,28 @@ class _ExerciseListScreenState extends State<ExerciseListScreen> {
 
     if (userId != null) {
       final userRef =
-          FirebaseFirestore.instance.collection('usuarios').doc(userId);
+      FirebaseFirestore.instance.collection('usuarios').doc(userId);
       final favoritosRef = userRef.collection('ejercicios_favoritos');
 
       // Comprobar si el ejercicio ya está en favoritos
       final snapshot = await favoritosRef.doc(ejercicio.uid!).get();
 
-      if (snapshot.exists) {
-        // El ejercicio está en favoritos, así que lo eliminamos
-        print('Removing from favorites: ${ejercicio.nombre}');
-        ejerciciosFavoritos.remove(ejercicio);
-        favoritosRef.doc(ejercicio.uid!).delete();
-      } else {
-        // El ejercicio no está en favoritos, así que lo añadimos
-        print('Adding to favorites: ${ejercicio.nombre}');
-        ejerciciosFavoritos.add(ejercicio);
-        favoritosRef.doc(ejercicio.uid!).set({
-          'nombre': ejercicio.nombre,
-          'grupo': ejercicio.grupo,
-        });
-      }
-
       setState(() {
+        if (snapshot.exists) {
+          // El ejercicio está en favoritos, así que lo eliminamos
+          ejerciciosFavoritos.remove(ejercicio);
+          favoritosRef.doc(ejercicio.uid!).delete();
+        } else {
+          // El ejercicio no está en favoritos, así que lo añadimos
+          ejerciciosFavoritos.add(ejercicio);
+          favoritosRef.doc(ejercicio.uid!).set({
+            'nombre': ejercicio.nombre,
+            'grupo': ejercicio.grupo,
+            // Agrega más campos según sea necesario
+          });
+        }
         ejercicioActual = ejercicio;
+
       });
     }
 
@@ -174,7 +173,7 @@ class _ExerciseListScreenState extends State<ExerciseListScreen> {
                           controller: _pageController,
                           itemCount: widget.ejercicios
                               .where((ejercicio) =>
-                                  ejercicio.grupo == selectedGroup)
+                          ejercicio.grupo == selectedGroup)
                               .length,
                           itemBuilder: (BuildContext context, int index) {
                             return Container(
@@ -182,12 +181,12 @@ class _ExerciseListScreenState extends State<ExerciseListScreen> {
                               child: RotatingCard(
                                 ejercicio: widget.ejercicios
                                     .where((ejercicio) =>
-                                        ejercicio.grupo == selectedGroup)
+                                ejercicio.grupo == selectedGroup)
                                     .toList()[index],
                                 currentIndex: index + 1,
                                 totalItems: widget.ejercicios
                                     .where((ejercicio) =>
-                                        ejercicio.grupo == selectedGroup)
+                                ejercicio.grupo == selectedGroup)
                                     .length,
                               ),
                             );
