@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Ejercicios {
+  final String? uid;
   final String nombre;
   final String? descripcion;
   final String? grupo;
@@ -8,9 +9,10 @@ class Ejercicios {
   final String? imagen;
   final String? comentarios;
   final List<String>? musculos;
-  bool isSelected;  // Nueva línea
+  bool isSelected; // Nueva línea
 
   Ejercicios({
+    required this.uid,
     this.nombre = " ",
     this.descripcion = " ",
     this.grupo = " ",
@@ -27,6 +29,7 @@ class Ejercicios {
   ) {
     final data = snapshot.data();
     return Ejercicios(
+      uid: snapshot.id,
       nombre: data?['nombre'],
       descripcion: data?['descripcion'],
       grupo: data?['grupo'],

@@ -48,6 +48,7 @@ class _RotatingCardState extends State<RotatingCard>
             GestureDetector(
               onTap: _toggleCard,
               child: AnimatedBuilder(
+                key: ValueKey<String>(widget.ejercicio.nombre),
                 animation: _animationController,
                 builder: (context, child) {
                   return Transform(
