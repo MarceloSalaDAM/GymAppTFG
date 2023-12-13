@@ -1,12 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:gym_app_tfg/src/views/main_list_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../firebase_objects/ejercicios_firebase.dart';
 import '../views/create_new_rutine.dart';
 import '../views/login_view.dart';
-import '../views/main_view.dart';
 
 class AlertDialogManager {
   static Future<void> showRutinaDialog(

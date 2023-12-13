@@ -208,26 +208,77 @@ class _DetailsProfileViewState extends State<DetailsProfileView> {
               onPressed: () {
                 showDialog(
                   context: context,
+                  barrierDismissible: false,
                   builder: (BuildContext context) {
-                    return AlertDialog(
-                      content: const Text("¿Estás seguro que quieres salir?"),
-                      actions: [
-                        TextButton(
-                          child: const Text("Cancelar"),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                            // Cierra el cuadro de diálogo
-                          },
+                    return WillPopScope(
+                      // Evitar que se cierre el diálogo con el botón de retroceso del dispositivo
+                      onWillPop: () async => false,
+                      child: AlertDialog(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16.0),
                         ),
-                        TextButton(
-                          child: const Text("Aceptar"),
-                          onPressed: () {
-                            Navigator.of(context)
-                                .pop(); // Cierra el cuadro de diálogo
-                            _revertChanges();
-                          },
+                        title: const Text(
+                          'SALIR',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20.0,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
-                      ],
+                        content: const Text(
+                            '¿Estás seguro de que deseas salir? Perderás los cambios'),
+                        actions: <Widget>[
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              ElevatedButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  primary: Colors.black,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                ),
+                                child: const Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Text(
+                                    'Cancelar',
+                                    style: TextStyle(
+                                      fontSize: 18.0,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              ElevatedButton(
+                                onPressed: () {
+                                  Navigator.of(context)
+                                      .pop(); // Cierra el cuadro de diálogo
+                                  _revertChanges();
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  primary: Colors.black,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                ),
+                                child: const Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Text(
+                                    'Aceptar',
+                                    style: TextStyle(
+                                      fontSize: 18.0,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     );
                   },
                 );

@@ -15,18 +15,25 @@ class RutinasUsuarioView extends StatefulWidget {
 class _RutinasUsuarioViewState extends State<RutinasUsuarioView> {
   FirebaseFirestore db = FirebaseFirestore.instance;
   List<Rutina> rutinas = [];
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    // Cargar datos de usuario y rutinas asociadas
-    loadUserData();
+    Future.delayed(Duration(milliseconds: 500), () {
+      loadUserData();
+    });
   }
 
   // Carga de datos de usuario y rutinas asociadas
   Future<void> loadUserData() async {
     String? idUser = FirebaseAuth.instance.currentUser?.uid;
     final docRef = db.collection("usuarios").doc(idUser);
+
+    // Establecer _isLoading en true antes de cargar los datos
+    setState(() {
+      _isLoading = true;
+    });
 
     DocumentSnapshot docsnap = await docRef.get();
 
@@ -44,6 +51,7 @@ class _RutinasUsuarioViewState extends State<RutinasUsuarioView> {
       setState(() {
         rutinas =
             rutinasSnap.docs.map((doc) => Rutina.fromFirestore(doc)).toList();
+        _isLoading = false;
       });
     }
   }
@@ -61,13 +69,30 @@ class _RutinasUsuarioViewState extends State<RutinasUsuarioView> {
           ),
         ),
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.fromLTRB(5, 10, 5, 10),
-        itemCount: rutinas.length,
-        itemBuilder: (context, index) {
-          return _buildRutinaTile(rutinas[index], index);
-        },
-      ),
+      body: _isLoading
+          ? Container(
+              color: Colors.white,
+              child: const Center(
+                child: CircularProgressIndicator(),
+              ),
+            )
+          : rutinas.isEmpty
+              ? const Center(
+                  child: Text(
+                    'Todavía no tienes rutinas',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                )
+              : ListView.builder(
+                  padding: const EdgeInsets.fromLTRB(5, 10, 5, 10),
+                  itemCount: rutinas.length,
+                  itemBuilder: (context, index) {
+                    return _buildRutinaTile(rutinas[index], index);
+                  },
+                ),
     );
   }
 
@@ -162,34 +187,37 @@ class _RutinasUsuarioViewState extends State<RutinasUsuarioView> {
             children: tiles,
           ),
         ),
-        Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-          IconButton(
-            icon: const Icon(Icons.remove_red_eye),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => DetallesRutinaView(rutina: rutina),
-                ),
-              );
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.edit_calendar_sharp),
-            onPressed: () {
-              // Lógica que se ejecutará al hacer clic en el botón de ojo
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.delete_forever),
-            onPressed: () {
-              print("ID de la rutina a eliminar: ${rutina.id}");
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.remove_red_eye),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DetallesRutinaView(rutina: rutina),
+                  ),
+                );
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.edit_calendar_sharp),
+              onPressed: () {
+                // Lógica que se ejecutará al hacer clic en el botón de ojo
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.delete_forever),
+              onPressed: () {
+                print("ID de la rutina a eliminar: ${rutina.id}");
 
-              // Lógica para eliminar la rutina
-              _showDeleteConfirmationDialog(rutina);
-            },
-          ),
-        ]),
+                // Lógica para eliminar la rutina
+                _showDeleteConfirmationDialog(rutina);
+              },
+            ),
+          ],
+        ),
       ],
     );
   }
