@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../firebase_objects/rutinas_firebase.dart';
-import 'details_routine.dart';
+import '../detail_views/details_routine.dart';
 
 class RutinasUsuarioView extends StatefulWidget {
   const RutinasUsuarioView({super.key});

@@ -5,7 +5,7 @@ import '../custom/alert_dialogs.dart';
 import '../custom/custom_drawer.dart';
 import '../firebase_objects/ejercicios_firebase.dart';
 import 'details_profile_view.dart';
-import 'main_list_view.dart';
+import '../list_views/main_list_view.dart';
 
 class MainViewApp extends StatefulWidget {
   const MainViewApp({Key? key}) : super(key: key);

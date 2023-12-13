@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../custom/alert_dialogs.dart';
 import '../firebase_objects/ejercicios_firebase.dart';
-import 'exercise_list_view.dart';
+import '../list_views/exercise_list_view.dart';
 
 class CrearRutinaView extends StatefulWidget {
   final List<Ejercicios> ejercicios;
