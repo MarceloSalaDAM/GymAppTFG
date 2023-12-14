@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../list_views/list_routines_pred.dart';
 
 class SelectTrainingLevelView extends StatelessWidget {
   @override
@@ -39,8 +40,15 @@ class SelectTrainingLevelView extends StatelessWidget {
                     'Si estás comenzando tu viaje fitness, este nivel es perfecto para ti. Aquí encontrarás rutinas diseñadas para construir una base sólida y desarrollar hábitos saludables.',
                     'PRINCIPIANTE',
                     Colors.green,
-                        () {
-                      Navigator.of(context).pushNamed('/Main');
+                    () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => RutinasPredView(
+                            nivelSeleccionado: "Principiante",
+                          ),
+                        ),
+                      );
                     },
                   ),
                   Divider(height: 16.0),
@@ -49,8 +57,15 @@ class SelectTrainingLevelView extends StatelessWidget {
                     'Para aquellos que ya han avanzado en su viaje, el nivel intermedio ofrece desafíos más intensos. Prepárate para mejorar tu resistencia y fuerza con entrenamientos específicos.',
                     'INTERMEDIO',
                     Colors.orange,
-                        () {
-                      Navigator.of(context).pushNamed('/DetailsRoutinePredIntermediate');
+                    () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => RutinasPredView(
+                            nivelSeleccionado: "Intermedio",
+                          ),
+                        ),
+                      );
                     },
                   ),
                   Divider(height: 16.0),
@@ -59,8 +74,15 @@ class SelectTrainingLevelView extends StatelessWidget {
                     'Si eres un atleta experimentado, el nivel avanzado te desafiará al máximo. Descubre rutinas diseñadas para personas con un alto nivel de condición física y metas ambiciosas.',
                     'AVANZADO',
                     Colors.red,
-                        () {
-                      Navigator.of(context).pushNamed('/DetailsRoutinePredAdvanced');
+                    () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => RutinasPredView(
+                            nivelSeleccionado: "Avanzado",
+                          ),
+                        ),
+                      );
                     },
                   ),
                   SizedBox(height: 16.0),
@@ -74,12 +96,12 @@ class SelectTrainingLevelView extends StatelessWidget {
   }
 
   Widget buildLevelTextAndButton(
-      String title,
-      String description,
-      String buttonText,
-      Color buttonColor,
-      VoidCallback onPressed,
-      ) {
+    String title,
+    String description,
+    String buttonText,
+    Color buttonColor,
+    VoidCallback onPressed,
+  ) {
     return Column(
       children: [
         Text(

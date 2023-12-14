@@ -6,6 +6,7 @@ class RutinaPredeterminada {
   final String? nombreRutinaPred;
   final String? descripcionRutinaPred;
   final String? grupoPred;
+  final String? nivelPred;
   final Map<String, dynamic> diasPred;
 
   RutinaPredeterminada({
@@ -13,6 +14,7 @@ class RutinaPredeterminada {
     this.nombreRutinaPred,
     this.descripcionRutinaPred,
     this.grupoPred,
+    this.nivelPred,
     required this.diasPred,
   });
 
@@ -22,47 +24,45 @@ class RutinaPredeterminada {
     return RutinaPredeterminada(
       idPred: snapshot.id,
       // Obtén el ID de Firestore
-      nombreRutinaPred: data['nombreRutinaPred'] ?? '',
-      descripcionRutinaPred: data['descripcionRutinaPred'] ?? '',
-      grupoPred: data['grupoPred'] ?? '',
-      diasPred: data['diasPred'] ?? {},
+      nombreRutinaPred: data['nombre'] ?? '',
+      descripcionRutinaPred: data['descripcion'] ?? '',
+      grupoPred: data['grupo'] ?? '',
+      nivelPred: data['nivel'] ?? '',
+      diasPred: data['dias'] ?? {},
     );
   }
 
   Map<String, dynamic> toFirestore() {
     return {
-      "nombreRutinaPred": nombreRutinaPred,
-      "descripcionRutinaPred": descripcionRutinaPred,
-      "grupoPred": grupoPred,
-      "diasPred": diasPred,
+      "nombre": nombreRutinaPred,
+      "descripcion": descripcionRutinaPred,
+      "grupo": grupoPred,
+      "nivel": nivelPred,
+      "dias": diasPred,
     };
   }
 
-  // Método para guardar la rutina en Firestore
   Future<void> saveToProfile() async {
     String? idUser = FirebaseAuth.instance.currentUser?.uid;
     try {
-      // Asegúrate de que id no sea null
       if (idPred != null) {
-        // Suponiendo que el documento de usuario está en la colección "usuarios"
-        // y tiene una subcolección "rutinas"
         await FirebaseFirestore.instance
             .collection("usuarios")
-            .doc(
-                idUser) // Ajusta esto según la estructura real de tu base de datos
+            .doc(idUser)
             .collection("rutinas")
             .doc(idPred)
-            .set(toFirestore()); // Guarda los datos de la rutina
+            .set(toFirestore());
         print("Rutina guardada correctamente: $idPred");
+
       } else {
         print("ID de la rutina es null. No se puede guardar.");
       }
     } catch (e) {
       print("Error al guardar la rutina: $e");
-      throw e; // Puedes manejar el error según tus necesidades
+      throw e;
     }
   }
-
+/*
   // Método para eliminar la rutina de Firestore
   Future<void> removeFromProfile() async {
     String? idUser = FirebaseAuth.instance.currentUser?.uid;
@@ -74,7 +74,7 @@ class RutinaPredeterminada {
         await FirebaseFirestore.instance
             .collection("usuarios")
             .doc(
-                idUser) // Ajusta esto según la estructura real de tu base de datos
+            idUser) // Ajusta esto según la estructura real de tu base de datos
             .collection("rutinas")
             .doc(idPred)
             .delete();
@@ -86,5 +86,5 @@ class RutinaPredeterminada {
       print("Error al eliminar la rutina: $e");
       throw e; // Puedes manejar el error según tus necesidades
     }
-  }
+  }*/
 }

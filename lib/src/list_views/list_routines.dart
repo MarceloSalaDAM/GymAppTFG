@@ -136,38 +136,52 @@ class _RutinasUsuarioViewState extends State<RutinasUsuarioView> {
   Widget _buildDiasList(Map<String, dynamic> dias, Rutina rutina) {
     List<Widget> tiles = [];
 
-    dias.forEach((nombreDia, infoDia) {
-      List<Widget> ejerciciosTiles = [];
+    final diasOrdenados = [
+      'LUNES',
+      'MARTES',
+      'MIÉRCOLES',
+      'JUEVES',
+      'VIERNES',
+      'SÁBADO',
+      'DOMINGO'
+    ];
 
-      tiles.add(Container(
-        margin: const EdgeInsets.fromLTRB(25, 0, 25, 0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-              width: double.infinity,
-              child: Text(
-                nombreDia,
-                style: const TextStyle(
-                  fontSize: 25,
-                  fontWeight: FontWeight.w900,
-                  color: Colors.white,
-                  decoration: TextDecoration.underline,
+    diasOrdenados.forEach((nombreDia) {
+      if (dias.containsKey(nombreDia)) {
+        List<Widget> ejerciciosTiles = [];
+
+        tiles.add(
+          Container(
+            margin: const EdgeInsets.fromLTRB(25, 0, 25, 0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  width: double.infinity,
+                  child: Text(
+                    nombreDia,
+                    style: const TextStyle(
+                      fontSize: 25,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.white,
+                      decoration: TextDecoration.underline,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
                 ),
-                textAlign: TextAlign.center,
-              ),
+                const SizedBox(height: 5),
+                if (dias[nombreDia]['grupo'] != null)
+                  Text(
+                    '${dias[nombreDia]['grupo']}',
+                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
+                  ),
+                const SizedBox(height: 5),
+                ...ejerciciosTiles,
+              ],
             ),
-            const SizedBox(height: 5),
-            if (infoDia['grupo'] != null)
-              Text(
-                '${infoDia['grupo']}',
-                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
-              ),
-            const SizedBox(height: 5),
-            ...ejerciciosTiles,
-          ],
-        ),
-      ));
+          ),
+        );
+      }
     });
 
     return Column(

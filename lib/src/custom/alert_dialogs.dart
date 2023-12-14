@@ -65,7 +65,7 @@ class AlertDialogManager {
               child: ElevatedButton(
                 onPressed: () {
                   Navigator.of(context)
-                      .popAndPushNamed('/AddRoutine');
+                      .popAndPushNamed('/AddRoutinePred');
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.black,
