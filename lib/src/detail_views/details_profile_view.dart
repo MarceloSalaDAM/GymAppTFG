@@ -146,6 +146,7 @@ class _DetailsProfileViewState extends State<DetailsProfileView> {
 
   Widget _buildDataRow(String label, String value) {
     return Row(
+      mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
@@ -298,7 +299,7 @@ class _DetailsProfileViewState extends State<DetailsProfileView> {
               ),
             ),
 
-// Spacer para agregar espacio entre los dos botones
+          // Spacer para agregar espacio entre los dos botones
           const Spacer(),
 
           ElevatedButton.icon(
@@ -400,18 +401,18 @@ class _DetailsProfileViewState extends State<DetailsProfileView> {
                       children: [
                         _buildTextField(
                             'NOMBRE', nombreController.text, _isEditing),
-                        const SizedBox(height: 20),
+                        const Divider(height: 25),
                         _isEditing
                             ? _buildEditableField(
-                                'GENERO',
+                                'GÉNERO',
                                 ['Hombre', 'Mujer', 'Otro'],
                                 selectedGenero, (newValue) {
                                 setState(() {
                                   selectedGenero = newValue!;
                                 });
                               })
-                            : _buildNonEditableField('GENERO', selectedGenero),
-                        const SizedBox(height: 20),
+                            : _buildNonEditableField('GÉNERO', selectedGenero),
+                        const Divider(height: 25),
                         _isEditing
                             ? _buildEditableField(
                                 'EDAD',
@@ -423,7 +424,7 @@ class _DetailsProfileViewState extends State<DetailsProfileView> {
                                 });
                               })
                             : _buildNonEditableField('EDAD', selectedEdad),
-                        const SizedBox(height: 5),
+                        const Divider(height: 25),
                         _isEditing
                             ? _buildEditableField(
                                 'ESTATURA (cm)',
@@ -436,7 +437,7 @@ class _DetailsProfileViewState extends State<DetailsProfileView> {
                               })
                             : _buildNonEditableField(
                                 'ESTATURA (cm)', selectedEstatura),
-                        const SizedBox(height: 5),
+                        const Divider(height: 25),
                         _isEditing
                             ? _buildEditableField(
                                 'PESO (kg)',
