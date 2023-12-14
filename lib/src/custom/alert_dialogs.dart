@@ -1,8 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:gym_app_tfg/src/detail_views/details_routine_prefabricated.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../detail_views/add_routine_view.dart';
 import '../firebase_objects/ejercicios_firebase.dart';
 import '../detail_views/create_new_rutine.dart';
+import '../firebase_objects/rutinas_predeterminadas_firebase.dart';
 import '../login_views/login_view.dart';
 
 class AlertDialogManager {
@@ -60,7 +64,8 @@ class AlertDialogManager {
               margin: const EdgeInsets.fromLTRB(25, 5, 25, 5),
               child: ElevatedButton(
                 onPressed: () {
-                  showLevelDialog(context);
+                  Navigator.of(context)
+                      .popAndPushNamed('/AddRoutine');
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.black,
@@ -144,7 +149,8 @@ class AlertDialogManager {
                   const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.pop(context, 'PRINCIPIANTE');
+                      Navigator.of(context)
+                          .popAndPushNamed('/DetailsRoutinePred');
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green,
@@ -430,7 +436,6 @@ class AlertDialogManager {
     );
   }
 
-
   static Future<void> showLanguageDialog(BuildContext context) async {
     await showDialog(
       context: context,
@@ -531,6 +536,5 @@ class AlertDialogManager {
     );
   }
 }
-
 
 void onLanguageChanged(String s) {}
