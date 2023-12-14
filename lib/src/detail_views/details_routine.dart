@@ -12,8 +12,8 @@ class DetallesRutinaView extends StatefulWidget {
 }
 
 class _DetallesRutinaViewState extends State<DetallesRutinaView> {
-  bool isEditMode = false;
-  String? editingDay;
+  Map<String, bool> editModeByDay = {};
+  Map<String, List<Map<String, dynamic>>> editingExercisesByDay = {};
 
   @override
   Widget build(BuildContext context) {
@@ -84,11 +84,15 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                   onPressed: () {
                     setState(() {
                       print("Botón de edición presionado para $diaEnMayusculas");
-                      isEditMode = !isEditMode;
-                      if (isEditMode) {
-                        editingDay = diaEnMayusculas;
+                      editModeByDay[diaEnMayusculas] =
+                      !(editModeByDay[diaEnMayusculas] ?? false);
+                      if (editModeByDay[diaEnMayusculas]!) {
+                        // Si está entrando en modo edición, copia la lista completa de ejercicios
+                        editingExercisesByDay[diaEnMayusculas] =
+                            List.from(dias[diaEnMayusculas]['ejercicios'] as List);
                       } else {
-                        editingDay = null;
+                        // Si está saliendo de modo edición, restablece a null
+                        editingExercisesByDay[diaEnMayusculas] = [];
                       }
                     });
                   },
@@ -111,7 +115,7 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  if (isEditMode && editingDay == diaEnMayusculas)
+                  if (editModeByDay[diaEnMayusculas] == true)
                   // Campos de edición para el modo de edición
                     Column(
                       children: [
@@ -150,20 +154,21 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                           children: [
                             ElevatedButton(
                               onPressed: () {
-                                print("Guardando cambios");
+                                print("Guardando cambios para $diaEnMayusculas");
                                 setState(() {
-                                  isEditMode = false;
-                                  editingDay = null;
+                                  editModeByDay[diaEnMayusculas] = false;
+                                  dias[diaEnMayusculas]['ejercicios'] =
+                                      List.from(editingExercisesByDay[diaEnMayusculas] ?? []);
                                 });
                               },
                               child: Text('Guardar'),
                             ),
                             ElevatedButton(
                               onPressed: () {
-                                print("Cancelando cambios");
+                                print("Cancelando cambios para $diaEnMayusculas");
                                 setState(() {
-                                  isEditMode = false;
-                                  editingDay = null;
+                                  editModeByDay[diaEnMayusculas] = false;
+                                  editingExercisesByDay[diaEnMayusculas] = [];
                                 });
                               },
                               child: Text('Cancelar'),
