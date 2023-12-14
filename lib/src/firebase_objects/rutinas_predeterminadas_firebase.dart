@@ -1,5 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+
+import '../detail_views/main_view.dart';
 
 class RutinaPredeterminada {
   final String? idPred;
@@ -42,18 +45,54 @@ class RutinaPredeterminada {
     };
   }
 
-  Future<void> saveToProfile() async {
+  Future<void> saveToProfile(BuildContext context) async {
     String? idUser = FirebaseAuth.instance.currentUser?.uid;
+
     try {
       if (idPred != null) {
-        await FirebaseFirestore.instance
+        DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
             .collection("usuarios")
             .doc(idUser)
             .collection("rutinas")
             .doc(idPred)
-            .set(toFirestore());
-        print("Rutina guardada correctamente: $idPred");
+            .get();
 
+        // Verificar si la rutina ya está en el perfil
+        if (documentSnapshot.exists) {
+          // Mostrar Snackbar indicando que la rutina ya está añadida
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('YA TIENES LA RUTINA'),
+              duration: Duration(milliseconds: 2000),
+              backgroundColor: Colors.red,
+            ),
+          );
+        } else {
+          // La rutina no está en el perfil, añádela
+          await FirebaseFirestore.instance
+              .collection("usuarios")
+              .doc(idUser)
+              .collection("rutinas")
+              .doc(idPred)
+              .set(toFirestore());
+
+          // Mostrar Snackbar indicando que la rutina se añadió correctamente
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('RUTINA GUARDADA'),
+              duration: Duration(milliseconds: 2000),
+            ),
+          );
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+              builder: (context) => MainViewApp(),
+            ),
+            (route) => false,
+          );
+
+          print("Rutina guardada correctamente: $idPred");
+        }
       } else {
         print("ID de la rutina es null. No se puede guardar.");
       }
@@ -62,6 +101,7 @@ class RutinaPredeterminada {
       throw e;
     }
   }
+
 /*
   // Método para eliminar la rutina de Firestore
   Future<void> removeFromProfile() async {

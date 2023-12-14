@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:gym_app_tfg/src/detail_views/main_view.dart';
 
 import '../detail_views/details_routine_prefabricated.dart';
 import '../firebase_objects/rutinas_predeterminadas_firebase.dart';
+import 'main_list_view.dart';
 
 class RutinasPredView extends StatefulWidget {
   final String nivelSeleccionado;
@@ -217,14 +219,7 @@ class _RutinasPredViewState extends State<RutinasPredView> {
             IconButton(
               icon: const Icon(Icons.add),
               onPressed: () async {
-                await rutinaPred.saveToProfile();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('RUTINA GUARDADA CORRECTAMENTE'),
-                    duration: Duration(milliseconds: 4000),
-                  ),
-                );
-                Navigator.of(context).popAndPushNamed('/Main');
+                await rutinaPred.saveToProfile(context);
               },
             ),
           ],
