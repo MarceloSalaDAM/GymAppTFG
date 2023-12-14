@@ -62,7 +62,7 @@ class DetallesRutinaPredeterminadaView extends StatelessWidget {
 
         if (dias[diaEnMayusculas]['ejercicios'] != null) {
           ejerciciosTiles.add(
-            Column(
+            const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(

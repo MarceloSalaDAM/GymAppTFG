@@ -1,10 +1,19 @@
 import 'package:flutter/material.dart';
 import '../firebase_objects/rutinas_firebase.dart';
+import 'edit_routine.dart';
 
-class DetallesRutinaView extends StatelessWidget {
+class DetallesRutinaView extends StatefulWidget {
   final Rutina rutina;
 
   const DetallesRutinaView({required this.rutina});
+
+  @override
+  _DetallesRutinaViewState createState() => _DetallesRutinaViewState();
+}
+
+class _DetallesRutinaViewState extends State<DetallesRutinaView> {
+  bool isEditMode = false;
+  String? editingDay;
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +21,7 @@ class DetallesRutinaView extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: const Color(0XFF0f7991),
         title: Text(
-          '${rutina.nombreRutina}',
+          '${widget.rutina.nombreRutina}',
           style: const TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
@@ -24,10 +33,14 @@ class DetallesRutinaView extends StatelessWidget {
         margin: EdgeInsets.all(25.0),
         child: Card(
           elevation: 4.0,
-          child: ListView(
-            padding: EdgeInsets.all(10.0),
+          child: Stack(
             children: [
-              _buildDiasList(rutina.dias),
+              ListView(
+                padding: EdgeInsets.all(10.0),
+                children: [
+                  _buildDiasList(widget.rutina.dias, context),
+                ],
+              ),
             ],
           ),
         ),
@@ -35,7 +48,7 @@ class DetallesRutinaView extends StatelessWidget {
     );
   }
 
-  Widget _buildDiasList(Map<String, dynamic> dias) {
+  Widget _buildDiasList(Map<String, dynamic> dias, BuildContext context) {
     List<Widget> tiles = [];
 
     final diasOrdenados = [
@@ -56,17 +69,32 @@ class DetallesRutinaView extends StatelessWidget {
 
         if (dias[diaEnMayusculas]['ejercicios'] != null) {
           ejerciciosTiles.add(
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
+                const Text(
                   'Ejercicios',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 20.0,
                   ),
                 ),
-                SizedBox(height: 10),
+                // Botón de editar para la lista de ejercicios del día
+                IconButton(
+                  onPressed: () {
+                    setState(() {
+                      print("Botón de edición presionado para $diaEnMayusculas");
+                      isEditMode = !isEditMode;
+                      if (isEditMode) {
+                        editingDay = diaEnMayusculas;
+                      } else {
+                        editingDay = null;
+                      }
+                    });
+                  },
+                  icon: Icon(Icons.edit),
+                  color: const Color(0XFF0f7991),
+                ),
               ],
             ),
           );
@@ -83,61 +111,128 @@ class DetallesRutinaView extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  Row(
-                    children: [
-                      const Text(
-                        '\t\t\tSeries: ',
-                        style: TextStyle(
-                            fontSize: 17,
-                            fontWeight: FontWeight.w500,
-                            fontStyle: FontStyle.italic),
-                      ),
-                      Text(
-                        '${ejercicio['series']}',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
+                  if (isEditMode && editingDay == diaEnMayusculas)
+                  // Campos de edición para el modo de edición
+                    Column(
+                      children: [
+                        TextFormField(
+                          initialValue: ejercicio['series'].toString(),
+                          onChanged: (value) {
+                            setState(() {
+                              print("Cambiando series: $value");
+                              ejercicio['series'] = int.parse(value);
+                            });
+                          },
+                          decoration: InputDecoration(labelText: 'Series'),
                         ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      const Text(
-                        '\t\t\tRepeticiones: ',
-                        style: TextStyle(
-                            fontSize: 17,
-                            fontWeight: FontWeight.w500,
-                            fontStyle: FontStyle.italic),
-                      ),
-                      Text(
-                        '${ejercicio['repeticiones']}',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
+                        TextFormField(
+                          initialValue: ejercicio['repeticiones'].toString(),
+                          onChanged: (value) {
+                            setState(() {
+                              print("Cambiando repeticiones: $value");
+                              ejercicio['repeticiones'] = int.parse(value);
+                            });
+                          },
+                          decoration: InputDecoration(labelText: 'Repeticiones'),
                         ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      const Text(
-                        '\t\t\tPeso: ',
-                        style: TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.w500,
-                          fontStyle: FontStyle.italic,
+                        TextFormField(
+                          initialValue: ejercicio['peso'].toString(),
+                          onChanged: (value) {
+                            setState(() {
+                              print("Cambiando peso: $value");
+                              ejercicio['peso'] = double.parse(value);
+                            });
+                          },
+                          decoration: InputDecoration(labelText: 'Peso (kg)'),
                         ),
-                      ),
-                      Text(
-                        '${ejercicio['peso']} kg',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            ElevatedButton(
+                              onPressed: () {
+                                print("Guardando cambios");
+                                setState(() {
+                                  isEditMode = false;
+                                  editingDay = null;
+                                });
+                              },
+                              child: Text('Guardar'),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                print("Cancelando cambios");
+                                setState(() {
+                                  isEditMode = false;
+                                  editingDay = null;
+                                });
+                              },
+                              child: Text('Cancelar'),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    )
+                  else
+                    Column(
+                      // Visualización normal del ejercicio
+                      children: [
+                        Row(
+                          children: [
+                            const Text(
+                              '\t\t\tSeries: ',
+                              style: TextStyle(
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.w500,
+                                  fontStyle: FontStyle.italic),
+                            ),
+                            Text(
+                              '${ejercicio['series']}',
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            const Text(
+                              '\t\t\tRepeticiones: ',
+                              style: TextStyle(
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.w500,
+                                  fontStyle: FontStyle.italic),
+                            ),
+                            Text(
+                              '${ejercicio['repeticiones']}',
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            const Text(
+                              '\t\t\tPeso: ',
+                              style: TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.w500,
+                                fontStyle: FontStyle.italic,
+                              ),
+                            ),
+                            Text(
+                              '${ejercicio['peso']} kg',
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                 ],
               ),
             );
@@ -188,8 +283,6 @@ class DetallesRutinaView extends StatelessWidget {
       }
     });
 
-    return Column(
-      children: tiles,
-    );
+    return Column(children: [...tiles]);
   }
 }

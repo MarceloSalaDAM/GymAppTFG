@@ -18,6 +18,7 @@ import 'package:gym_app_tfg/src/login_views/register_view.dart';
 import 'package:gym_app_tfg/src/login_views/splash_view.dart';
 
 import 'detail_views/add_routine_view.dart';
+import 'detail_views/edit_routine.dart';
 import 'list_views/list_routines_pred.dart';
 
 class App extends StatelessWidget {
@@ -48,6 +49,7 @@ class App extends StatelessWidget {
         '/ExerciseList': (context) => ExerciseListScreen(ejercicios: []),
         '/CreateRoutine': (context) => CrearRutinaView(ejercicios: []),
         '/ListRoutine': (context) => RutinasUsuarioView(),
+        '/EditarEjercicios': (context) => EditarEjerciciosView(ejercicios: []),
         '/DetailsRoutine': (context) => DetallesRutinaView(
               rutina: Rutina(id: '', dias: {}),
             ),
@@ -55,7 +57,9 @@ class App extends StatelessWidget {
               rutinaPred: RutinaPredeterminada(idPred: '', diasPred: {}),
             ),
         '/AddRoutinePred': (context) => SelectTrainingLevelView(),
-        '/ListRoutinePred': (context) => RutinasPredView(nivelSeleccionado: '',),
+        '/ListRoutinePred': (context) => RutinasPredView(
+              nivelSeleccionado: '',
+            ),
       },
     );
   }
