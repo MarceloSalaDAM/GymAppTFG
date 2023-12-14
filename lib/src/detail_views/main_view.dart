@@ -72,7 +72,6 @@ class _MainViewAppState extends State<MainViewApp> {
   @override
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
-    print("Tamaño de la pantalla: $screenSize");
     double bottomNavBarHeight = screenSize.height > 800 ? 95.0 : 75.0;
 
     return Scaffold(

@@ -23,8 +23,6 @@ class CustomDrawer extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 20),
-            const Divider(color: Colors.white),
             Expanded(
               child: ListView(
                 padding: EdgeInsets.zero,
@@ -34,11 +32,6 @@ class CustomDrawer extends StatelessWidget {
                     await AlertDialogManager.showLanguageDialog(context);
                   }),
                   const Divider(color: Colors.white),
-                  buildDrawerItem('Cerrar Sesión', Icons.exit_to_app, () async {
-                    Navigator.pop(context);
-                    await AlertDialogManager.showSignOutConfirmation(context);
-                  }),
-                  const Divider(color: Colors.white),
                   buildDrawerItem('Ayuda', Icons.help, () async {
                     Navigator.pop(context);
                     await AlertDialogManager.showInfoDialog(context);
@@ -46,6 +39,11 @@ class CustomDrawer extends StatelessWidget {
                 ],
               ),
             ),
+            const Divider(color: Colors.white),
+            buildDrawerItem('Cerrar Sesión', Icons.exit_to_app, () async {
+              Navigator.pop(context);
+              await AlertDialogManager.showSignOutConfirmation(context);
+            }),
           ],
         ),
       ),

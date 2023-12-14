@@ -47,6 +47,7 @@ dependencies:
   intl: ^0.17.0
   page_transition: ^2.0.0
   multiselect_formfield: ^0.1.7
+  flutter_svg: ^0.22.0
 
 
 
