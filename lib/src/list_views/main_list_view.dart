@@ -149,6 +149,69 @@ class _MainListViewState extends State<MainListView> {
               ),
             ),
           ),
+          Container(
+            margin: const EdgeInsets.fromLTRB(5, 0, 5, 10),
+            height: 200,
+            child: Container(
+              margin: const EdgeInsets.fromLTRB(20, 20, 20, 20),
+              child: MouseRegion(
+                onEnter: (_) => _handleHover(true),
+                onExit: (_) => _handleHover(false),
+                child: Card(
+                  elevation: isHovered ? 8 : 2,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15.0),
+                  ),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage("assets/fondotarjeta3.jpg"),
+                        fit: BoxFit.cover,
+                      ),
+                      border: Border.all(),
+                      borderRadius: BorderRadius.circular(15.0),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black,
+                          blurRadius: 5.0,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: InkWell(
+                      onTap: () {
+                      },
+                      child: const Padding(
+                        padding: EdgeInsets.all(10.0), // Adjust the padding
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            ListTile(
+                              title: Text(
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.w800,
+                                    shadows: [
+                                      Shadow(
+                                        blurRadius: 3.0,
+                                        color: Colors.white,
+                                        offset: Offset(1.0, 1.0),
+                                      ),
+                                    ],
+                                  ),
+                                  'NUTRICIÓN'),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
