@@ -18,14 +18,16 @@ class _MainListViewState extends State<MainListView> {
 
   @override
   Widget build(BuildContext context) {
+    double containerHeight = MediaQuery.of(context).size.height > 800 ? 185 : 170;
+
     return SingleChildScrollView(
       child: Column(
         children: <Widget>[
           Container(
-            margin: const EdgeInsets.fromLTRB(5, 10, 5, 0),
-            height: 200,
+            margin: const EdgeInsets.fromLTRB(5, 0, 5, 10),
+            height: containerHeight,
             child: Container(
-              margin: const EdgeInsets.fromLTRB(20, 20, 20, 20),
+              margin: const EdgeInsets.fromLTRB(20, 15, 20, 0),
               child: MouseRegion(
                 onEnter: (_) => _handleHover(true),
                 onExit: (_) => _handleHover(false),
@@ -55,26 +57,27 @@ class _MainListViewState extends State<MainListView> {
                         _showExerciseListScreen(context);
                       },
                       child: const Padding(
-                        padding: EdgeInsets.all(10.0), // Adjust the padding
+                        padding: EdgeInsets.all(10.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             ListTile(
                               title: Text(
-                                  textAlign: TextAlign.left,
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 30,
-                                    fontWeight: FontWeight.w800,
-                                    shadows: [
-                                      Shadow(
-                                        blurRadius: 3.0,
-                                        color: Colors.white,
-                                        offset: Offset(1.0, 1.0),
-                                      ),
-                                    ],
-                                  ),
-                                  'EJERCICIOS'),
+                                textAlign: TextAlign.left,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.w800,
+                                  shadows: [
+                                    Shadow(
+                                      blurRadius: 3.0,
+                                      color: Colors.white,
+                                      offset: Offset(1.0, 1.0),
+                                    ),
+                                  ],
+                                ),
+                                'EJERCICIOS',
+                              ),
                             ),
                           ],
                         ),
@@ -87,9 +90,9 @@ class _MainListViewState extends State<MainListView> {
           ),
           Container(
             margin: const EdgeInsets.fromLTRB(5, 0, 5, 10),
-            height: 200,
+            height: containerHeight,
             child: Container(
-              margin: const EdgeInsets.fromLTRB(20, 20, 20, 20),
+              margin: const EdgeInsets.fromLTRB(20, 15, 20, 0),
               child: MouseRegion(
                 onEnter: (_) => _handleHover(true),
                 onExit: (_) => _handleHover(false),
@@ -119,26 +122,27 @@ class _MainListViewState extends State<MainListView> {
                         _showRoutinesListScreen(context);
                       },
                       child: const Padding(
-                        padding: EdgeInsets.all(10.0), // Adjust the padding
+                        padding: EdgeInsets.all(10.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             ListTile(
                               title: Text(
-                                  textAlign: TextAlign.left,
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 30,
-                                    fontWeight: FontWeight.w800,
-                                    shadows: [
-                                      Shadow(
-                                        blurRadius: 3.0,
-                                        color: Colors.white,
-                                        offset: Offset(1.0, 1.0),
-                                      ),
-                                    ],
-                                  ),
-                                  'RUTINAS'),
+                                textAlign: TextAlign.left,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.w800,
+                                  shadows: [
+                                    Shadow(
+                                      blurRadius: 3.0,
+                                      color: Colors.white,
+                                      offset: Offset(1.0, 1.0),
+                                    ),
+                                  ],
+                                ),
+                                'RUTINAS',
+                              ),
                             ),
                           ],
                         ),
@@ -151,9 +155,9 @@ class _MainListViewState extends State<MainListView> {
           ),
           Container(
             margin: const EdgeInsets.fromLTRB(5, 0, 5, 10),
-            height: 200,
+            height: containerHeight,
             child: Container(
-              margin: const EdgeInsets.fromLTRB(20, 20, 20, 20),
+              margin: const EdgeInsets.fromLTRB(20, 15, 20, 0),
               child: MouseRegion(
                 onEnter: (_) => _handleHover(true),
                 onExit: (_) => _handleHover(false),
@@ -179,29 +183,29 @@ class _MainListViewState extends State<MainListView> {
                       ],
                     ),
                     child: InkWell(
-                      onTap: () {
-                      },
+                      onTap: () {},
                       child: const Padding(
-                        padding: EdgeInsets.all(10.0), // Adjust the padding
+                        padding: EdgeInsets.all(10.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             ListTile(
                               title: Text(
-                                  textAlign: TextAlign.left,
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 30,
-                                    fontWeight: FontWeight.w800,
-                                    shadows: [
-                                      Shadow(
-                                        blurRadius: 3.0,
-                                        color: Colors.white,
-                                        offset: Offset(1.0, 1.0),
-                                      ),
-                                    ],
-                                  ),
-                                  'NUTRICIÓN'),
+                                textAlign: TextAlign.left,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.w800,
+                                  shadows: [
+                                    Shadow(
+                                      blurRadius: 3.0,
+                                      color: Colors.white,
+                                      offset: Offset(1.0, 1.0),
+                                    ),
+                                  ],
+                                ),
+                                'NUTRICIÓN',
+                              ),
                             ),
                           ],
                         ),

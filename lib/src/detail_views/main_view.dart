@@ -71,6 +71,10 @@ class _MainViewAppState extends State<MainViewApp> {
 
   @override
   Widget build(BuildContext context) {
+    var screenSize = MediaQuery.of(context).size;
+    print("Tamaño de la pantalla: $screenSize");
+    double bottomNavBarHeight = screenSize.height > 800 ? 95.0 : 75.0;
+
     return Scaffold(
       appBar: AppBar(
         title: _currentIndex == 1
@@ -99,24 +103,52 @@ class _MainViewAppState extends State<MainViewApp> {
       endDrawer: _currentIndex == 2
           ? CustomDrawer(onLanguageChanged: (String language) {})
           : null,
-      body: _currentIndex == 1
-          ? MainListView(ejercicios: ejercicios)
-          : _currentIndex == 0
-              ? const Center(
-                  child: Text(
-                    'Contenido de Estadísticas',
-                    style: TextStyle(
-                      fontSize: 24,
-                      color: Colors.black,
-                    ),
+      body: Column(
+        children: [
+          Expanded(
+            child: Container(
+              child: _currentIndex == 1
+                  ? MainListView(ejercicios: ejercicios)
+                  : _currentIndex == 0
+                      ? const Center(
+                          child: Text(
+                            'Contenido de Estadísticas',
+                            style: TextStyle(
+                              fontSize: 24,
+                              color: Colors.black,
+                            ),
+                          ),
+                        )
+                      : _currentIndex == 2
+                          ? const DetailsProfileView()
+                          : Container(),
+            ),
+          ),
+          if (_currentIndex ==
+              1) // Muestra solo cuando _currentIndex es igual a 0
+            Container(
+              height: screenSize.height > 800 ? 70 : 55,
+              color: Colors.transparent,
+              child: Align(
+                alignment: Alignment.bottomRight,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 5, right: 15, bottom: 5),
+                  child: FloatingActionButton(
+                    onPressed: () async {
+                      await AlertDialogManager.showRutinaDialog(
+                          context, ejercicios);
+                    },
+                    backgroundColor: const Color(0XFF0f7991),
+                    child: const Icon(Icons.add, size: 30),
                   ),
-                )
-              : _currentIndex == 2
-                  ? const DetailsProfileView()
-                  : Container(),
+                ),
+              ),
+            ),
+        ],
+      ),
       bottomNavigationBar: Container(
-        height: 90,
-        margin: const EdgeInsets.fromLTRB(5, 5, 5, 15),
+        height: bottomNavBarHeight,
+        margin: const EdgeInsets.fromLTRB(5, 0, 5, 5),
         padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
         decoration: BoxDecoration(
           color: const Color(0XFF0f7991),
@@ -157,21 +189,7 @@ class _MainViewAppState extends State<MainViewApp> {
           ),
         ),
       ),
-      floatingActionButton: _currentIndex == 1
-          ? Tooltip(
-              message: 'Añadir nueva rutina',
-              child: FloatingActionButton(
-                onPressed: () async {
-                  // Llama al método para mostrar el AlertDialog específico
-                  await AlertDialogManager.showRutinaDialog(
-                      context, ejercicios);
-                },
-                backgroundColor: const Color(0XFF0f7991),
-                child: const Icon(Icons.add, size: 40),
-              ),
-            )
-          : null,
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      backgroundColor: Colors.white,
     );
   }
 }
