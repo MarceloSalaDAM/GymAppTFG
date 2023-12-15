@@ -12,6 +12,7 @@ class DetallesRutinaView extends StatefulWidget {
 }
 
 class _DetallesRutinaViewState extends State<DetallesRutinaView> {
+  PageController _pageController = PageController();
   Map<String, bool> editModeByDay = {};
   Map<String, List<Map<String, dynamic>>> editingExercisesByDay = {};
 
@@ -48,6 +49,10 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
           margin: EdgeInsets.fromLTRB(15, 25, 15, 90),
           padding: EdgeInsets.fromLTRB(15, 20, 15, 20),
           child: PageView.builder(
+            controller: _pageController,
+            physics: editModeByDay.containsValue(true)
+                ? NeverScrollableScrollPhysics()
+                : AlwaysScrollableScrollPhysics(),
             itemCount: diasPresentes.length,
             itemBuilder: (context, index) {
               final diaEnMayusculas = diasPresentes[index];
@@ -70,6 +75,31 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
           ),
         ),
       ),
+      // Botones fuera del contenedor del PageView
+      persistentFooterButtons: [
+        Visibility(
+          visible: editModeByDay.containsValue(true),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  // Lógica para el botón "Guardar" aquí
+                  print("Guardando cambios");
+                },
+                child: Text('Guardar'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  // Lógica para el botón "Cancelar" aquí
+                  print("Cancelando cambios");
+                },
+                child: Text('Cancelar'),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
@@ -132,7 +162,9 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                       onChanged: (value) {
                         setState(() {
                           print("Cambiando series: $value");
-                          ejercicio['series'] = int.parse(value);
+                          for (var ej in editingExercisesByDay[dia]!) {
+                            ej['series'] = int.parse(value);
+                          }
                         });
                       },
                       decoration: InputDecoration(labelText: 'Series'),
@@ -142,7 +174,9 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                       onChanged: (value) {
                         setState(() {
                           print("Cambiando repeticiones: $value");
-                          ejercicio['repeticiones'] = int.parse(value);
+                          for (var ej in editingExercisesByDay[dia]!) {
+                            ej['repeticiones'] = int.parse(value);
+                          }
                         });
                       },
                       decoration: InputDecoration(labelText: 'Repeticiones'),
@@ -152,36 +186,12 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                       onChanged: (value) {
                         setState(() {
                           print("Cambiando peso: $value");
-                          ejercicio['peso'] = double.parse(value);
+                          for (var ej in editingExercisesByDay[dia]!) {
+                            ej['peso'] = double.parse(value);
+                          }
                         });
                       },
                       decoration: InputDecoration(labelText: 'Peso (kg)'),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        ElevatedButton(
-                          onPressed: () {
-                            print("Guardando cambios para $dia");
-                            setState(() {
-                              editModeByDay[dia] = false;
-                              ejerciciosDia['ejercicios'] =
-                                  List.from(editingExercisesByDay[dia] ?? []);
-                            });
-                          },
-                          child: Text('Guardar'),
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            print("Cancelando cambios para $dia");
-                            setState(() {
-                              editModeByDay[dia] = false;
-                              editingExercisesByDay[dia] = [];
-                            });
-                          },
-                          child: Text('Cancelar'),
-                        ),
-                      ],
                     ),
                   ],
                 )
@@ -246,7 +256,8 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                     ),
                   ],
                 ),
-              Divider( // Agrega un Divider
+              Divider(
+                // Agrega un Divider
                 height: 20,
                 color: Colors.grey,
               ),
@@ -277,7 +288,6 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                 fontSize: 10.0,
               ),
             ),
-
           ],
         ),
         const SizedBox(height: 8.0),
