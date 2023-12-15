@@ -216,7 +216,7 @@ class _RutinasUsuarioViewState extends State<RutinasUsuarioView> {
               },
             ),
             IconButton(
-              icon: const Icon(Icons.edit_calendar_sharp),
+              icon: const Icon(Icons.download),
               onPressed: () {
                 // Lógica que se ejecutará al hacer clic en el botón de ojo
               },
