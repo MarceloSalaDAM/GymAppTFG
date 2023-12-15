@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../firebase_objects/rutinas_firebase.dart';
 import 'edit_routine.dart';
@@ -15,6 +17,54 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
   PageController _pageController = PageController();
   Map<String, bool> editModeByDay = {};
   Map<String, List<Map<String, dynamic>>> editingExercisesByDay = {};
+  FirebaseFirestore db = FirebaseFirestore.instance;
+
+  void _guardarCambiosEnFirebase(String dia) async {
+    try {
+      // Obtén el ID del usuario actual
+      String? idUser = FirebaseAuth.instance.currentUser?.uid;
+
+      // Verifica que el ID del usuario esté presente antes de proceder
+      if (idUser == null) {
+        print('Error: ID de usuario no disponible');
+        return;
+      }
+
+      // Obtenemos una referencia al documento del usuario en Firebase
+      final userDocRef =
+          FirebaseFirestore.instance.collection('usuarios').doc(idUser);
+
+      // Obtenemos una referencia a la subcolección de rutinas
+      final rutinasCollectionRef = userDocRef.collection('rutinas');
+
+      // Obtenemos una referencia al documento de la rutina en Firebase
+      final rutinaRef = rutinasCollectionRef.doc(widget.rutina.id);
+
+      // Obtenemos la información actual de la rutina desde Firebase
+      final rutinaSnapshot = await rutinaRef.get();
+
+      // Verificamos si el día que estamos editando existe en la base de datos
+      if (rutinaSnapshot.exists &&
+          rutinaSnapshot.data()!['dias'][dia] != null) {
+        // Actualizamos los datos del día en la base de datos
+        await rutinaRef.update({
+          'dias.$dia.ejercicios': editingExercisesByDay[dia],
+        });
+
+        // Notificamos al usuario que los cambios se guardaron exitosamente
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Cambios guardados correctamente'),
+        ));
+      } else {
+        // Manejar el caso en el que el día no existe en la base de datos
+        print('El día $dia no existe en la base de datos');
+      }
+    } catch (error) {
+      // Manejar cualquier error que pueda ocurrir durante la actualización en Firebase
+      print('Error al guardar cambios en Firebase: $error');
+      // También puedes mostrar un SnackBar indicando el error al usuario si lo prefieres
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -80,21 +130,55 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
         Visibility(
           visible: editModeByDay.containsValue(true),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               ElevatedButton(
-                onPressed: () {
-                  // Lógica para el botón "Guardar" aquí
-                  print("Guardando cambios");
-                },
-                child: Text('Guardar'),
+                onPressed: () {},
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0XFF0f7991),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                ),
+                child: const Padding(
+                  padding:
+                      EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                  child: Text(
+                    'CANCELAR',
+                    style: TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
               ),
               ElevatedButton(
                 onPressed: () {
-                  // Lógica para el botón "Cancelar" aquí
-                  print("Cancelando cambios");
+                  print("Guardando cambios");
+                  // Iteramos sobre los días en modo de edición
+                  editModeByDay.forEach((dia, isEditMode) {
+                    if (isEditMode) {
+                      _guardarCambiosEnFirebase(dia);
+                    }
+                  });
                 },
-                child: Text('Cancelar'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0XFF0f7991),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                ),
+                child: const Padding(
+                  padding:
+                      EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                  child: Text(
+                    'GUARDAR',
+                    style: TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
