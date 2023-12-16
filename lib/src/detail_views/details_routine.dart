@@ -17,11 +17,17 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
   Map<String, bool> editModeByDay = {};
   Map<String, List<Map<String, dynamic>>> editingExercisesByDay = {};
   FirebaseFirestore db = FirebaseFirestore.instance;
+  int currentPage = 0;
 
   @override
   void initState() {
     super.initState();
     _loadOriginalData();
+    _pageController.addListener(() {
+      setState(() {
+        currentPage = _pageController.page!.round();
+      });
+    });
   }
 
   void _guardarCambiosEnFirebase(String dia) async {
@@ -134,32 +140,71 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
       body: Center(
         child: Container(
           height: 800,
-          margin: EdgeInsets.fromLTRB(15, 25, 15, 90),
+          margin: EdgeInsets.fromLTRB(15, 25, 15, 50),
           padding: EdgeInsets.fromLTRB(15, 20, 15, 20),
-          child: PageView.builder(
-            controller: _pageController,
-            physics: editModeByDay.containsValue(true)
-                ? NeverScrollableScrollPhysics()
-                : AlwaysScrollableScrollPhysics(),
-            itemCount: diasPresentes.length,
-            itemBuilder: (context, index) {
-              final diaEnMayusculas = diasPresentes[index];
-              final dias = widget.rutina.dias;
-              final ejerciciosDia = dias[diaEnMayusculas];
+          child: Column(
+            children: [
+              Expanded(
+                child: PageView.builder(
+                  controller: _pageController,
+                  onPageChanged: (int page) {
+                    setState(() {
+                      currentPage = page;
+                    });
+                  },
+                  physics: editModeByDay.containsValue(true)
+                      ? NeverScrollableScrollPhysics()
+                      : AlwaysScrollableScrollPhysics(),
+                  itemCount: diasPresentes.length,
+                  itemBuilder: (context, index) {
+                    final diaEnMayusculas = diasPresentes[index];
+                    final dias = widget.rutina.dias;
+                    final ejerciciosDia = dias[diaEnMayusculas];
 
-              return Container(
-                margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                padding: EdgeInsets.fromLTRB(15, 20, 15, 20),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.black, width: 4),
-                  borderRadius: BorderRadius.circular(18),
+                    return Container(
+                      margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                      padding: EdgeInsets.fromLTRB(15, 20, 15, 20),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.black, width: 4),
+                        borderRadius: BorderRadius.circular(18),
+                      ),
+                      constraints: BoxConstraints(maxHeight: 800),
+                      child: SingleChildScrollView(
+                        child: _buildDia(diaEnMayusculas, ejerciciosDia),
+                      ),
+                    );
+                  },
                 ),
-                constraints: BoxConstraints(maxHeight: 800),
-                child: SingleChildScrollView(
-                  child: _buildDia(diaEnMayusculas, ejerciciosDia),
-                ),
-              );
-            },
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(diasPresentes.length, (index) {
+                  return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: GestureDetector(
+                      onTap: () {
+                        _pageController.animateToPage(index,
+                            duration: Duration(milliseconds: 500),
+                            curve: Curves.easeInOut);
+                      },
+                      child: CircleAvatar(
+                        backgroundColor:
+                            currentPage == index ? Colors.black : Colors.grey,
+                        radius: currentPage == index ? 15 : 10,
+                        child: Text(
+                          (index + 1).toString(),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 11,
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                }),
+              ),
+            ],
           ),
         ),
       ),
