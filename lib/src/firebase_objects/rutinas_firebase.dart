@@ -10,9 +10,9 @@ class Rutina {
 
   Rutina({
     required this.id,
-     this.nombreRutina,
-     this.descripcionRutina,
-     this.grupo,
+    this.nombreRutina,
+    this.descripcionRutina,
+    this.grupo,
     required this.dias,
   });
 
@@ -59,6 +59,33 @@ class Rutina {
       }
     } catch (e) {
       print("Error al eliminar la rutina: $e");
+      throw e; // Puedes manejar el error según tus necesidades
+    }
+  }
+
+  Future<Rutina> obtenerRutinaActual() async {
+    try {
+      String? idUser = FirebaseAuth.instance.currentUser?.uid;
+
+      // Obtén la referencia al documento de la rutina actual del usuario
+      DocumentSnapshot rutinaSnapshot = await FirebaseFirestore.instance
+          .collection("usuarios")
+          .doc(idUser)
+          .collection("rutinas")
+          .doc(id) // Puedes ajustar esto según tu estructura de datos
+          .get();
+
+      // Verifica si el documento existe
+      if (rutinaSnapshot.exists) {
+        // Crea una instancia de la clase Rutina a partir de los datos obtenidos
+        Rutina rutina = Rutina.fromFirestore(rutinaSnapshot);
+        return rutina;
+      } else {
+        // Si el documento no existe, puedes manejarlo según tus necesidades
+        throw Exception("La rutina no existe para el usuario actual");
+      }
+    } catch (e) {
+      print("Error al obtener la rutina: $e");
       throw e; // Puedes manejar el error según tus necesidades
     }
   }

@@ -2,12 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../firebase_objects/rutinas_firebase.dart';
-import 'edit_routine.dart';
 
 class DetallesRutinaView extends StatefulWidget {
-  final Rutina rutina;
+  Rutina rutina;
 
-  const DetallesRutinaView({required this.rutina});
+  DetallesRutinaView({required this.rutina});
 
   @override
   _DetallesRutinaViewState createState() => _DetallesRutinaViewState();
@@ -18,6 +17,12 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
   Map<String, bool> editModeByDay = {};
   Map<String, List<Map<String, dynamic>>> editingExercisesByDay = {};
   FirebaseFirestore db = FirebaseFirestore.instance;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadOriginalData();
+  }
 
   void _guardarCambiosEnFirebase(String dia) async {
     try {
@@ -50,10 +55,14 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
         await rutinaRef.update({
           'dias.$dia.ejercicios': editingExercisesByDay[dia],
         });
+        // Salir del modo de edición para el día específico
+        setState(() {
+          editModeByDay[dia] = false;
+        });
 
         // Notificamos al usuario que los cambios se guardaron exitosamente
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Cambios guardados correctamente'),
+          content: Text('RUTINA ACTUALIZADA CORRECTAMENTE'),
         ));
       } else {
         // Manejar el caso en el que el día no existe en la base de datos
@@ -64,6 +73,35 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
       print('Error al guardar cambios en Firebase: $error');
       // También puedes mostrar un SnackBar indicando el error al usuario si lo prefieres
     }
+  }
+
+  void _loadOriginalData() async {
+    try {
+      Rutina rutina = await widget.rutina.obtenerRutinaActual();
+      setState(() {
+        // Asigna la rutina original y restablece el estado de edición
+        widget.rutina = rutina;
+        editModeByDay = {};
+        editingExercisesByDay = {};
+      });
+    } catch (e) {
+      // Maneja el error según tus necesidades
+      print("Error al cargar la rutina original: $e");
+    }
+  }
+
+  void _resetData() {
+    setState(() {
+      // Reinicia el estado para mostrar los datos iniciales
+      editModeByDay = {};
+      editingExercisesByDay = {};
+    });
+
+    // Cargar de nuevo los datos originales de la rutina
+    _loadOriginalData();
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('NO SE GUARDARON LOS CAMBIOS'),
+    ));
   }
 
   @override
@@ -133,7 +171,9 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  _resetData();
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0XFF0f7991),
                   shape: RoundedRectangleBorder(
@@ -189,6 +229,7 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
 
   Widget _buildDia(String dia, Map<String, dynamic> ejerciciosDia) {
     List<Widget> ejerciciosTiles = [];
+    print('Valores iniciales al entrar en la vista para el día $dia:');
 
     if (ejerciciosDia['ejercicios'] != null) {
       ejerciciosTiles.add(
@@ -215,6 +256,7 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                   } else {
                     // Si está saliendo de modo edición, restablece a null
                     editingExercisesByDay[dia] = [];
+                    _resetData();
                   }
                 });
               },
@@ -246,9 +288,11 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                       onChanged: (value) {
                         setState(() {
                           print("Cambiando series: $value");
-                          for (var ej in editingExercisesByDay[dia]!) {
-                            ej['series'] = int.parse(value);
-                          }
+                          // Encuentra el ejercicio actual en la lista y actualiza solo ese ejercicio
+                          var ejercicioActual = editingExercisesByDay[dia]!
+                              .firstWhere(
+                                  (e) => e['nombre'] == ejercicio['nombre']);
+                          ejercicioActual['series'] = int.parse(value);
                         });
                       },
                       decoration: InputDecoration(labelText: 'Series'),
@@ -258,9 +302,10 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                       onChanged: (value) {
                         setState(() {
                           print("Cambiando repeticiones: $value");
-                          for (var ej in editingExercisesByDay[dia]!) {
-                            ej['repeticiones'] = int.parse(value);
-                          }
+                          var ejercicioActual = editingExercisesByDay[dia]!
+                              .firstWhere(
+                                  (e) => e['nombre'] == ejercicio['nombre']);
+                          ejercicioActual['repeticiones'] = int.parse(value);
                         });
                       },
                       decoration: InputDecoration(labelText: 'Repeticiones'),
@@ -270,9 +315,10 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                       onChanged: (value) {
                         setState(() {
                           print("Cambiando peso: $value");
-                          for (var ej in editingExercisesByDay[dia]!) {
-                            ej['peso'] = double.parse(value);
-                          }
+                          var ejercicioActual = editingExercisesByDay[dia]!
+                              .firstWhere(
+                                  (e) => e['nombre'] == ejercicio['nombre']);
+                          ejercicioActual['peso'] = int.parse(value);
                         });
                       },
                       decoration: InputDecoration(labelText: 'Peso (kg)'),
