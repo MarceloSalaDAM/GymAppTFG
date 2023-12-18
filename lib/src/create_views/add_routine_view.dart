@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../list_views/list_routines_pred.dart';
 
 class SelectTrainingLevelView extends StatelessWidget {
+  String nivelSeleccionadoGlobal = "";
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,14 +43,7 @@ class SelectTrainingLevelView extends StatelessWidget {
                     'PRINCIPIANTE',
                     Colors.green,
                     () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => RutinasPredView(
-                            nivelSeleccionado: "Principiante",
-                          ),
-                        ),
-                      );
+                      actualizarNivelSeleccionado("Principiante", context);
                     },
                   ),
                   Divider(height: 16.0),
@@ -58,31 +53,17 @@ class SelectTrainingLevelView extends StatelessWidget {
                     'INTERMEDIO',
                     Colors.orange,
                     () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => RutinasPredView(
-                            nivelSeleccionado: "Intermedio",
-                          ),
-                        ),
-                      );
+                      actualizarNivelSeleccionado("Intermedio", context);
                     },
                   ),
-                  Divider(height: 16.0),
+                  const Divider(height: 16.0),
                   buildLevelTextAndButton(
                     'AVANZADO:',
                     'Si eres un atleta experimentado, el nivel avanzado te desafiará al máximo. Descubre rutinas diseñadas para personas con un alto nivel de condición física y metas ambiciosas.',
                     'AVANZADO',
                     Colors.red,
                     () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => RutinasPredView(
-                            nivelSeleccionado: "Avanzado",
-                          ),
-                        ),
-                      );
+                      actualizarNivelSeleccionado("Avanzado", context);
                     },
                   ),
                   SizedBox(height: 16.0),
@@ -90,6 +71,18 @@ class SelectTrainingLevelView extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  void actualizarNivelSeleccionado(String nivel, BuildContext context) {
+    nivelSeleccionadoGlobal = nivel; // Actualiza el valor global
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => RutinasPredView(
+          nivelSeleccionado: nivelSeleccionadoGlobal,
         ),
       ),
     );

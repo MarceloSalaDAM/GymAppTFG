@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:gym_app_tfg/src/detail_views/main_view.dart';
-
 import '../detail_views/details_routine_prefabricated.dart';
 import '../firebase_objects/rutinas_predeterminadas_firebase.dart';
-import 'main_list_view.dart';
 
 class RutinasPredView extends StatefulWidget {
   final String nivelSeleccionado;
@@ -54,6 +50,12 @@ class _RutinasPredViewState extends State<RutinasPredView> {
         QuerySnapshot snapshot = await collectionRef.get();
 
         if (snapshot.docs.isNotEmpty) {
+          print(
+              "Documentos cargados exitosamente para el nivel ${widget.nivelSeleccionado}:");
+          snapshot.docs.forEach((doc) {
+            print("ID: ${doc.id}, Datos: ${doc.data()}");
+          });
+
           setState(() {
             // Filtrar rutinas por nivel
             rutinasPred = snapshot.docs
@@ -61,6 +63,13 @@ class _RutinasPredViewState extends State<RutinasPredView> {
                 .where((rutina) => rutina.nivelPred == widget.nivelSeleccionado)
                 .toList();
           });
+
+          print("Rutinas filtradas para el nivel ${widget.nivelSeleccionado}:");
+          rutinasPred.forEach((rutina) {
+            print("ID: ${rutina.idPred}, Nombre: ${rutina.nombreRutinaPred}");
+          });
+        } else {
+          print("La colección 'rutinas_predeterminadas' está vacía.");
         }
       } else {
         print("La colección 'rutinas_predeterminadas' no existe en Firebase.");
@@ -102,32 +111,34 @@ class _RutinasPredViewState extends State<RutinasPredView> {
         side: BorderSide(),
       ),
       elevation: 4.0,
-      margin: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
-      child: ExpansionTile(
-        title: Text(
-          rutinaPred.nombreRutinaPred ?? 'SIN NOMBRE',
-          style: const TextStyle(
-              fontSize: 25, fontWeight: FontWeight.w900, color: Colors.white),
-        ),
-        children: [
-          ListTile(
-            title: const Text(
-              'Descripción:',
-              style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white),
-            ),
-            subtitle: Text(
-              '${rutinaPred.descripcionRutinaPred}',
-              style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black),
-            ),
+      margin: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15.0),
+      child: Container(
+        child: ExpansionTile(
+          title: Text(
+            rutinaPred.nombreRutinaPred ?? 'SIN NOMBRE',
+            style: const TextStyle(
+                fontSize: 30, fontWeight: FontWeight.w900, color: Colors.white),
           ),
-          _buildDiasList(rutinaPred.diasPred, rutinaPred),
-        ],
+          children: [
+            ListTile(
+              title: const Text(
+                'Descripción:',
+                style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white),
+              ),
+              subtitle: Text(
+                '${rutinaPred.descripcionRutinaPred}',
+                style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black),
+              ),
+            ),
+            _buildDiasList(rutinaPred.diasPred, rutinaPred),
+          ],
+        ),
       ),
     );
   }
@@ -211,7 +222,9 @@ class _RutinasPredViewState extends State<RutinasPredView> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => DetallesRutinaPredeterminadaView(
-                        rutinaPred: rutinaPred),
+                      rutinaPred: rutinaPred,
+                      nivelSeleccionado: widget.nivelSeleccionado,
+                    ),
                   ),
                 );
               },

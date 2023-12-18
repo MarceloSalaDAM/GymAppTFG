@@ -23,6 +23,12 @@ class App extends StatelessWidget {
   App({Key? key}) : super(key: key);
   FirebaseFirestore db = FirebaseFirestore.instance;
 
+  String nivelSeleccionadoGlobal = "Principiante"; // Inicializa con el valor predeterminado
+
+  String obtenerNivelSeleccionado() {
+    return nivelSeleccionadoGlobal;
+  }
+
   @override
   Widget build(BuildContext context) {
     // Bloquea la orientación en posición vertical
@@ -38,23 +44,27 @@ class App extends StatelessWidget {
       ),
       initialRoute: '/Splash',
       routes: {
-        '/Login': (context) => LoginViewApp(),
-        '/Register': (context) => RegisterView(),
+        '/Login': (context) => const LoginViewApp(),
+        '/Register': (context) => const RegisterView(),
         '/Main': (context) => const MainViewApp(),
         '/OnBoarding': (context) => const OnBoardingView(),
-        '/Splash': (context) => SplashView(),
+        '/Splash': (context) => const SplashView(),
         '/DetailsProfile': (context) => const DetailsProfileView(),
-        '/ExerciseList': (context) => ExerciseListScreen(ejercicios: []),
-        '/CreateRoutine': (context) => CrearRutinaView(ejercicios: []),
-        '/ListRoutine': (context) => RutinasUsuarioView(),
+        '/ExerciseList': (context) => const ExerciseListScreen(ejercicios: []),
+        '/CreateRoutine': (context) => const CrearRutinaView(ejercicios: []),
+        '/ListRoutine': (context) => const RutinasUsuarioView(),
         '/DetailsRoutine': (context) => DetallesRutinaView(
               rutina: Rutina(id: '', dias: {}),
             ),
-        '/DetailsRoutinePred': (context) => DetallesRutinaPredeterminadaView(
-              rutinaPred: RutinaPredeterminada(idPred: '', diasPred: {}),
-            ),
+        '/DetailsRoutinePred': (context) {
+          String nivelSeleccionado = obtenerNivelSeleccionado();
+          return DetallesRutinaPredeterminadaView(
+            rutinaPred: RutinaPredeterminada(idPred: '', diasPred: {}),
+            nivelSeleccionado: nivelSeleccionado,
+          );
+        },
         '/AddRoutinePred': (context) => SelectTrainingLevelView(),
-        '/ListRoutinePred': (context) => RutinasPredView(
+        '/ListRoutinePred': (context) => const RutinasPredView(
               nivelSeleccionado: '',
             ),
       },

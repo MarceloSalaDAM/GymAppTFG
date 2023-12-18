@@ -102,29 +102,29 @@ class RutinaPredeterminada {
     }
   }
 
-/*
-  // Método para eliminar la rutina de Firestore
-  Future<void> removeFromProfile() async {
-    String? idUser = FirebaseAuth.instance.currentUser?.uid;
+  /*Future<void> saveToGlobalCollection(BuildContext context) async {
     try {
-      // Asegúrate de que id no sea null
-      if (idPred != null) {
-        // Suponiendo que el documento de usuario está en la colección "usuarios"
-        // y tiene una subcolección "rutinas"
+      // Generar un nuevo ID para la rutina
+      String newId = FirebaseFirestore.instance
+          .collection("rutinas_predeterminadas")
+          .doc()
+          .id;
+
+      if (newId.isNotEmpty) {
+        // Añadir la rutina a la colección global con el nuevo ID
         await FirebaseFirestore.instance
-            .collection("usuarios")
-            .doc(
-            idUser) // Ajusta esto según la estructura real de tu base de datos
-            .collection("rutinas")
-            .doc(idPred)
-            .delete();
-        print("Rutina eliminada correctamente: $idPred");
+            .collection("rutinas_predeterminadas")
+            .doc(newId)
+            .set(toFirestore());
+
+        print("Rutina guardada en la colección global: $newId");
       } else {
-        print("ID de la rutina es null. No se puede eliminar.");
+        print("No se pudo generar un nuevo ID para la rutina.");
       }
     } catch (e) {
-      print("Error al eliminar la rutina: $e");
-      throw e; // Puedes manejar el error según tus necesidades
+      print("Error al guardar la rutina en la colección global: $e");
+      throw e;
     }
   }*/
+
 }

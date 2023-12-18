@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+
 import '../firebase_objects/rutinas_predeterminadas_firebase.dart';
 
 class DetallesRutinaPredeterminadaView extends StatefulWidget {
   RutinaPredeterminada rutinaPred;
+  final String nivelSeleccionado;
 
-  DetallesRutinaPredeterminadaView({super.key, required this.rutinaPred});
+  DetallesRutinaPredeterminadaView(
+      {Key? key, required this.rutinaPred, required this.nivelSeleccionado})
+      : super(key: key);
 
   @override
   _DetallesRutinaPredeterminadaViewState createState() =>
@@ -15,6 +19,7 @@ class _DetallesRutinaPredeterminadaViewState
     extends State<DetallesRutinaPredeterminadaView> {
   final PageController _pageController = PageController();
   int currentPage = 0;
+  Color appBarColor = const Color(0XFF0f7991);
 
   @override
   void initState() {
@@ -24,6 +29,18 @@ class _DetallesRutinaPredeterminadaViewState
         currentPage = _pageController.page!.round();
       });
     });
+    setAppBarColor();
+  }
+
+  void setAppBarColor() {
+    // Cambiar el color del AppBar según el nivel
+    if (widget.nivelSeleccionado == "Principiante") {
+      appBarColor = Colors.green; // Puedes cambiar a otro color
+    } else if (widget.nivelSeleccionado == "Intermedio") {
+      appBarColor = Colors.orange; // Puedes cambiar a otro color
+    } else if (widget.nivelSeleccionado == "Avanzado") {
+      appBarColor = Colors.red; // Puedes cambiar a otro color
+    }
   }
 
   @override
@@ -44,7 +61,7 @@ class _DetallesRutinaPredeterminadaViewState
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.green,
+        backgroundColor: appBarColor,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
