@@ -1,12 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:gym_app_tfg/src/detail_views/details_routine_prefabricated.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../detail_views/add_routine_view.dart';
 import '../firebase_objects/ejercicios_firebase.dart';
-import '../detail_views/create_new_rutine.dart';
-import '../firebase_objects/rutinas_predeterminadas_firebase.dart';
+import '../create_views/create_new_rutine.dart';
 import '../login_views/login_view.dart';
 
 class AlertDialogManager {

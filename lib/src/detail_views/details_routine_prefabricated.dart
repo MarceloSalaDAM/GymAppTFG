@@ -1,14 +1,47 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../firebase_objects/rutinas_predeterminadas_firebase.dart';
 
-class DetallesRutinaPredeterminadaView extends StatelessWidget {
-  final RutinaPredeterminada rutinaPred;
+class DetallesRutinaPredeterminadaView extends StatefulWidget {
+  RutinaPredeterminada rutinaPred;
 
-  DetallesRutinaPredeterminadaView({required this.rutinaPred});
+  DetallesRutinaPredeterminadaView({super.key, required this.rutinaPred});
+
+  @override
+  _DetallesRutinaPredeterminadaViewState createState() =>
+      _DetallesRutinaPredeterminadaViewState();
+}
+
+class _DetallesRutinaPredeterminadaViewState
+    extends State<DetallesRutinaPredeterminadaView> {
+  final PageController _pageController = PageController();
+  int currentPage = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController.addListener(() {
+      setState(() {
+        currentPage = _pageController.page!.round();
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    final diasOrdenados = [
+      'LUNES',
+      'MARTES',
+      'MIÉRCOLES',
+      'JUEVES',
+      'VIERNES',
+      'SÁBADO',
+      'DOMINGO'
+    ];
+
+    final diasPresentes = diasOrdenados.where((dia) {
+      return widget.rutinaPred.diasPred.containsKey(dia);
+    }).toList();
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.green,
@@ -16,7 +49,7 @@ class DetallesRutinaPredeterminadaView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '${rutinaPred.nombreRutinaPred}',
+              '${widget.rutinaPred.nombreRutinaPred}',
               style: const TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
@@ -25,15 +58,71 @@ class DetallesRutinaPredeterminadaView extends StatelessWidget {
           ],
         ),
       ),
-      body: Container(
-        color: Colors.black,
-        margin: EdgeInsets.all(25.0),
-        child: Card(
-          elevation: 4.0,
-          child: ListView(
-            padding: EdgeInsets.all(10.0),
+      body: Center(
+        child: Container(
+          height: 800,
+          margin: const EdgeInsets.fromLTRB(15, 25, 15, 50),
+          padding: const EdgeInsets.fromLTRB(15, 20, 15, 20),
+          child: Column(
             children: [
-              _buildDiasList(rutinaPred.diasPred),
+              Expanded(
+                child: PageView.builder(
+                  controller: _pageController,
+                  onPageChanged: (int page) {
+                    setState(() {
+                      currentPage = page;
+                    });
+                  },
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  itemCount: diasPresentes.length,
+                  itemBuilder: (context, index) {
+                    final diaEnMayusculas = diasPresentes[index];
+                    final dias = widget.rutinaPred.diasPred;
+                    final ejerciciosDia = dias[diaEnMayusculas];
+
+                    return Container(
+                      margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                      padding: const EdgeInsets.fromLTRB(15, 20, 15, 20),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.black, width: 4),
+                        borderRadius: BorderRadius.circular(18),
+                      ),
+                      constraints: const BoxConstraints(maxHeight: 800),
+                      child: SingleChildScrollView(
+                        child: _buildDiasList({diaEnMayusculas: ejerciciosDia}),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(diasPresentes.length, (index) {
+                  return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: GestureDetector(
+                      onTap: () {
+                        _pageController.animateToPage(index,
+                            duration: const Duration(milliseconds: 500),
+                            curve: Curves.easeInOut);
+                      },
+                      child: CircleAvatar(
+                        backgroundColor:
+                            currentPage == index ? Colors.black : Colors.grey,
+                        radius: currentPage == index ? 15 : 10,
+                        child: Text(
+                          (index + 1).toString(),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 11,
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                }),
+              ),
             ],
           ),
         ),
@@ -54,7 +143,7 @@ class DetallesRutinaPredeterminadaView extends StatelessWidget {
       'DOMINGO'
     ];
 
-    diasOrdenados.forEach((nombreDia) {
+    for (var nombreDia in diasOrdenados) {
       final diaEnMayusculas = nombreDia;
 
       if (dias.containsKey(diaEnMayusculas)) {
@@ -144,6 +233,11 @@ class DetallesRutinaPredeterminadaView extends StatelessWidget {
                       ),
                     ],
                   ),
+                  const Divider(
+                    // Agrega un Divider
+                    height: 20,
+                    color: Colors.grey,
+                  ),
                 ],
               ),
             );
@@ -162,20 +256,14 @@ class DetallesRutinaPredeterminadaView extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 8.0),
-              const Row(
-                children: [
-                  Text(
-                    ' ⚠ No olvides calentar antes de comenzar',
-                    style: TextStyle(
-                      color: Color(0XFF0f7991),
-                      fontWeight: FontWeight.bold,
-                      fontSize: 10.0,
-                    ),
-                  ),
-                ],
+              const Text(
+                ' ⚠ No olvides calentar antes de comenzar',
+                style: TextStyle(
+                  color: Color(0XFF0f7991),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 10.0,
+                ),
               ),
-              const SizedBox(height: 8.0),
-              ...ejerciciosTiles,
               const SizedBox(height: 8.0),
               const Text(
                 '⏱ Los descansos son muy importantes para realizar un buen entrenamiento',
@@ -185,18 +273,16 @@ class DetallesRutinaPredeterminadaView extends StatelessWidget {
                   fontSize: 10.0,
                 ),
               ),
-              const Divider(
-                height: 25,
-              ),
+              const SizedBox(height: 8.0),
+              ...ejerciciosTiles,
             ],
           ),
         );
       }
-    });
+    }
 
     return Column(
       children: tiles,
     );
   }
-
 }

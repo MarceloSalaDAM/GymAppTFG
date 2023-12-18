@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:gym_app_tfg/src/detail_views/details_routine_prefabricated.dart';
 import 'package:gym_app_tfg/src/firebase_objects/rutinas_firebase.dart';
-import 'package:gym_app_tfg/src/detail_views/create_new_rutine.dart';
+import 'package:gym_app_tfg/src/create_views/create_new_rutine.dart';
 import 'package:gym_app_tfg/src/detail_views/details_profile_view.dart';
 import 'package:gym_app_tfg/src/detail_views/details_routine.dart';
 import 'package:gym_app_tfg/src/firebase_objects/rutinas_predeterminadas_firebase.dart';
@@ -16,7 +16,7 @@ import 'package:gym_app_tfg/src/detail_views/main_view.dart';
 import 'package:gym_app_tfg/src/login_views/on_boarding.dart';
 import 'package:gym_app_tfg/src/login_views/register_view.dart';
 import 'package:gym_app_tfg/src/login_views/splash_view.dart';
-import 'detail_views/add_routine_view.dart';
+import 'create_views/add_routine_view.dart';
 import 'list_views/list_routines_pred.dart';
 
 class App extends StatelessWidget {
