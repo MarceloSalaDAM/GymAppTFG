@@ -260,8 +260,7 @@ class _RutinasUsuarioViewState extends State<RutinasUsuarioView> {
             content:
                 const Text('¿Estás seguro de que deseas borrar la rutina?'),
             actions: <Widget>[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              Column(
                 children: [
                   ElevatedButton(
                     onPressed: () {
@@ -284,6 +283,7 @@ class _RutinasUsuarioViewState extends State<RutinasUsuarioView> {
                       ),
                     ),
                   ),
+                  SizedBox(height: 8.0), // Ajusta el espacio entre los botones
                   ElevatedButton(
                     onPressed: () async {
                       try {
@@ -293,6 +293,12 @@ class _RutinasUsuarioViewState extends State<RutinasUsuarioView> {
                         setState(() {
                           rutinas.remove(rutina);
                         });
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('RUTINA BORRADA'),
+                            duration: Duration(milliseconds: 2000),
+                          ),
+                        );
                         Navigator.of(context).pop();
                       } catch (e) {
                         print("Error al eliminar la rutina: $e");
