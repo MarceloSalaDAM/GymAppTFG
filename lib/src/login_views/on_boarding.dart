@@ -135,7 +135,7 @@ class _OnBoardingViewState extends State<OnBoardingView> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  const Divider(height: 11),
+                  const Divider(height: 10),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: iNombre,
