@@ -16,7 +16,7 @@ class RegisterView extends StatelessWidget {
       String emailAdress, String password, BuildContext context) async {
     try {
       final credential =
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: emailAdress,
         password: password,
       );
@@ -124,55 +124,57 @@ class RegisterView extends StatelessWidget {
                           iContra2,
                           const SizedBox(height: 10),
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              MaterialButton(
-                                color: Colors.black,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(7.0),
-                                ),
-                                padding: const EdgeInsets.all(8.0),
-                                textColor: Colors.white,
-                                splashColor: Colors.white,
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    border: Border.all(),
-                                  ),
-                                  child: const Padding(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: Text("CREAR"),
-                                  ),
-                                ),
-                                onPressed: () {
-                                  if (iContra.getText() == iContra2.getText()) {
-                                    btnRegistroPressed(
-                                        iUsuario.getText(),
-                                        iContra.getText(),
-                                        context);
-                                    print("USUARIO CREADO CORRECTAMENTE------>>> ${iUsuario.getText()} ${iContra.getText()}");
-                                  } else {}
-                                },
-                              ),
-                              MaterialButton(
-                                color: Colors.black,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(7.0),
-                                ),
-                                padding: const EdgeInsets.all(8.0),
-                                textColor: Colors.white,
-                                splashColor: Colors.white,
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    border: Border.all(),
-                                  ),
-                                  child: const Padding(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: Text("CANCELAR"),
-                                  ),
-                                ),
+                              ElevatedButton.icon(
                                 onPressed: () {
                                   Navigator.of(context).popAndPushNamed('/Login');
                                 },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.black,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                ),
+                                icon: Icon(Icons.arrow_back, size: 30), // Añade el ícono de retroceso
+                                label: Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 1.0),
+                                  child: Text(
+                                    '', // Deja el texto vacío
+                                    style: TextStyle(
+                                      fontSize: 1.0,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ),
+
+                              ElevatedButton(
+                                onPressed: () {
+                                  if (iContra.getText() == iContra2.getText()) {
+                                    btnRegistroPressed(iUsuario.getText(),
+                                        iContra.getText(), context);
+                                    print(
+                                        "USUARIO CREADO CORRECTAMENTE------>>> ${iUsuario.getText()} ${iContra.getText()}");
+                                  } else {}
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.black,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                ),
+                                child: const Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 8.0, horizontal: 16.0),
+                                  child: Text(
+                                    'ACEPTAR',
+                                    style: TextStyle(
+                                      fontSize: 18.0,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
                               ),
                             ],
                           )
@@ -189,4 +191,3 @@ class RegisterView extends StatelessWidget {
     );
   }
 }
-

@@ -1,3 +1,5 @@
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -48,8 +50,24 @@ class _OnBoardingViewState extends State<OnBoardingView> {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
-      setState(() {
-        _imagePath = pickedFile.path;
+      var file = File(pickedFile.path);
+
+      // Obtén el UID del usuario actual
+      String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
+
+      // Concatena el UID del usuario con el nombre del archivo
+      String filename = 'profile_image_$userId.jpg';
+
+      // Obtén la referencia al almacenamiento de Firebase
+      Reference ref =
+          FirebaseStorage.instance.ref().child("profileImages/$filename");
+      UploadTask uploadTask = ref.putFile(file);
+
+      await uploadTask.whenComplete(() async {
+        String imageUrl = await ref.getDownloadURL();
+        setState(() {
+          _imagePath = imageUrl;
+        });
       });
     }
   }
@@ -107,17 +125,24 @@ class _OnBoardingViewState extends State<OnBoardingView> {
                       },
                       child: _imagePath != null
                           ? ClipOval(
-                              child: Image.file(File(_imagePath!)),
+                              child: Image.network(
+                                _imagePath!,
+                                fit: BoxFit.cover,
+                              ),
                             )
                           : const Icon(Icons.add_a_photo,
                               size: 40, color: Colors.white),
                     ),
                   ),
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 20),
+                  const Divider(height: 10),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: iNombre,
-                  ),
+                  ),  const Divider(height: 10),
+
+
+
                   PickerButton<String>(
                     titulo: 'GENERO',
                     opciones: const ['Hombre', 'Mujer', 'Otro'],
@@ -130,6 +155,7 @@ class _OnBoardingViewState extends State<OnBoardingView> {
                       }
                     },
                   ),
+                  const Divider(height: 10),
                   PickerButton<String>(
                     titulo: 'EDAD',
                     opciones:
@@ -143,6 +169,7 @@ class _OnBoardingViewState extends State<OnBoardingView> {
                       }
                     },
                   ),
+                  const Divider(height: 10),
                   PickerButton<String>(
                     titulo: 'ESTATURA (cm)',
                     opciones:
@@ -156,6 +183,7 @@ class _OnBoardingViewState extends State<OnBoardingView> {
                       }
                     },
                   ),
+                  const Divider(height: 10),
                   PickerButton<String>(
                     titulo: 'PESO (kg)',
                     opciones:
@@ -169,24 +197,11 @@ class _OnBoardingViewState extends State<OnBoardingView> {
                       }
                     },
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 30),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      MaterialButton(
-                        color: const Color(0xFF0c5363),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(7.0),
-                        ),
-                        padding: const EdgeInsets.all(8.0),
-                        textColor: Colors.white,
-                        splashColor: Colors.white,
-                        child: Container(
-                          child: const Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Text("GUARDAR"),
-                          ),
-                        ),
+                      ElevatedButton(
                         onPressed: () {
                           acceptPressed(
                             iNombre.myController.text,
@@ -198,6 +213,23 @@ class _OnBoardingViewState extends State<OnBoardingView> {
                             context,
                           );
                         },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0XFF0f7991),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                        ),
+                        child: const Padding(
+                          padding: EdgeInsets.symmetric(
+                              vertical: 8.0, horizontal: 16.0),
+                          child: Text(
+                            'ACEPTAR',
+                            style: TextStyle(
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
                       ),
                     ],
                   ),

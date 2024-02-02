@@ -141,25 +141,7 @@ class LoginViewApp extends StatelessWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              MaterialButton(
-                                height: 40,
-                                color: Colors.black,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(7.0),
-                                ),
-                                padding: const EdgeInsets.all(8.0),
-                                textColor: Colors.white,
-                                splashColor: Colors.white,
-                                child: Container(
-                                  margin: EdgeInsets.fromLTRB(0, 5, 5, 5),
-                                  decoration: BoxDecoration(
-                                    border: Border.all(),
-                                  ),
-                                  child: const Padding(
-                                    padding: EdgeInsets.all(3.0),
-                                    child: Icon(Icons.login_outlined),
-                                  ),
-                                ),
+                              ElevatedButton(
                                 onPressed: () {
                                   btnAceptarPressed(
                                     iUser.getText(),
@@ -169,6 +151,23 @@ class LoginViewApp extends StatelessWidget {
                                   print(
                                       "SESIÓN INICIADA CON----------->>>  ${iUser.getText()} ${iPass.getText()}");
                                 },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.black,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                ),
+                                child: const Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 8.0, horizontal: 16.0),
+                                  child: Text(
+                                    'ENTRAR',
+                                    style: TextStyle(
+                                      fontSize: 18.0,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
                               ),
                             ],
                           ),
