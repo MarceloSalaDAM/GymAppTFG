@@ -150,6 +150,15 @@ class _RutinasUsuarioViewState extends State<RutinasUsuarioView> {
       if (dias.containsKey(nombreDia)) {
         List<Widget> ejerciciosTiles = [];
 
+        if (dias[nombreDia]['grupo'] != null) {
+          ejerciciosTiles.add(
+            Text(
+              '${dias[nombreDia]['grupo']}',
+              style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
+            ),
+          );
+        }
+
         tiles.add(
           Container(
             margin: const EdgeInsets.fromLTRB(25, 0, 25, 0),
@@ -169,12 +178,6 @@ class _RutinasUsuarioViewState extends State<RutinasUsuarioView> {
                     textAlign: TextAlign.center,
                   ),
                 ),
-                const SizedBox(height: 5),
-                if (dias[nombreDia]['grupo'] != null)
-                  Text(
-                    '${dias[nombreDia]['grupo']}',
-                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
-                  ),
                 const SizedBox(height: 5),
                 ...ejerciciosTiles,
               ],
@@ -235,6 +238,7 @@ class _RutinasUsuarioViewState extends State<RutinasUsuarioView> {
       ],
     );
   }
+
 
   // Función para mostrar un cuadro de diálogo de confirmación antes de eliminar
   Future<void> _showDeleteConfirmationDialog(Rutina rutina) async {
