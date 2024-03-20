@@ -246,13 +246,23 @@ class _RutinasUsuarioViewState extends State<RutinasUsuarioView> {
   }
 
   Future<void> _descargarRutina(Rutina rutina) async {
+    // Obtener el directorio de descargas del dispositivo
+    final directory = await getDownloadsDirectory();
+    String fileName = 'rutina_${rutina.nombreRutina}.pdf';
+
+    // Verificar si el archivo ya existe en el directorio de descargas
+    if (directory != null) {
+      int suffix = 1;
+      while (await File('${directory.path}/$fileName').exists()) {
+        fileName = 'rutina_${rutina.nombreRutina}(${suffix++}).pdf';
+      }
+    }
+
     final pdf = pw.Document();
 
     // Definir la imagen estática
     final image = pw.MemoryImage(
-      (await rootBundle.load('assets/pdflogo.jpg'))
-          .buffer
-          .asUint8List(),
+      (await rootBundle.load('assets/pdflogo.jpg')).buffer.asUint8List(),
     );
 
     pdf.addPage(
@@ -261,62 +271,85 @@ class _RutinasUsuarioViewState extends State<RutinasUsuarioView> {
         margin: pw.EdgeInsets.all(20),
         build: (pw.Context context) {
           return <pw.Widget>[
-            // Agregar la imagen estática
             pw.Container(
-              alignment: pw.Alignment.center,
+              alignment: pw.Alignment.topLeft,
+              width: 100, // Ancho deseado de la imagen
+              height: 100, // Alto deseado de la imagen
               child: pw.Image(image),
             ),
-            pw.Header(
-              level: 1,
-              textStyle: pw.TextStyle(
-                  fontSize: 24,
+            // Título grande y centrado para el nombre de la rutina
+            pw.Container(
+              alignment: pw.Alignment.center,
+              child: pw.Text(
+                rutina.nombreRutina ?? 'SIN NOMBRE',
+                style: pw.TextStyle(
+                  fontSize: 44,
                   fontWeight: pw.FontWeight.bold,
-                  color: PdfColors.blue),
-              child: pw.Text(rutina.nombreRutina ?? 'SIN NOMBRE'),
+                  color: PdfColors.black,
+                ),
+              ),
             ),
-            // Descripción de la rutina con estilo personalizado
-            pw.Paragraph(
-              style: pw.TextStyle(fontSize: 18, color: PdfColors.black),
-              text: rutina.descripcionRutina ?? '',
+            // Espacio entre el título y la descripción
+            pw.SizedBox(height: 20),
+            // Descripción de la rutina con tamaño de fuente más pequeño y alineación izquierda
+            pw.Container(
+              alignment: pw.Alignment.topLeft,
+              child: pw.Text(
+                rutina.descripcionRutina ?? '',
+                style: pw.TextStyle(
+                  fontSize: 28,
+                  color: PdfColors.black,
+                ),
+              ),
             ),
-            // Lista de días y ejercicios
+            // Espacio entre la descripción y la tabla de días y ejercicios
+            pw.SizedBox(height: 20),
+            pw.Divider(height: 20),
+            pw.SizedBox(height: 20),
+            // Tabla de días, ejercicios y detalles
             for (var dia in rutina.dias.keys)
               pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
-                  // Título del día con estilo personalizado
-                  pw.Header(
-                    level: 2,
-                    textStyle: pw.TextStyle(
-                        fontSize: 20,
-                        fontWeight: pw.FontWeight.bold,
-                        color: PdfColors.green),
-                    child: pw.Text(dia),
-                  ),
-                  // Lista de ejercicios y detalles
-                  for (var ejercicio in rutina.dias[dia]['ejercicios'])
-                    pw.Column(
-                      crossAxisAlignment: pw.CrossAxisAlignment.start,
-                      children: [
-                        // Nombre del ejercicio con estilo personalizado
-                        pw.Text(
-                          ejercicio['nombre'] ?? '',
-                          style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
-                        ),
-                        // Detalles del ejercicio (peso, series, repeticiones) con estilo personalizado
-                        pw.Row(
-                          children: [
-                            if (ejercicio.containsKey('peso'))
-                              pw.Text('Peso: ${ejercicio['peso']}'),
-                            if (ejercicio.containsKey('series'))
-                              pw.Text('Series: ${ejercicio['series']}'),
-                            if (ejercicio.containsKey('repeticiones'))
-                              pw.Text(
-                                  'Repeticiones: ${ejercicio['repeticiones']}'),
-                          ],
-                        ),
-                      ],
+                  pw.Container(
+                    alignment: pw.Alignment.topLeft,
+                    child: pw.Text(
+                      dia,
+                      style: pw.TextStyle(
+                        fontSize: 25,
+                        color: PdfColors.black,
+                      ),
                     ),
+                  ),
+                  pw.SizedBox(height: 10),
+                  // Tabla de ejercicios y detalles
+                  pw.TableHelper.fromTextArray(
+                    border: pw.TableBorder.all(),
+                    cellAlignment: pw.Alignment.centerLeft,
+                    headerAlignment: pw.Alignment.centerLeft,
+                    cellStyle: pw.TextStyle(fontSize: 16),
+                    headerStyle: pw.TextStyle(
+                        fontSize: 22, fontWeight: pw.FontWeight.bold),
+                    data: [
+                      // Encabezado de la tabla
+                      ['Ejercicio', 'Peso', 'Series', 'Repeticiones'],
+                      // Filas de datos de ejercicios
+                      for (var ejercicio in rutina.dias[dia]['ejercicios'])
+                        [
+                          ejercicio['nombre'] ?? '',
+                          ejercicio.containsKey('peso')
+                              ? '${ejercicio['peso']} kg' // Agrega "kg" después del peso
+                              : '',
+                          ejercicio.containsKey('series')
+                              ? ejercicio['series'].toString()
+                              : '',
+                          ejercicio.containsKey('repeticiones')
+                              ? ejercicio['repeticiones'].toString()
+                              : '',
+                        ],
+                    ],
+                  ),
+                  pw.SizedBox(height: 20),
                 ],
               ),
           ];
@@ -324,31 +357,11 @@ class _RutinasUsuarioViewState extends State<RutinasUsuarioView> {
       ),
     );
 
-    // Agregar marca de agua
-    pdf.addPage(
-      pw.Page(
-        build: (pw.Context context) {
-          return pw.Center(
-            child: pw.Transform.rotate(
-              angle: -0.5, // Ángulo de rotación de la marca de agua
-              child: pw.Text(
-                'Confidencial',
-                style: pw.TextStyle(fontSize: 50, color: PdfColors.grey),
-              ),
-            ),
-          );
-        },
-      ),
-    );
-
-    // Obtener el directorio de descargas del dispositivo
-    final directory = await getDownloadsDirectory();
-    final path = '${directory?.path}/rutina_${rutina.id}.pdf';
+    final path = '${directory?.path}/$fileName';
 
     // Guardar el PDF en el directorio de descargas
     final File file = File(path);
     await file.writeAsBytes(await pdf.save());
-
     // Verificar si el archivo se guardó correctamente
     if (await file.exists()) {
       print('PDF guardado correctamente en: $path');
