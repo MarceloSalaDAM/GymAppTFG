@@ -58,8 +58,20 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
       if (rutinaSnapshot.exists &&
           rutinaSnapshot.data()!['dias'][dia] != null) {
         // Actualizamos los datos del día en la base de datos
+        List<Map<String, dynamic>> updatedExercises = [];
+        for (var exercise in editingExercisesByDay[dia]!) {
+          // Si el ejercicio está siendo editado y se ha cambiado el peso
+          if (exercise['nombre'] != null && exercise['peso'] != null) {
+            updatedExercises.add({
+              'nombre': exercise['nombre'],
+              'series': exercise['series'],
+              'repeticiones': exercise['repeticiones'],
+              'peso': exercise['peso'], // Actualizamos el peso aquí
+            });
+          }
+        }
         await rutinaRef.update({
-          'dias.$dia.ejercicios': editingExercisesByDay[dia],
+          'dias.$dia.ejercicios': updatedExercises,
         });
         // Salir del modo de edición para el día específico
         setState(() {
@@ -363,7 +375,7 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                           var ejercicioActual = editingExercisesByDay[dia]!
                               .firstWhere(
                                   (e) => e['nombre'] == ejercicio['nombre']);
-                          ejercicioActual['peso'] = int.parse(value);
+                          ejercicioActual['peso'] = double.parse(value);
                         });
                       },
                       decoration: InputDecoration(labelText: 'Peso (kg)'),
