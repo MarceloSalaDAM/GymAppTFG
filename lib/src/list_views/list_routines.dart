@@ -1,9 +1,15 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
 
 import '../firebase_objects/rutinas_firebase.dart';
 import '../detail_views/details_routine.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:path_provider/path_provider.dart';
 
 class RutinasUsuarioView extends StatefulWidget {
   const RutinasUsuarioView({super.key});
@@ -221,7 +227,7 @@ class _RutinasUsuarioViewState extends State<RutinasUsuarioView> {
             IconButton(
               icon: const Icon(Icons.download),
               onPressed: () {
-                // Lógica que se ejecutará al hacer clic en el botón de ojo
+                _descargarRutina(rutina);
               },
             ),
             IconButton(
@@ -239,6 +245,131 @@ class _RutinasUsuarioViewState extends State<RutinasUsuarioView> {
     );
   }
 
+  Future<void> _descargarRutina(Rutina rutina) async {
+    final pdf = pw.Document();
+
+    // Definir la imagen estática
+    final image = pw.MemoryImage(
+      (await rootBundle.load('assets/pdflogo.jpg'))
+          .buffer
+          .asUint8List(),
+    );
+
+    pdf.addPage(
+      pw.MultiPage(
+        pageFormat: PdfPageFormat.a4,
+        margin: pw.EdgeInsets.all(20),
+        build: (pw.Context context) {
+          return <pw.Widget>[
+            // Agregar la imagen estática
+            pw.Container(
+              alignment: pw.Alignment.center,
+              child: pw.Image(image),
+            ),
+            pw.Header(
+              level: 1,
+              textStyle: pw.TextStyle(
+                  fontSize: 24,
+                  fontWeight: pw.FontWeight.bold,
+                  color: PdfColors.blue),
+              child: pw.Text(rutina.nombreRutina ?? 'SIN NOMBRE'),
+            ),
+            // Descripción de la rutina con estilo personalizado
+            pw.Paragraph(
+              style: pw.TextStyle(fontSize: 18, color: PdfColors.black),
+              text: rutina.descripcionRutina ?? '',
+            ),
+            // Lista de días y ejercicios
+            for (var dia in rutina.dias.keys)
+              pw.Column(
+                crossAxisAlignment: pw.CrossAxisAlignment.start,
+                children: [
+                  // Título del día con estilo personalizado
+                  pw.Header(
+                    level: 2,
+                    textStyle: pw.TextStyle(
+                        fontSize: 20,
+                        fontWeight: pw.FontWeight.bold,
+                        color: PdfColors.green),
+                    child: pw.Text(dia),
+                  ),
+                  // Lista de ejercicios y detalles
+                  for (var ejercicio in rutina.dias[dia]['ejercicios'])
+                    pw.Column(
+                      crossAxisAlignment: pw.CrossAxisAlignment.start,
+                      children: [
+                        // Nombre del ejercicio con estilo personalizado
+                        pw.Text(
+                          ejercicio['nombre'] ?? '',
+                          style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                        ),
+                        // Detalles del ejercicio (peso, series, repeticiones) con estilo personalizado
+                        pw.Row(
+                          children: [
+                            if (ejercicio.containsKey('peso'))
+                              pw.Text('Peso: ${ejercicio['peso']}'),
+                            if (ejercicio.containsKey('series'))
+                              pw.Text('Series: ${ejercicio['series']}'),
+                            if (ejercicio.containsKey('repeticiones'))
+                              pw.Text(
+                                  'Repeticiones: ${ejercicio['repeticiones']}'),
+                          ],
+                        ),
+                      ],
+                    ),
+                ],
+              ),
+          ];
+        },
+      ),
+    );
+
+    // Agregar marca de agua
+    pdf.addPage(
+      pw.Page(
+        build: (pw.Context context) {
+          return pw.Center(
+            child: pw.Transform.rotate(
+              angle: -0.5, // Ángulo de rotación de la marca de agua
+              child: pw.Text(
+                'Confidencial',
+                style: pw.TextStyle(fontSize: 50, color: PdfColors.grey),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+
+    // Obtener el directorio de descargas del dispositivo
+    final directory = await getDownloadsDirectory();
+    final path = '${directory?.path}/rutina_${rutina.id}.pdf';
+
+    // Guardar el PDF en el directorio de descargas
+    final File file = File(path);
+    await file.writeAsBytes(await pdf.save());
+
+    // Verificar si el archivo se guardó correctamente
+    if (await file.exists()) {
+      print('PDF guardado correctamente en: $path');
+      // Mostrar un mensaje de éxito
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Rutina descargada exitosamente'),
+          duration: Duration(milliseconds: 2000),
+        ),
+      );
+    } else {
+      print('Error al guardar el PDF.');
+      // Mostrar un mensaje de error
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Error al descargar la rutina'),
+          duration: Duration(milliseconds: 2000),
+        ),
+      );
+    }
+  }
 
   // Función para mostrar un cuadro de diálogo de confirmación antes de eliminar
   Future<void> _showDeleteConfirmationDialog(Rutina rutina) async {
