@@ -245,6 +245,7 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                     style: TextStyle(
                       fontSize: 18.0,
                       fontWeight: FontWeight.bold,
+                      color: Colors.white,
                     ),
                   ),
                 ),
@@ -273,6 +274,7 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                     style: TextStyle(
                       fontSize: 18.0,
                       fontWeight: FontWeight.bold,
+                      color: Colors.white,
                     ),
                   ),
                 ),

@@ -139,7 +139,8 @@ class _OnBoardingViewState extends State<OnBoardingView> {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: iNombre,
-                  ),  const Divider(height: 10),
+                  ),
+                  const Divider(height: 10),
                   PickerButton<String>(
                     titulo: 'GENERO',
                     opciones: const ['Hombre', 'Mujer', 'Otro'],
@@ -222,9 +223,9 @@ class _OnBoardingViewState extends State<OnBoardingView> {
                           child: Text(
                             'ACEPTAR',
                             style: TextStyle(
-                              fontSize: 18.0,
-                              fontWeight: FontWeight.bold,
-                            ),
+                                fontSize: 18.0,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
                           ),
                         ),
                       ),

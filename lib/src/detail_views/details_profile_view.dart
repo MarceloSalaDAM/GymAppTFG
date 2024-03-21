@@ -237,7 +237,7 @@ class _DetailsProfileViewState extends State<DetailsProfileView> {
                                   Navigator.pop(context);
                                 },
                                 style: ElevatedButton.styleFrom(
-                                  primary: Colors.black,
+                                  backgroundColor: Colors.black,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10.0),
                                   ),
@@ -247,9 +247,9 @@ class _DetailsProfileViewState extends State<DetailsProfileView> {
                                   child: Text(
                                     'Cancelar',
                                     style: TextStyle(
-                                      fontSize: 18.0,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                        fontSize: 18.0,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white),
                                   ),
                                 ),
                               ),
@@ -260,7 +260,7 @@ class _DetailsProfileViewState extends State<DetailsProfileView> {
                                   _revertChanges();
                                 },
                                 style: ElevatedButton.styleFrom(
-                                  primary: Colors.black,
+                                  backgroundColor: Colors.black,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10.0),
                                   ),
@@ -270,9 +270,9 @@ class _DetailsProfileViewState extends State<DetailsProfileView> {
                                   child: Text(
                                     'Aceptar',
                                     style: TextStyle(
-                                      fontSize: 18.0,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                        fontSize: 18.0,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white),
                                   ),
                                 ),
                               ),
@@ -284,13 +284,10 @@ class _DetailsProfileViewState extends State<DetailsProfileView> {
                   },
                 );
               },
-              icon: const Icon(
-                Icons.cancel,
-                size: 30,
-              ),
+              icon: const Icon(Icons.cancel, size: 30, color: Colors.white),
               label: const Text(
                 "CANCELAR",
-                style: TextStyle(fontSize: 18),
+                style: TextStyle(fontSize: 18, color: Colors.white),
               ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,
@@ -317,13 +314,11 @@ class _DetailsProfileViewState extends State<DetailsProfileView> {
                 _isEditing = !_isEditing;
               });
             },
-            icon: Icon(
-              _isEditing ? Icons.save_alt : Icons.edit,
-              size: 30,
-            ),
+            icon: Icon(_isEditing ? Icons.save_alt : Icons.edit,
+                size: 30, color: Colors.white),
             label: Text(
               _isEditing ? 'GUARDAR' : 'EDITAR',
-              style: const TextStyle(fontSize: 18),
+              style: const TextStyle(fontSize: 18, color: Colors.white),
             ),
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0XFF0f7991),

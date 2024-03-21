@@ -48,9 +48,9 @@ class AlertDialogManager {
                   child: Text(
                     'Crear rutina personalizada',
                     style: TextStyle(
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold,
-                    ),
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -60,8 +60,7 @@ class AlertDialogManager {
               margin: const EdgeInsets.fromLTRB(25, 5, 25, 5),
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.of(context)
-                      .popAndPushNamed('/AddRoutinePred');
+                  Navigator.of(context).popAndPushNamed('/AddRoutinePred');
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.black,
@@ -75,9 +74,9 @@ class AlertDialogManager {
                   child: Text(
                     'Añadir rutina predeterminada',
                     style: TextStyle(
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold,
-                    ),
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -88,6 +87,7 @@ class AlertDialogManager {
       },
     );
   }
+
   static Future<void> showInfoDialog(BuildContext context) async {
     await showDialog(
       context: context,
@@ -131,9 +131,9 @@ class AlertDialogManager {
                 child: Text(
                   'Salir',
                   style: TextStyle(
-                    fontSize: 18.0,
-                    fontWeight: FontWeight.bold,
-                  ),
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
                 ),
               ),
             ),
@@ -170,7 +170,7 @@ class AlertDialogManager {
                     Navigator.pop(context);
                   },
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.black,
+                    backgroundColor: Colors.black,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
@@ -180,9 +180,9 @@ class AlertDialogManager {
                     child: Text(
                       'Cancelar',
                       style: TextStyle(
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.bold,
-                      ),
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white),
                     ),
                   ),
                 ),
@@ -199,7 +199,7 @@ class AlertDialogManager {
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.black,
+                    backgroundColor: Colors.black,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
@@ -209,9 +209,9 @@ class AlertDialogManager {
                     child: Text(
                       'Aceptar',
                       style: TextStyle(
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.bold,
-                      ),
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white),
                     ),
                   ),
                 ),
@@ -254,7 +254,7 @@ class AlertDialogManager {
                       Navigator.pop(context);
                     },
                     style: ElevatedButton.styleFrom(
-                      primary: Colors.black,
+                      backgroundColor: Colors.black,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
                       ),
@@ -264,9 +264,9 @@ class AlertDialogManager {
                       child: Text(
                         'Cancelar',
                         style: TextStyle(
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.bold,
-                        ),
+                            fontSize: 18.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white),
                       ),
                     ),
                   ),
@@ -276,7 +276,7 @@ class AlertDialogManager {
                       Navigator.popUntil(context, ModalRoute.withName('/Main'));
                     },
                     style: ElevatedButton.styleFrom(
-                      primary: Colors.black,
+                      backgroundColor: Colors.black,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
                       ),
@@ -286,9 +286,9 @@ class AlertDialogManager {
                       child: Text(
                         'Aceptar',
                         style: TextStyle(
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.bold,
-                        ),
+                            fontSize: 18.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white),
                       ),
                     ),
                   ),
@@ -341,9 +341,9 @@ class AlertDialogManager {
                     child: Text(
                       'INGLÉS',
                       style: TextStyle(
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.bold,
-                      ),
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white),
                     ),
                   ),
                 ),
@@ -365,9 +365,9 @@ class AlertDialogManager {
                     child: Text(
                       'ESPAÑOL',
                       style: TextStyle(
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.bold,
-                      ),
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white),
                     ),
                   ),
                 ),
@@ -387,9 +387,9 @@ class AlertDialogManager {
                     child: Text(
                       'CANCELAR',
                       style: TextStyle(
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.bold,
-                      ),
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white),
                     ),
                   ),
                 ),

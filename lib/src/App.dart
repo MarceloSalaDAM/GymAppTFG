@@ -17,13 +17,15 @@ import 'package:gym_app_tfg/src/login_views/on_boarding.dart';
 import 'package:gym_app_tfg/src/login_views/register_view.dart';
 import 'package:gym_app_tfg/src/login_views/splash_view.dart';
 import 'create_views/add_routine_view.dart';
+import 'detail_views/stats_view.dart';
 import 'list_views/list_routines_pred.dart';
 
 class App extends StatelessWidget {
   App({Key? key}) : super(key: key);
   FirebaseFirestore db = FirebaseFirestore.instance;
 
-  String nivelSeleccionadoGlobal = "Principiante"; // Inicializa con el valor predeterminado
+  String nivelSeleccionadoGlobal =
+      "Principiante"; // Inicializa con el valor predeterminado
 
   String obtenerNivelSeleccionado() {
     return nivelSeleccionadoGlobal;
@@ -50,6 +52,7 @@ class App extends StatelessWidget {
         '/OnBoarding': (context) => const OnBoardingView(),
         '/Splash': (context) => const SplashView(),
         '/DetailsProfile': (context) => const DetailsProfileView(),
+        '/Stats': (context) => StatisticsView(),
         '/ExerciseList': (context) => const ExerciseListScreen(ejercicios: []),
         '/CreateRoutine': (context) => const CrearRutinaView(ejercicios: []),
         '/ListRoutine': (context) => const RutinasUsuarioView(),

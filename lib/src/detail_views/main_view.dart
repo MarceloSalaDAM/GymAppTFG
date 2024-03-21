@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:gym_app_tfg/src/detail_views/stats_view.dart';
 import '../custom/alert_dialogs.dart';
 import '../custom/custom_drawer.dart';
 import '../firebase_objects/ejercicios_firebase.dart';
@@ -109,15 +110,7 @@ class _MainViewAppState extends State<MainViewApp> {
               child: _currentIndex == 1
                   ? MainListView(ejercicios: ejercicios)
                   : _currentIndex == 0
-                      ? const Center(
-                          child: Text(
-                            'Contenido de Estadísticas',
-                            style: TextStyle(
-                              fontSize: 24,
-                              color: Colors.black,
-                            ),
-                          ),
-                        )
+                      ? StatisticsView()
                       : _currentIndex == 2
                           ? const DetailsProfileView()
                           : Container(),
@@ -138,7 +131,7 @@ class _MainViewAppState extends State<MainViewApp> {
                           context, ejercicios);
                     },
                     backgroundColor: const Color(0XFF0f7991),
-                    child: const Icon(Icons.add, size: 30),
+                    child: const Icon(Icons.add, size: 30, color: Colors.white),
                   ),
                 ),
               ),

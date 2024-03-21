@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../firebase_objects/rutinas_firebase.dart';
 import '../detail_views/details_routine.dart';
@@ -270,14 +271,19 @@ class _RutinasUsuarioViewState extends State<RutinasUsuarioView> {
         pageFormat: PdfPageFormat.a4,
         margin: pw.EdgeInsets.all(20),
         build: (pw.Context context) {
-          return <pw.Widget>[
+          final List<pw.Widget> content = [];
+
+          content.add(
             pw.Container(
               alignment: pw.Alignment.topLeft,
               width: 100, // Ancho deseado de la imagen
               height: 100, // Alto deseado de la imagen
               child: pw.Image(image),
             ),
-            // Título grande y centrado para el nombre de la rutina
+          );
+
+          // Título grande y centrado para el nombre de la rutina
+          content.add(
             pw.Container(
               alignment: pw.Alignment.center,
               child: pw.Text(
@@ -289,9 +295,13 @@ class _RutinasUsuarioViewState extends State<RutinasUsuarioView> {
                 ),
               ),
             ),
-            // Espacio entre el título y la descripción
-            pw.SizedBox(height: 20),
-            // Descripción de la rutina con tamaño de fuente más pequeño y alineación izquierda
+          );
+
+          // Espacio entre el título y la descripción
+          content.add(pw.SizedBox(height: 20));
+
+          // Descripción de la rutina con tamaño de fuente más pequeño y alineación izquierda
+          content.add(
             pw.Container(
               alignment: pw.Alignment.topLeft,
               child: pw.Text(
@@ -302,57 +312,77 @@ class _RutinasUsuarioViewState extends State<RutinasUsuarioView> {
                 ),
               ),
             ),
-            // Espacio entre la descripción y la tabla de días y ejercicios
-            pw.SizedBox(height: 20),
-            pw.Divider(height: 20),
-            pw.SizedBox(height: 20),
-            // Tabla de días, ejercicios y detalles
-            for (var dia in rutina.dias.keys)
-              pw.Column(
-                crossAxisAlignment: pw.CrossAxisAlignment.start,
-                children: [
-                  pw.Container(
-                    alignment: pw.Alignment.topLeft,
-                    child: pw.Text(
-                      dia,
-                      style: pw.TextStyle(
-                        fontSize: 25,
-                        color: PdfColors.black,
+          );
+
+          // Espacio entre la descripción y la tabla de días y ejercicios
+          content.add(pw.SizedBox(height: 20));
+          content.add(pw.Divider(height: 20));
+          content.add(pw.SizedBox(height: 20));
+
+          // Ordenar los días de la rutina de lunes a domingo
+          final diasSemana = [
+            'LUNES',
+            'MARTES',
+            'MIÉRCOLES',
+            'JUEVES',
+            'VIERNES',
+            'SÁBADO',
+            'DOMINGO'
+          ];
+          for (var dia in diasSemana) {
+            if (rutina.dias.containsKey(dia)) {
+              content.add(
+                pw.Column(
+                  crossAxisAlignment: pw.CrossAxisAlignment.start,
+                  children: [
+                    pw.Container(
+                      alignment: pw.Alignment.topLeft,
+                      child: pw.Text(
+                        '${dia}${rutina.dias[dia]['grupo'] != null ? ': ${rutina.dias[dia]['grupo']}' : ''}',
+                        style: pw.TextStyle(
+                          fontSize: 25,
+                          color: PdfColors.black,
+                        ),
                       ),
                     ),
-                  ),
-                  pw.SizedBox(height: 10),
-                  // Tabla de ejercicios y detalles
-                  pw.TableHelper.fromTextArray(
-                    border: pw.TableBorder.all(),
-                    cellAlignment: pw.Alignment.centerLeft,
-                    headerAlignment: pw.Alignment.centerLeft,
-                    cellStyle: pw.TextStyle(fontSize: 16),
-                    headerStyle: pw.TextStyle(
-                        fontSize: 22, fontWeight: pw.FontWeight.bold),
-                    data: [
-                      // Encabezado de la tabla
-                      ['Ejercicio', 'Peso', 'Series', 'Repeticiones'],
-                      // Filas de datos de ejercicios
-                      for (var ejercicio in rutina.dias[dia]['ejercicios'])
-                        [
-                          ejercicio['nombre'] ?? '',
-                          ejercicio.containsKey('peso')
-                              ? '${ejercicio['peso']} kg' // Agrega "kg" después del peso
-                              : '',
-                          ejercicio.containsKey('series')
-                              ? ejercicio['series'].toString()
-                              : '',
-                          ejercicio.containsKey('repeticiones')
-                              ? ejercicio['repeticiones'].toString()
-                              : '',
-                        ],
-                    ],
-                  ),
-                  pw.SizedBox(height: 20),
-                ],
-              ),
-          ];
+                    pw.SizedBox(height: 10),
+                    // Tabla de ejercicios y detalles
+                    pw.TableHelper.fromTextArray(
+                      border: pw.TableBorder.all(),
+                      cellAlignment: pw.Alignment.centerLeft,
+                      headerAlignment: pw.Alignment.centerLeft,
+                      cellStyle: pw.TextStyle(fontSize: 16),
+                      headerStyle: pw.TextStyle(
+                        fontSize: 19,
+                        fontWeight: pw.FontWeight.bold,
+                      ),
+                      data: [
+                        // Encabezado de la tabla
+                        ['Ejercicio', 'Peso', 'Series', 'Repeticiones'],
+                        // Filas de datos de ejercicios
+                        for (var ejercicio in rutina.dias[dia]['ejercicios'])
+                          [
+                            ejercicio['nombre'] ?? '',
+                            ejercicio.containsKey('peso')
+                                ? '${ejercicio['peso']} kg'
+                                : '',
+                            ejercicio.containsKey('series')
+                                ? ejercicio['series'].toString()
+                                : '',
+                            ejercicio.containsKey('repeticiones')
+                                ? ejercicio['repeticiones'].toString()
+                                : '',
+                          ],
+                      ],
+                    ),
+                    pw.SizedBox(height: 20),
+                  ],
+                ),
+              );
+            }
+          }
+
+          return content;
         },
       ),
     );
@@ -415,7 +445,7 @@ class _RutinasUsuarioViewState extends State<RutinasUsuarioView> {
                       Navigator.of(context).pop();
                     },
                     style: ElevatedButton.styleFrom(
-                      primary: Colors.black,
+                      backgroundColor: Colors.black,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
                       ),
@@ -427,6 +457,7 @@ class _RutinasUsuarioViewState extends State<RutinasUsuarioView> {
                         style: TextStyle(
                           fontSize: 18.0,
                           fontWeight: FontWeight.bold,
+                          color: Colors.white,
                         ),
                       ),
                     ),
@@ -453,7 +484,7 @@ class _RutinasUsuarioViewState extends State<RutinasUsuarioView> {
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      primary: Colors.black,
+                      backgroundColor: Colors.black,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
                       ),
@@ -465,6 +496,7 @@ class _RutinasUsuarioViewState extends State<RutinasUsuarioView> {
                         style: TextStyle(
                           fontSize: 18.0,
                           fontWeight: FontWeight.bold,
+                          color: Colors.white,
                         ),
                       ),
                     ),

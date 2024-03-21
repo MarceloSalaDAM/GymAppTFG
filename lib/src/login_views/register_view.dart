@@ -128,7 +128,8 @@ class RegisterView extends StatelessWidget {
                             children: [
                               ElevatedButton.icon(
                                 onPressed: () {
-                                  Navigator.of(context).popAndPushNamed('/Login');
+                                  Navigator.of(context)
+                                      .popAndPushNamed('/Login');
                                 },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.black,
@@ -136,9 +137,12 @@ class RegisterView extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(10.0),
                                   ),
                                 ),
-                                icon: Icon(Icons.arrow_back, size: 30), // Añade el ícono de retroceso
+                                icon: Icon(Icons.arrow_back,
+                                    size: 30, color: Colors.white),
+                                // Añade el ícono de retroceso
                                 label: Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 1.0),
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 8.0, horizontal: 1.0),
                                   child: Text(
                                     '', // Deja el texto vacío
                                     style: TextStyle(
@@ -148,7 +152,6 @@ class RegisterView extends StatelessWidget {
                                   ),
                                 ),
                               ),
-
                               ElevatedButton(
                                 onPressed: () {
                                   if (iContra.getText() == iContra2.getText()) {
@@ -170,9 +173,9 @@ class RegisterView extends StatelessWidget {
                                   child: Text(
                                     'ACEPTAR',
                                     style: TextStyle(
-                                      fontSize: 18.0,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                        fontSize: 18.0,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white),
                                   ),
                                 ),
                               ),
