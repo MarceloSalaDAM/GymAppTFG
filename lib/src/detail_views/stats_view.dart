@@ -7,76 +7,97 @@ class StatisticsView extends StatefulWidget {
 }
 
 class _StatisticsViewState extends State<StatisticsView> {
+  // Lista de títulos para cada tarjeta
+  final List<String> _titles = [
+    'Calcular IMC',
+    'Mis objetivos',
+    'Mis records',
+    'Mi progreso',
+    'Título 5',
+    'Título 6',
+  ];
+
+  // Contenido correspondiente a cada tarjeta
+  final Map<String, Widget> _contentMap = {
+    'Calcular IMC': Text('Contenido para Calcular IMC'),
+    'Mis objetivos': Text('Contenido para Mis objetivos'),
+    'Mis records': Text('Contenido para Mis records'),
+    'Mi progreso': Text('Mi progreso'),
+    'Título 5': Text('Contenido para Título 5'),
+    'Título 6': Text('Contenido para Título 6'),
+  };
+
+  // Variable para almacenar el contenido seleccionado
+  Widget _selectedContent = Text('Seleccione una opción');
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              margin: EdgeInsets.only(top: 8), // Margen superior para el texto
-              child: const Text(
-                'Contenido de Estadísticas',
-                style: TextStyle(
-                  fontSize: 24,
-                  color: Colors.black,
-                ),
-              ),
-            ),
-            SizedBox(height: 20),
-            // Aquí colocaremos la gráfica
-            Container(
-              height: 300, // Altura suficiente para mostrar la gráfica
-              padding: EdgeInsets.all(16),
-              child: LineChart(
-                LineChartData(
-                  lineBarsData: [
-                    LineChartBarData(
-                      spots: [
-                        FlSpot(0, 3),
-                        FlSpot(1, 4),
-                        FlSpot(2, 3.5),
-                        FlSpot(3, 5),
-                        FlSpot(4, 4),
-                        FlSpot(5, 6),
-                        FlSpot(6, 5),
-                      ],
-                      isCurved: true,
-                      color: Colors.blue,
-                      barWidth: 4,
-                      isStrokeCapRound: true,
-                      belowBarData: BarAreaData(show: false),
-                    ),
-                  ],
-                  minY: 0,
-                  titlesData: FlTitlesData(
-                    leftTitles: AxisTitles(),
-                    bottomTitles: AxisTitles(),
-                  ),
-                  gridData: FlGridData(
-                    show: true,
-                    drawVerticalLine: true,
-                    drawHorizontalLine: true,
-                    getDrawingHorizontalLine: (value) {
-                      return FlLine(
-                        color: const Color(0xFFE4E8EB),
-                        strokeWidth: 1,
-                      );
-                    },
-                    getDrawingVerticalLine: (value) {
-                      return FlLine(
-                        color: const Color(0xFFE4E8EB),
-                        strokeWidth: 1,
-                      );
-                    },
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Primera sección de la pantalla con el grid de tarjetas
+          Container(
+            color: Colors.blue,
+            padding: EdgeInsets.all(10),
+            margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  height: 150, // Altura del grid de tarjetas
+                  padding:EdgeInsets.fromLTRB(10, 10, 10, 10),
+                  child: GridView.count(
+                    crossAxisCount: 2, // 2 tarjetas por fila
+                    childAspectRatio: 4, // Relación de aspecto de las tarjetas
+                    children: _buildCards(),
                   ),
                 ),
+              ],
+            ),
+          ),
+          // Segunda sección de la pantalla
+          Expanded(
+            child: Container(
+              margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
+              color: Colors.grey[300],
+              padding: EdgeInsets.all(20),
+              child: AnimatedSwitcher(
+                duration: Duration(milliseconds: 300),
+                child: _selectedContent,
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
+  }
+
+  // Método para generar las tarjetas
+  List<Widget> _buildCards() {
+    return _titles.map((title) {
+      final index = _titles.indexOf(title);
+      return GestureDetector(
+        onTap: () {
+          // Al pulsar la tarjeta, actualizar el contenido seleccionado
+          setState(() {
+            _selectedContent = _contentMap[title] ?? Text('Seleccione una opción');
+          });
+        },
+        child: Card(
+          color: Colors.blue[100],
+          elevation: 3,
+          child: Center(
+            child: Text(
+              title, // Título diferente para cada tarjeta
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.black,
+              ),
+            ),
+          ),
+        ),
+      );
+    }).toList();
   }
 }
