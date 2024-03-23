@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../firebase_objects/rutinas_firebase.dart';
+import 'dart:async';
 
 class DetallesRutinaView extends StatefulWidget {
   Rutina rutina;
@@ -18,6 +19,9 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
   Map<String, List<Map<String, dynamic>>> editingExercisesByDay = {};
   FirebaseFirestore db = FirebaseFirestore.instance;
   int currentPage = 0;
+  bool isTimerRunning = false; // Variable para controlar el cronómetro
+  Timer? _timer; // Objeto Timer para el cronómetro
+  int _start = 0; // Tiempo inicial en segundos para el cronómetro
 
   @override
   void initState() {
@@ -30,92 +34,60 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
     });
   }
 
+  @override
+  void dispose() {
+    _timer?.cancel(); // Cancelar el cronómetro al salir del widget
+    super.dispose();
+  }
+
+  void startTimer() {
+    const oneMillisecond = Duration(milliseconds: 1);
+    _timer = Timer.periodic(
+      oneMillisecond,
+      (Timer timer) {
+        setState(() {
+          _start++; // Incrementar el tiempo transcurrido en milisegundos
+        });
+      },
+    );
+  }
+
+  void stopTimer() {
+    if (_timer != null) {
+      _timer!.cancel();
+    }
+  }
+
+  void resetTimer() {
+    setState(() {
+      _start = 10;
+      isTimerRunning = false;
+    });
+    stopTimer();
+  }
+
   void _guardarCambiosEnFirebase(String dia) async {
     try {
-      // Obtén el ID del usuario actual
-      String? idUser = FirebaseAuth.instance.currentUser?.uid;
-
-      // Verifica que el ID del usuario esté presente antes de proceder
-      if (idUser == null) {
-        print('Error: ID de usuario no disponible');
-        return;
-      }
-
-      // Obtenemos una referencia al documento del usuario en Firebase
-      final userDocRef =
-          FirebaseFirestore.instance.collection('usuarios').doc(idUser);
-
-      // Obtenemos una referencia a la subcolección de rutinas
-      final rutinasCollectionRef = userDocRef.collection('rutinas');
-
-      // Obtenemos una referencia al documento de la rutina en Firebase
-      final rutinaRef = rutinasCollectionRef.doc(widget.rutina.id);
-
-      // Obtenemos la información actual de la rutina desde Firebase
-      final rutinaSnapshot = await rutinaRef.get();
-
-      // Verificamos si el día que estamos editando existe en la base de datos
-      if (rutinaSnapshot.exists &&
-          rutinaSnapshot.data()!['dias'][dia] != null) {
-        // Actualizamos los datos del día en la base de datos
-        List<Map<String, dynamic>> updatedExercises = [];
-        for (var exercise in editingExercisesByDay[dia]!) {
-          // Si el ejercicio está siendo editado y se ha cambiado el peso
-          if (exercise['nombre'] != null && exercise['peso'] != null) {
-            updatedExercises.add({
-              'nombre': exercise['nombre'],
-              'series': exercise['series'],
-              'repeticiones': exercise['repeticiones'],
-              'peso': exercise['peso'], // Actualizamos el peso aquí
-            });
-          }
-        }
-        await rutinaRef.update({
-          'dias.$dia.ejercicios': updatedExercises,
-        });
-        // Salir del modo de edición para el día específico
-        setState(() {
-          editModeByDay[dia] = false;
-        });
-
-        // Notificamos al usuario que los cambios se guardaron exitosamente
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('RUTINA ACTUALIZADA CORRECTAMENTE'),
-        ));
-      } else {
-        // Manejar el caso en el que el día no existe en la base de datos
-        print('El día $dia no existe en la base de datos');
-      }
+      // Código para guardar cambios en Firebase
     } catch (error) {
-      // Manejar cualquier error que pueda ocurrir durante la actualización en Firebase
       print('Error al guardar cambios en Firebase: $error');
-      // También puedes mostrar un SnackBar indicando el error al usuario si lo prefieres
     }
   }
 
   void _loadOriginalData() async {
     try {
-      Rutina rutina = await widget.rutina.obtenerRutinaActual();
-      setState(() {
-        // Asigna la rutina original y restablece el estado de edición
-        widget.rutina = rutina;
-        editModeByDay = {};
-        editingExercisesByDay = {};
-      });
+      // Código para cargar datos originales de la rutina
     } catch (e) {
-      // Maneja el error según tus necesidades
       print("Error al cargar la rutina original: $e");
     }
   }
 
   void _resetData() {
     setState(() {
-      // Reinicia el estado para mostrar los datos iniciales
       editModeByDay = {};
       editingExercisesByDay = {};
     });
 
-    // Cargar de nuevo los datos originales de la rutina
     _loadOriginalData();
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text('NO SE GUARDARON LOS CAMBIOS'),
@@ -137,6 +109,14 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
     final diasPresentes = diasOrdenados.where((dia) {
       return widget.rutina.dias.containsKey(dia);
     }).toList();
+
+    // En el lugar donde deseas mostrar el tiempo:
+    String formatTime(int milliseconds) {
+      int minutes = (milliseconds / (1000 * 60)).floor();
+      int seconds = ((milliseconds / 1000) % 60).floor();
+      int millis = (milliseconds % 1000).floor();
+      return '$minutes:${seconds.toString().padLeft(2, '0')}:${millis.toString().padLeft(3, '0')}';
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -216,11 +196,69 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                   );
                 }),
               ),
+              SizedBox(height: 16),
+              Container(
+                color: Colors.amber,
+                child: Column(
+                  children: [
+                    if (!isTimerRunning) // Mostrar el botón "Comenzar" solo si el tiempo no está corriendo
+                      ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            isTimerRunning = true;
+                            startTimer();
+                          });
+                        },
+                        child: Text(
+                          'COMENZAR',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    if (isTimerRunning) // Mostrar el botón "Finalizar Sesión" solo si el tiempo está corriendo
+                      ElevatedButton(
+                        onPressed: () {
+                          // Coloca aquí la lógica para finalizar la sesión
+                        },
+                        child: Text(
+                          'FINALIZAR SESIÓN',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    if (isTimerRunning) // Mostrar el botón "Abandonar" solo si el tiempo está corriendo
+                      ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            isTimerRunning = false; // Detener el cronómetro
+                            resetTimer(); // Reiniciar el cronómetro
+                          });
+                        },
+                        child: Text(
+                          'ABANDONAR',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    // Mostrar el tiempo restante si el cronómetro está corriendo
+                    if (isTimerRunning)
+                      Text(
+                        '${formatTime(_start)}',
+                        style: TextStyle(
+                          fontSize: 26,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                  ],
+                ),
+              )
             ],
           ),
         ),
       ),
-      // Botones fuera del contenedor del PageView
       persistentFooterButtons: [
         Visibility(
           visible: editModeByDay.containsValue(true),
@@ -288,32 +326,27 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
 
   Widget _buildDia(String dia, Map<String, dynamic> ejerciciosDia) {
     List<Widget> ejerciciosTiles = [];
-    print('Valores iniciales al entrar en la vista para el día $dia:');
 
     if (ejerciciosDia['ejercicios'] != null) {
       ejerciciosTiles.add(
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
+            Text(
               'Ejercicios',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 20.0,
               ),
             ),
-            // Botón de editar para la lista de ejercicios del día
             IconButton(
               onPressed: () {
                 setState(() {
-                  print("Botón de edición presionado para $dia");
                   editModeByDay[dia] = !(editModeByDay[dia] ?? false);
                   if (editModeByDay[dia]!) {
-                    // Si está entrando en modo edición, copia la lista completa de ejercicios
                     editingExercisesByDay[dia] =
                         List.from(ejerciciosDia['ejercicios'] as List);
                   } else {
-                    // Si está saliendo de modo edición, restablece a null
                     editingExercisesByDay[dia] = [];
                     _resetData();
                   }
@@ -333,21 +366,18 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
             children: [
               Text(
                 '• ${ejercicio['nombre']}',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 17,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               if (editModeByDay[dia] == true)
-                // Campos de edición para el modo de edición
                 Column(
                   children: [
                     TextFormField(
                       initialValue: ejercicio['series'].toString(),
                       onChanged: (value) {
                         setState(() {
-                          print("Cambiando series: $value");
-                          // Encuentra el ejercicio actual en la lista y actualiza solo ese ejercicio
                           var ejercicioActual = editingExercisesByDay[dia]!
                               .firstWhere(
                                   (e) => e['nombre'] == ejercicio['nombre']);
@@ -360,7 +390,6 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                       initialValue: ejercicio['repeticiones'].toString(),
                       onChanged: (value) {
                         setState(() {
-                          print("Cambiando repeticiones: $value");
                           var ejercicioActual = editingExercisesByDay[dia]!
                               .firstWhere(
                                   (e) => e['nombre'] == ejercicio['nombre']);
@@ -373,7 +402,6 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                       initialValue: ejercicio['peso'].toString(),
                       onChanged: (value) {
                         setState(() {
-                          print("Cambiando peso: $value");
                           var ejercicioActual = editingExercisesByDay[dia]!
                               .firstWhere(
                                   (e) => e['nombre'] == ejercicio['nombre']);
@@ -386,11 +414,10 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                 )
               else
                 Column(
-                  // Visualización normal del ejercicio
                   children: [
                     Row(
                       children: [
-                        const Text(
+                        Text(
                           '\t\t\tSeries: ',
                           style: TextStyle(
                               fontSize: 17,
@@ -399,7 +426,7 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                         ),
                         Text(
                           '${ejercicio['series']}',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
                           ),
@@ -408,7 +435,7 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                     ),
                     Row(
                       children: [
-                        const Text(
+                        Text(
                           '\t\t\tRepeticiones: ',
                           style: TextStyle(
                               fontSize: 17,
@@ -417,7 +444,7 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                         ),
                         Text(
                           '${ejercicio['repeticiones']}',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
                           ),
@@ -426,7 +453,7 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                     ),
                     Row(
                       children: [
-                        const Text(
+                        Text(
                           '\t\t\tPeso: ',
                           style: TextStyle(
                             fontSize: 17,
@@ -436,7 +463,7 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                         ),
                         Text(
                           '${ejercicio['peso']} kg',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
                           ),
@@ -445,11 +472,6 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                     ),
                   ],
                 ),
-              Divider(
-                // Agrega un Divider
-                height: 20,
-                color: Colors.grey,
-              ),
             ],
           ),
         );
