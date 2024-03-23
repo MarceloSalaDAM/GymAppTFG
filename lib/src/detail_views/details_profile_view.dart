@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:intl/intl.dart';
 import 'dart:io';
 
 import '../custom/picker_button.dart';
@@ -31,6 +32,8 @@ class _DetailsProfileViewState extends State<DetailsProfileView> {
   late String _initialGenero = '';
   late String _initialEstatura = '';
   late String _initialPeso = '';
+  late String _ultimaModFija='';
+
 
   @override
   void initState() {
@@ -67,6 +70,10 @@ class _DetailsProfileViewState extends State<DetailsProfileView> {
         _initialGenero = selectedGenero;
         _initialEstatura = selectedEstatura;
         _initialPeso = selectedPeso;
+        // Establecer la fecha y hora de la última modificación
+        Timestamp ultimaModTimestamp = userData['ultimaMod'];
+        DateTime ultimaModDateTime = ultimaModTimestamp.toDate();
+        _ultimaModFija = DateFormat('dd/MM/yyyy HH:mm').format(ultimaModDateTime);
 
         // Establecer _isLoading en false después de cargar los datos
         _isLoading = false;
@@ -93,7 +100,7 @@ class _DetailsProfileViewState extends State<DetailsProfileView> {
       var file = File(pickedFile.path);
       String filename = 'profile_image.jpg';
       Reference ref =
-          FirebaseStorage.instance.ref().child("profileImages/$filename");
+      FirebaseStorage.instance.ref().child("profileImages/$filename");
       UploadTask uploadTask = ref.putFile(file);
 
       await uploadTask.whenComplete(() async {
@@ -111,15 +118,21 @@ class _DetailsProfileViewState extends State<DetailsProfileView> {
   }
 
   void acceptPressed(
-    String nombre,
-    String edad,
-    String genero,
-    String estatura,
-    String peso,
-  ) async {
+      String nombre,
+      String edad,
+      String genero,
+      String estatura,
+      String peso,
+      ) async {
     try {
       String? idUser = FirebaseAuth.instance.currentUser?.uid;
       final docRef = db.collection("usuarios").doc(idUser);
+
+      // Obtener la fecha y hora actual
+      DateTime now = DateTime.now();
+
+      // Formatear la fecha y hora actual como "dd/MM/yyyy HH:mm"
+      String formattedDate = DateFormat('dd/MM/yyyy HH:mm').format(now);
 
       await docRef.update({
         'nombre': nombre,
@@ -128,6 +141,13 @@ class _DetailsProfileViewState extends State<DetailsProfileView> {
         'estatura': estatura,
         'peso': peso,
         'imageURL': _imagePath,
+        'ultimaMod': now,
+        // Actualizar la fecha y hora de la última modificación
+      });
+
+      // Actualizar el valor de ultimaMod en el estado local
+      setState(() {
+        _ultimaModFija = formattedDate;
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -186,12 +206,12 @@ class _DetailsProfileViewState extends State<DetailsProfileView> {
       padding: const EdgeInsets.all(8.0),
       child: isEditing
           ? TextFormField(
-              controller: nombreController,
-              decoration: InputDecoration(
-                labelText: label,
-                border: InputBorder.none,
-              ),
-            )
+        controller: nombreController,
+        decoration: InputDecoration(
+          labelText: label,
+          border: InputBorder.none,
+        ),
+      )
           : _buildDataRow(label, value),
     );
   }
@@ -292,7 +312,7 @@ class _DetailsProfileViewState extends State<DetailsProfileView> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,
                 minimumSize:
-                    const Size(140, 50), // Ajusta el tamaño según sea necesario
+                const Size(140, 50), // Ajusta el tamaño según sea necesario
               ),
             ),
 
@@ -323,7 +343,7 @@ class _DetailsProfileViewState extends State<DetailsProfileView> {
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0XFF0f7991),
               minimumSize:
-                  const Size(140, 50), // Ajusta el tamaño según sea necesario
+              const Size(140, 50), // Ajusta el tamaño según sea necesario
             ),
           ),
         ],
@@ -370,21 +390,30 @@ class _DetailsProfileViewState extends State<DetailsProfileView> {
                           child: _isImageLoading
                               ? const CircularProgressIndicator()
                               : _imagePath != null
-                                  ? Image.network(
-                                      _imagePath!,
-                                      fit: BoxFit.cover,
-                                    )
-                                  : const Center(
-                                      child: Icon(
-                                        Icons.add_a_photo,
-                                        size: 60,
-                                        color: Colors.white,
-                                      ),
-                                    ),
+                              ? Image.network(
+                            _imagePath!,
+                            fit: BoxFit.cover,
+                          )
+                              : const Center(
+                            child: Icon(
+                              Icons.add_a_photo,
+                              size: 60,
+                              color: Colors.white,
+                            ),
+                          ),
                         ),
                       ),
                     ),
                   ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              // Espacio entre la imagen y el texto de última modificación
+              Text(
+                'Última modificación: $_ultimaModFija',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey[600],
                 ),
               ),
               Expanded(
@@ -399,50 +428,50 @@ class _DetailsProfileViewState extends State<DetailsProfileView> {
                         const Divider(height: 25),
                         _isEditing
                             ? _buildEditableField(
-                                'GÉNERO',
-                                ['Hombre', 'Mujer', 'Otro'],
-                                selectedGenero, (newValue) {
-                                setState(() {
-                                  selectedGenero = newValue!;
-                                });
-                              })
+                            'GÉNERO',
+                            ['Hombre', 'Mujer', 'Otro'],
+                            selectedGenero, (newValue) {
+                          setState(() {
+                            selectedGenero = newValue!;
+                          });
+                        })
                             : _buildNonEditableField('GÉNERO', selectedGenero),
                         const Divider(height: 25),
                         _isEditing
                             ? _buildEditableField(
-                                'EDAD',
-                                List.generate(
-                                    55, (index) => (16 + index).toString()),
-                                selectedEdad, (newValue) {
-                                setState(() {
-                                  selectedEdad = newValue!;
-                                });
-                              })
+                            'EDAD',
+                            List.generate(
+                                55, (index) => (16 + index).toString()),
+                            selectedEdad, (newValue) {
+                          setState(() {
+                            selectedEdad = newValue!;
+                          });
+                        })
                             : _buildNonEditableField('EDAD', selectedEdad),
                         const Divider(height: 25),
                         _isEditing
                             ? _buildEditableField(
-                                'ESTATURA (cm)',
-                                List.generate(
-                                    221, (index) => (100 + index).toString()),
-                                selectedEstatura, (newValue) {
-                                setState(() {
-                                  selectedEstatura = newValue!;
-                                });
-                              })
+                            'ESTATURA (cm)',
+                            List.generate(
+                                221, (index) => (100 + index).toString()),
+                            selectedEstatura, (newValue) {
+                          setState(() {
+                            selectedEstatura = newValue!;
+                          });
+                        })
                             : _buildNonEditableField(
-                                'ESTATURA (cm)', selectedEstatura),
+                            'ESTATURA (cm)', selectedEstatura),
                         const Divider(height: 25),
                         _isEditing
                             ? _buildEditableField(
-                                'PESO (kg)',
-                                List.generate(
-                                    160, (index) => (40 + index).toString()),
-                                selectedPeso, (newValue) {
-                                setState(() {
-                                  selectedPeso = newValue!;
-                                });
-                              })
+                            'PESO (kg)',
+                            List.generate(
+                                160, (index) => (40 + index).toString()),
+                            selectedPeso, (newValue) {
+                          setState(() {
+                            selectedPeso = newValue!;
+                          });
+                        })
                             : _buildNonEditableField('PESO (kg)', selectedPeso),
                         const SizedBox(height: 20),
                       ],

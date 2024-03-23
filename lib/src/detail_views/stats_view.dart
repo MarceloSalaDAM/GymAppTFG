@@ -16,7 +16,7 @@ class _StatisticsViewState extends State<StatisticsView> {
           children: [
             Container(
               margin: EdgeInsets.only(top: 8), // Margen superior para el texto
-              child: Text(
+              child: const Text(
                 'Contenido de Estadísticas',
                 style: TextStyle(
                   fontSize: 24,
