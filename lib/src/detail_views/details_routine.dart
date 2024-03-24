@@ -1,6 +1,9 @@
+import 'dart:isolate';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
 import '../firebase_objects/rutinas_firebase.dart';
 import 'dart:async';
 
@@ -17,11 +20,10 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
   PageController _pageController = PageController();
   Map<String, bool> editModeByDay = {};
   Map<String, List<Map<String, dynamic>>> editingExercisesByDay = {};
-  FirebaseFirestore db = FirebaseFirestore.instance;
   int currentPage = 0;
-  bool isTimerRunning = false; // Variable para controlar el cronómetro
-  Timer? _timer; // Objeto Timer para el cronómetro
-  int _start = 0; // Tiempo inicial en segundos para el cronómetro
+  bool isTimerRunning = false;
+  Timer? _timer;
+  int _start = 0;
 
   @override
   void initState() {
@@ -32,12 +34,29 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
         currentPage = _pageController.page!.round();
       });
     });
+
+    // Inicia el Isolate en segundo plano
+    startBackgroundIsolate();
   }
 
-  @override
-  void dispose() {
-    _timer?.cancel(); // Cancelar el cronómetro al salir del widget
-    super.dispose();
+  // Método para iniciar el Isolate en segundo plano
+  void startBackgroundIsolate() async {
+    ReceivePort receivePort = ReceivePort();
+
+    // Inicia un Isolate y pasa el SendPort para comunicación
+    Isolate.spawn(_backgroundTask, receivePort.sendPort);
+  }
+
+  // Método que será ejecutado en el Isolate en segundo plano
+  static void _backgroundTask(SendPort sendPort) {
+    Timer.periodic(Duration(seconds: 1), (Timer timer) {
+      // Ejecuta tu tarea en segundo plano aquí
+      sendPort.send("Background task running");
+    });
+  }
+
+  void onStart() {
+    startTimer();
   }
 
   void startTimer() {
@@ -46,7 +65,7 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
       oneMillisecond,
       (Timer timer) {
         setState(() {
-          _start++; // Incrementar el tiempo transcurrido en milisegundos
+          _start++;
         });
       },
     );
@@ -196,9 +215,11 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                   );
                 }),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Container(
-                color: Colors.amber,
+                width: 400,
+                decoration:
+                    BoxDecoration(border: Border.all(color: Colors.black)),
                 child: Column(
                   children: [
                     if (!isTimerRunning) // Mostrar el botón "Comenzar" solo si el tiempo no está corriendo
@@ -209,26 +230,34 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                             startTimer();
                           });
                         },
-                        child: Text(
-                          'COMENZAR',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0XFF0f7991),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
                           ),
+                        ),
+                        child: const Padding(
+                          padding: EdgeInsets.symmetric(
+                              vertical: 8.0, horizontal: 16.0),
+                          child: Text(
+                            'EMPEZAR SESIÓN',
+                            style: TextStyle(
+                              fontSize: 15.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    if (isTimerRunning)
+                      Text(
+                        formatTime(_start),
+                        style: const TextStyle(
+                          fontSize: 26,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     if (isTimerRunning) // Mostrar el botón "Finalizar Sesión" solo si el tiempo está corriendo
-                      ElevatedButton(
-                        onPressed: () {
-                          // Coloca aquí la lógica para finalizar la sesión
-                        },
-                        child: Text(
-                          'FINALIZAR SESIÓN',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    if (isTimerRunning) // Mostrar el botón "Abandonar" solo si el tiempo está corriendo
                       ElevatedButton(
                         onPressed: () {
                           setState(() {
@@ -236,20 +265,50 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                             resetTimer(); // Reiniciar el cronómetro
                           });
                         },
-                        child: Text(
-                          'ABANDONAAAR',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                        ),
+                        child: const Padding(
+                          padding: EdgeInsets.symmetric(
+                              vertical: 8.0, horizontal: 16.0),
+                          child: Text(
+                            'FINALIZAR SESIÓN',
+                            style: TextStyle(
+                              fontSize: 15.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                       ),
-                    // Mostrar el tiempo restante si el cronómetro está corriendo
-                    if (isTimerRunning)
-                      Text(
-                        '${formatTime(_start)}',
-                        style: TextStyle(
-                          fontSize: 26,
-                          fontWeight: FontWeight.bold,
+                    if (isTimerRunning) // Mostrar el botón "Finalizar Sesión" solo si el tiempo está corriendo
+                      ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            isTimerRunning = false; // Detener el cronómetro
+                            resetTimer(); // Reiniciar el cronómetro
+                          });
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                        ),
+                        child: const Padding(
+                          padding: EdgeInsets.symmetric(
+                              vertical: 8.0, horizontal: 16.0),
+                          child: Text(
+                            'ABANDONAR SESIÓN',
+                            style: TextStyle(
+                              fontSize: 15.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
                         ),
                       ),
                   ],
@@ -384,7 +443,7 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                           ejercicioActual['series'] = int.parse(value);
                         });
                       },
-                      decoration: InputDecoration(labelText: 'Series'),
+                      decoration: const InputDecoration(labelText: 'Series'),
                     ),
                     TextFormField(
                       initialValue: ejercicio['repeticiones'].toString(),
@@ -396,7 +455,8 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                           ejercicioActual['repeticiones'] = int.parse(value);
                         });
                       },
-                      decoration: InputDecoration(labelText: 'Repeticiones'),
+                      decoration:
+                          const InputDecoration(labelText: 'Repeticiones'),
                     ),
                     TextFormField(
                       initialValue: ejercicio['peso'].toString(),
@@ -408,7 +468,7 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                           ejercicioActual['peso'] = double.parse(value);
                         });
                       },
-                      decoration: InputDecoration(labelText: 'Peso (kg)'),
+                      decoration: const InputDecoration(labelText: 'Peso (kg)'),
                     ),
                   ],
                 )
@@ -417,7 +477,7 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                   children: [
                     Row(
                       children: [
-                        Text(
+                        const Text(
                           '\t\t\tSeries: ',
                           style: TextStyle(
                               fontSize: 17,
@@ -426,7 +486,7 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                         ),
                         Text(
                           '${ejercicio['series']}',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
                           ),
@@ -435,7 +495,7 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                     ),
                     Row(
                       children: [
-                        Text(
+                        const Text(
                           '\t\t\tRepeticiones: ',
                           style: TextStyle(
                               fontSize: 17,
@@ -444,7 +504,7 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                         ),
                         Text(
                           '${ejercicio['repeticiones']}',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
                           ),
@@ -453,7 +513,7 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                     ),
                     Row(
                       children: [
-                        Text(
+                        const Text(
                           '\t\t\tPeso: ',
                           style: TextStyle(
                             fontSize: 17,
@@ -463,7 +523,7 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                         ),
                         Text(
                           '${ejercicio['peso']} kg',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
                           ),
