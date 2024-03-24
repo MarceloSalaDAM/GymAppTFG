@@ -237,7 +237,7 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                           });
                         },
                         child: Text(
-                          'ABANDONAR',
+                          'ABANDONAAAR',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                           ),
