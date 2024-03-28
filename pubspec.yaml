@@ -50,6 +50,7 @@ dependencies:
   path_provider: ^2.0.2
   fl_chart: ^0.66.2
   flutter_background_service: ^5.0.5
+  provider: ^5.0.0
 
 
 dev_dependencies:

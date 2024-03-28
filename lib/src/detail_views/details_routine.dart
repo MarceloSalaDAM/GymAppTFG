@@ -4,8 +4,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
+import 'package:provider/provider.dart';
+import '../custom/timer.dart';
+import '../custom/timer_provider.dart';
 import '../firebase_objects/rutinas_firebase.dart';
 import 'dart:async';
+
+final BackgroundTimer backgroundTimer = BackgroundTimer();
 
 class DetallesRutinaView extends StatefulWidget {
   Rutina rutina;
@@ -17,13 +22,12 @@ class DetallesRutinaView extends StatefulWidget {
 }
 
 class _DetallesRutinaViewState extends State<DetallesRutinaView> {
+  late Function() onStart;
   PageController _pageController = PageController();
   Map<String, bool> editModeByDay = {};
   Map<String, List<Map<String, dynamic>>> editingExercisesByDay = {};
   int currentPage = 0;
   bool isTimerRunning = false;
-  Timer? _timer;
-  int _start = 0;
 
   @override
   void initState() {
@@ -34,69 +38,74 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
         currentPage = _pageController.page!.round();
       });
     });
-
-    // Inicia el Isolate en segundo plano
-    startBackgroundIsolate();
-  }
-
-  // Método para iniciar el Isolate en segundo plano
-  void startBackgroundIsolate() async {
-    ReceivePort receivePort = ReceivePort();
-
-    // Inicia un Isolate y pasa el SendPort para comunicación
-    Isolate.spawn(_backgroundTask, receivePort.sendPort);
-  }
-
-  // Método que será ejecutado en el Isolate en segundo plano
-  static void _backgroundTask(SendPort sendPort) {
-    Timer.periodic(Duration(seconds: 1), (Timer timer) {
-      // Ejecuta tu tarea en segundo plano aquí
-      sendPort.send("Background task running");
-    });
-  }
-
-  void onStart() {
-    startTimer();
-  }
-
-  void startTimer() {
-    const oneMillisecond = Duration(milliseconds: 1);
-    _timer = Timer.periodic(
-      oneMillisecond,
-      (Timer timer) {
-        setState(() {
-          _start++;
-        });
-      },
-    );
-  }
-
-  void stopTimer() {
-    if (_timer != null) {
-      _timer!.cancel();
-    }
-  }
-
-  void resetTimer() {
-    setState(() {
-      _start = 10;
-      isTimerRunning = false;
-    });
-    stopTimer();
   }
 
   void _guardarCambiosEnFirebase(String dia) async {
-    try {
-      // Código para guardar cambios en Firebase
-    } catch (error) {
-      print('Error al guardar cambios en Firebase: $error');
+    // Obtén el ID del usuario actual
+    String? idUser = FirebaseAuth.instance.currentUser?.uid;
+
+    // Verifica que el ID del usuario esté presente antes de proceder
+    if (idUser == null) {
+      print('Error: ID de usuario no disponible');
+      return;
+    }
+
+    // Obtenemos una referencia al documento del usuario en Firebase
+    final userDocRef =
+        FirebaseFirestore.instance.collection('usuarios').doc(idUser);
+
+    // Obtenemos una referencia a la subcolección de rutinas
+    final rutinasCollectionRef = userDocRef.collection('rutinas');
+
+    // Obtenemos una referencia al documento de la rutina en Firebase
+    final rutinaRef = rutinasCollectionRef.doc(widget.rutina.id);
+
+    // Obtenemos la información actual de la rutina desde Firebase
+    final rutinaSnapshot = await rutinaRef.get();
+    // Verificamos si el día que estamos editando existe en la base de datos
+    if (rutinaSnapshot.exists && rutinaSnapshot.data()!['dias'][dia] != null) {
+      // Actualizamos los datos del día en la base de datos
+      List<Map<String, dynamic>> updatedExercises = [];
+      for (var exercise in editingExercisesByDay[dia]!) {
+        // Si el ejercicio está siendo editado y se ha cambiado el peso
+        if (exercise['nombre'] != null && exercise['peso'] != null) {
+          updatedExercises.add({
+            'nombre': exercise['nombre'],
+            'series': exercise['series'],
+            'repeticiones': exercise['repeticiones'],
+            'peso': exercise['peso'], // Actualizamos el peso aquí
+          });
+        }
+      }
+      await rutinaRef.update({
+        'dias.$dia.ejercicios': updatedExercises,
+      });
+      // Salir del modo de edición para el día específico
+      setState(() {
+        editModeByDay[dia] = false;
+      });
+      // Notificamos al usuario que los cambios se guardaron exitosamente
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('RUTINA ACTUALIZADA CORRECTAMENTE'),
+      ));
+    } else {
+      // Manejar el caso en el que el día no existe en la base de datos
+      print('El día $dia no existe en la base de datos');
     }
   }
 
   void _loadOriginalData() async {
     try {
+      Rutina rutina = await widget.rutina.obtenerRutinaActual();
+      setState(() {
+        // Asigna la rutina original y restablece el estado de edición
+        widget.rutina = rutina;
+        editModeByDay = {};
+        editingExercisesByDay = {};
+      });
       // Código para cargar datos originales de la rutina
     } catch (e) {
+      // Maneja el error según tus necesidades
       print("Error al cargar la rutina original: $e");
     }
   }
@@ -115,6 +124,7 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
 
   @override
   Widget build(BuildContext context) {
+    final timerModel = Provider.of<TimerModel>(context);
     final diasOrdenados = [
       'LUNES',
       'MARTES',
@@ -222,49 +232,44 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                     BoxDecoration(border: Border.all(color: Colors.black)),
                 child: Column(
                   children: [
-                    if (!isTimerRunning) // Mostrar el botón "Comenzar" solo si el tiempo no está corriendo
+                    Consumer<TimerModel>(
+                      builder: (context, timerModel, _) {
+                        return ElevatedButton(
+                          onPressed: () {
+                            if (timerModel.isTimerRunning) {
+                              timerModel.stopTimer();
+                            } else {
+                              timerModel.startTimer();
+                            }
+                          },
+                          child: Text(timerModel.isTimerRunning
+                              ? 'Stop Timer'
+                              : 'Start Timer'),
+                        );
+                      },
+                    ),
+                    SizedBox(height: 20),
+                    Consumer<TimerModel>(
+                      builder: (context, timerModel, _) {
+                        return timerModel.isTimerRunning
+                            ? StreamBuilder<Map<String, dynamic>>(
+                                stream: backgroundTimer.dataStream,
+                                builder: (context, snapshot) {
+                                  if (!snapshot.hasData) return Container();
+                                  final secondsElapsed =
+                                      snapshot.data!['secondsElapsed'];
+                                  return Text(
+                                    'Seconds Elapsed: $secondsElapsed',
+                                    style: TextStyle(fontSize: 20),
+                                  );
+                                },
+                              )
+                            : Container();
+                      },
+                    ),
+                    if (timerModel.isTimerRunning)
                       ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            isTimerRunning = true;
-                            startTimer();
-                          });
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0XFF0f7991),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                        ),
-                        child: const Padding(
-                          padding: EdgeInsets.symmetric(
-                              vertical: 8.0, horizontal: 16.0),
-                          child: Text(
-                            'EMPEZAR SESIÓN',
-                            style: TextStyle(
-                              fontSize: 15.0,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                    if (isTimerRunning)
-                      Text(
-                        formatTime(_start),
-                        style: const TextStyle(
-                          fontSize: 26,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    if (isTimerRunning) // Mostrar el botón "Finalizar Sesión" solo si el tiempo está corriendo
-                      ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            isTimerRunning = false; // Detener el cronómetro
-                            resetTimer(); // Reiniciar el cronómetro
-                          });
-                        },
+                        onPressed: () {},
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.green,
                           shape: RoundedRectangleBorder(
@@ -284,14 +289,9 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                           ),
                         ),
                       ),
-                    if (isTimerRunning) // Mostrar el botón "Finalizar Sesión" solo si el tiempo está corriendo
+                    if (timerModel.isTimerRunning)
                       ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            isTimerRunning = false; // Detener el cronómetro
-                            resetTimer(); // Reiniciar el cronómetro
-                          });
-                        },
+                        onPressed: () {},
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.red,
                           shape: RoundedRectangleBorder(

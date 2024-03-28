@@ -50,5 +50,23 @@
 	<key>NSPhotoLibraryUsageDescription</key>
     <string>Necesitamos acceso a la biblioteca de fotos para seleccionar imágenes desde la galería.</string>
 
+    <!-- Permisos para ejecutar en segundo plano -->
+    <key>UIBackgroundModes</key>
+    <array>
+        <string>fetch</string>
+        <string>processing</string>
+    </array>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>Necesitamos acceso a tu ubicación mientras utilizas la aplicación.</string>
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>Necesitamos acceso a tu ubicación incluso cuando no estás utilizando la aplicación.</string>
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>Necesitamos acceso a tu ubicación incluso cuando no estás utilizando la aplicación.</string>
+    <key>UIBackgroundFetch</key>
+    <true/>
+    <key>UIRequiredDeviceCapabilities</key>
+    <array>
+        <string>location-services</string>
+    </array>
 </dict>
 </plist>

@@ -1,47 +1,36 @@
 import 'dart:async';
+import 'package:flutter_background_service/flutter_background_service.dart';
 
-class TimerService {
-  final StreamController<int> _timerController = StreamController.broadcast();
-  Stream<int> get timerStream => _timerController.stream;
-  late Timer _timer;
-  late StreamController<int> _controller;
-  late int _start;
-  late bool _isRunning;
+class BackgroundTimer {
+  Timer? _timer;
+  int _secondsElapsed = 0;
+  late StreamController<Map<String, dynamic>> _dataStreamController;
 
-  TimerService() {
-    _controller = StreamController<int>();
-    _start = 0;
-    _isRunning = false;
+  Stream<Map<String, dynamic>> get dataStream => _dataStreamController.stream;
+
+  BackgroundTimer() {
+    _dataStreamController = StreamController.broadcast();
   }
 
-
-
-  void start() {
-    if (!_isRunning) {
-      _timer = Timer.periodic(const Duration(milliseconds: 10), _tick);
-      _isRunning = true;
-    }
+  void start() async {
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      _secondsElapsed++;
+      _sendDataToBackgroundService({'secondsElapsed': _secondsElapsed});
+    });
   }
 
   void stop() {
-    if (_isRunning) {
-      _timer.cancel();
-      _isRunning = false;
-    }
+    _timer?.cancel();
+    _secondsElapsed = 0; // Reinicia a cero
+    _sendDataToBackgroundService({'secondsElapsed': _secondsElapsed}); // Envía el estado actualizado
   }
 
-  void reset() {
-    stop();
-    _start = 0;
-    _controller.add(_start);
-  }
 
-  void _tick(Timer timer) {
-    _start += 10;
-    _controller.add(_start);
+  void _sendDataToBackgroundService(Map<String, dynamic> data) {
+    _dataStreamController.add(data);
   }
 
   void dispose() {
-    _controller.close();
+    _dataStreamController.close();
   }
 }
