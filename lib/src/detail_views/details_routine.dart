@@ -162,9 +162,9 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
       ),
       body: Center(
         child: Container(
-          height: 800,
-          margin: EdgeInsets.fromLTRB(15, 25, 15, 50),
-          padding: EdgeInsets.fromLTRB(15, 20, 15, 20),
+          height: 2000,
+          margin: EdgeInsets.fromLTRB(10, 20, 10, 20),
+          padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
           child: Column(
             children: [
               Expanded(
@@ -227,117 +227,148 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                   );
                 }),
               ),
-              const SizedBox(height: 16),
-              Container(
-                width: 400,
-                decoration:
-                    BoxDecoration(border: Border.all(color: Colors.black)),
-                child: Column(
-                  children: [
-                    Consumer<TimerModel>(
-                      builder: (context, timerModel, _) {
-                        return ElevatedButton(
-                          onPressed: () {
-                            if (timerModel.isTimerRunning) {
-                              timerModel.stopTimer();
-                            } else {
-                              timerModel.startTimer();
-                            }
-                          },
-                          child: Text(timerModel.isTimerRunning
-                              ? 'Stop Timer'
-                              : 'Start Timer'),
-                        );
-                      },
-                    ),
-                    SizedBox(height: 20),
-                    Consumer<TimerModel>(
-                      builder: (context, timerModel, _) {
-                        return timerModel.isTimerRunning
-                            ? StreamBuilder<Map<String, dynamic>>(
-                          stream: backgroundTimer.dataStream,
-                          builder: (context, snapshot) {
-                            if (!snapshot.hasData || snapshot.data == null) {
-                              // Si no hay datos en el snapshot o son nulos, muestra un widget vacío
-                              return Container();
-                            }
-
-                            final hours = snapshot.data!['hours'];
-                            final minutes = snapshot.data!['minutes'];
-                            final seconds = snapshot.data!['seconds'];
-                            final milliseconds = snapshot.data!['milliseconds'];
-
-                            // Verificar si alguno de los valores es nulo
-                            if (hours == null ||
-                                minutes == null ||
-                                seconds == null ||
-                                milliseconds == null) {
-                              // Si alguno de los valores es nulo, maneja la situación
-                              return Text(
-                                'Time Elapsed: Data not available',
-                                style: TextStyle(fontSize: 20),
-                              );
-                            }
-
-                            final formattedTime = formatTime(hours, minutes, seconds, milliseconds);
-
-                            return Text(
-                              'Time Elapsed: $formattedTime',
-                              style: TextStyle(fontSize: 20),
+              SingleChildScrollView(
+                child: Container(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Center(
+                        child: Consumer<TimerModel>(
+                          builder: (context, timerModel, _) {
+                            return Visibility(
+                              visible: !timerModel.isTimerRunning,
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  timerModel.startTimer();
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0XFF0f7991),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                ),
+                                child: const Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 8.0, horizontal: 16.0),
+                                  child: Text(
+                                    'INICIAR SESIÓN',
+                                    style: TextStyle(
+                                      fontSize: 15.0,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
                             );
                           },
-                        )
+                        ),
+                      ),
+                      // Espacio entre el botón y el texto
+                      Consumer<TimerModel>(
+                        builder: (context, timerModel, _) {
+                          return !timerModel.isTimerRunning
+                              ? Container()
+                              : StreamBuilder<Map<String, dynamic>>(
+                                  stream: backgroundTimer.dataStream,
+                                  builder: (context, snapshot) {
+                                    if (!snapshot.hasData ||
+                                        snapshot.data == null) {
+                                      return Container();
+                                    }
+                                    final hours = snapshot.data!['hours'];
+                                    final minutes = snapshot.data!['minutes'];
+                                    final seconds = snapshot.data!['seconds'];
+                                    final milliseconds =
+                                        snapshot.data!['milliseconds'];
 
-                            : Container();
-                      },
-                    ),
-                    if (timerModel.isTimerRunning)
-                      ElevatedButton(
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                        ),
-                        child: const Padding(
-                          padding: EdgeInsets.symmetric(
-                              vertical: 8.0, horizontal: 16.0),
-                          child: Text(
-                            'FINALIZAR SESIÓN',
-                            style: TextStyle(
-                              fontSize: 15.0,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
+                                    if (hours == null ||
+                                        minutes == null ||
+                                        seconds == null ||
+                                        milliseconds == null) {
+                                      return Text(
+                                        textAlign: TextAlign.center,
+                                        'Time Elapsed: Data not available',
+                                        style: TextStyle(fontSize: 20),
+                                      );
+                                    }
+
+                                    final formattedTime = formatTime(
+                                        hours, minutes, seconds, milliseconds);
+
+                                    return Text(
+                                      textAlign: TextAlign.center,
+                                      '$formattedTime',
+                                      style: TextStyle(
+                                          fontSize: 25,
+                                          fontWeight: FontWeight.bold),
+                                    );
+                                  },
+                                );
+                        },
                       ),
-                    if (timerModel.isTimerRunning)
-                      ElevatedButton(
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                        ),
-                        child: const Padding(
-                          padding: EdgeInsets.symmetric(
-                              vertical: 8.0, horizontal: 16.0),
-                          child: Text(
-                            'ABANDONAR SESIÓN',
-                            style: TextStyle(
-                              fontSize: 15.0,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                      SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          if (timerModel.isTimerRunning)
+                            ElevatedButton(
+                              onPressed: () {
+                                timerModel.stopTimer();
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.green,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
+                              ),
+                              child: const Padding(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 5.0, horizontal: 5.0),
+                                child: Text(
+                                  textAlign: TextAlign.center,
+                                  'FINALIZAR\nSESIÓN',
+                                  style: TextStyle(
+                                    fontSize: 15.0,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
+                          if (timerModel.isTimerRunning)
+                            ElevatedButton(
+                              onPressed: () {
+                                timerModel.stopTimer();
+                              },
+                              style: ElevatedButton.styleFrom(
+                                alignment: Alignment.center,
+                                backgroundColor: Colors.red,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
+                              ),
+                              child: const Padding(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 0.0, horizontal: 0.0),
+                                child: Text(
+                                  textAlign: TextAlign.center,
+                                  'ABANDONAR\nSESIÓN',
+                                  style: TextStyle(
+                                    fontSize: 15.0,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
-                  ],
+                      // Espacio entre el texto y los botones
+                    ],
+                  ),
                 ),
-              )
+              ),
             ],
           ),
         ),
@@ -374,7 +405,6 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
               ElevatedButton(
                 onPressed: () {
                   print("Guardando cambios");
-                  // Iteramos sobre los días en modo de edición
                   editModeByDay.forEach((dia, isEditMode) {
                     if (isEditMode) {
                       _guardarCambiosEnFirebase(dia);
