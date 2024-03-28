@@ -2,6 +2,7 @@ import 'dart:isolate';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:provider/provider.dart';
@@ -84,10 +85,13 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
       setState(() {
         editModeByDay[dia] = false;
       });
-      // Notificamos al usuario que los cambios se guardaron exitosamente
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('RUTINA ACTUALIZADA CORRECTAMENTE'),
-      ));
+      WidgetsBinding.instance?.addPostFrameCallback((_) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('RUTINA ACTUALIZADA CORRECTAMENTE'),
+          ));
+        }
+      });
     } else {
       // Manejar el caso en el que el día no existe en la base de datos
       print('El día $dia no existe en la base de datos');
@@ -239,7 +243,50 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                               visible: !timerModel.isTimerRunning,
                               child: ElevatedButton(
                                 onPressed: () {
-                                  timerModel.startTimer();
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return const AlertDialog(
+                                        title: Text(
+                                          'TU RUTINA COMIENZA',
+                                          style: TextStyle(
+                                            fontSize: 30,
+                                            fontWeight: FontWeight.w900,
+                                          ),
+                                        ),
+                                        content: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Text(
+                                              '⚠ Calienta bien antes de comenzar',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontStyle: FontStyle.italic,
+                                                fontSize: 20.0,
+                                              ),
+                                            ),
+                                            SizedBox(height: 8.0),
+                                            Text(
+                                              '⏱ Descansar al menos 2 minutos entre series',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontStyle: FontStyle.italic,
+                                                fontSize: 20.0,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    },
+                                  ).then((value) {
+                                    // Lógica a ejecutar después de cerrar el AlertDialog
+                                    timerModel.startTimer();
+                                  });
+                                  Future.delayed(Duration(seconds: 3), () {
+                                    if (mounted) {
+                                      Navigator.of(context).pop();
+                                    }
+                                  });
                                 },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: const Color(0XFF0f7991),
@@ -286,7 +333,7 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                                         minutes == null ||
                                         seconds == null ||
                                         milliseconds == null) {
-                                      return Text(
+                                      return const Text(
                                         textAlign: TextAlign.center,
                                         'Time Elapsed: Data not available',
                                         style: TextStyle(fontSize: 20),
@@ -298,8 +345,8 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
 
                                     return Text(
                                       textAlign: TextAlign.center,
-                                      '$formattedTime',
-                                      style: TextStyle(
+                                      formattedTime,
+                                      style: const TextStyle(
                                           fontSize: 25,
                                           fontWeight: FontWeight.bold),
                                     );
@@ -438,195 +485,70 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
   }
 
   Widget _buildDia(String dia, Map<String, dynamic> ejerciciosDia) {
-    List<Widget> ejerciciosTiles = [];
+    List<Widget> exerciseWidgets = [];
 
     if (ejerciciosDia['ejercicios'] != null) {
-      ejerciciosTiles.add(
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Ejercicios',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 20.0,
-              ),
-            ),
-            IconButton(
-              onPressed: () {
-                setState(() {
-                  editModeByDay[dia] = !(editModeByDay[dia] ?? false);
-                  if (editModeByDay[dia]!) {
-                    editingExercisesByDay[dia] =
-                        List.from(ejerciciosDia['ejercicios'] as List);
-                  } else {
-                    editingExercisesByDay[dia] = [];
-                    _resetData();
-                  }
-                });
-              },
-              icon: Icon(Icons.edit),
-              color: const Color(0XFF0f7991),
-            ),
-          ],
-        ),
-      );
-
       for (var ejercicio in ejerciciosDia['ejercicios']) {
-        ejerciciosTiles.add(
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                '• ${ejercicio['nombre']}',
-                style: TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.bold,
-                ),
+        exerciseWidgets.add(
+          Card(
+            elevation: 3,
+            margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    ejercicio['nombre'],
+                    style:
+                        TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 8.0),
+                  Row(
+                    children: [
+                      Expanded(
+                        flex: 1,
+                        child: Text(
+                          'Series: ${ejercicio['series']}',
+                          style: TextStyle(fontSize: 16.0),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: Text(
+                          'Reps: ${ejercicio['repeticiones']}',
+                          style: TextStyle(fontSize: 16.0),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: Text(
+                          'Peso: ${ejercicio['peso']}',
+                          style: TextStyle(fontSize: 16.0),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-              if (editModeByDay[dia] == true)
-                Column(
-                  children: [
-                    TextFormField(
-                      initialValue: ejercicio['series'].toString(),
-                      onChanged: (value) {
-                        setState(() {
-                          var ejercicioActual = editingExercisesByDay[dia]!
-                              .firstWhere(
-                                  (e) => e['nombre'] == ejercicio['nombre']);
-                          ejercicioActual['series'] = int.parse(value);
-                        });
-                      },
-                      decoration: const InputDecoration(labelText: 'Series'),
-                    ),
-                    TextFormField(
-                      initialValue: ejercicio['repeticiones'].toString(),
-                      onChanged: (value) {
-                        setState(() {
-                          var ejercicioActual = editingExercisesByDay[dia]!
-                              .firstWhere(
-                                  (e) => e['nombre'] == ejercicio['nombre']);
-                          ejercicioActual['repeticiones'] = int.parse(value);
-                        });
-                      },
-                      decoration:
-                          const InputDecoration(labelText: 'Repeticiones'),
-                    ),
-                    TextFormField(
-                      initialValue: ejercicio['peso'].toString(),
-                      onChanged: (value) {
-                        setState(() {
-                          var ejercicioActual = editingExercisesByDay[dia]!
-                              .firstWhere(
-                                  (e) => e['nombre'] == ejercicio['nombre']);
-                          ejercicioActual['peso'] = double.parse(value);
-                        });
-                      },
-                      decoration: const InputDecoration(labelText: 'Peso (kg)'),
-                    ),
-                  ],
-                )
-              else
-                Column(
-                  children: [
-                    Row(
-                      children: [
-                        const Text(
-                          '\t\t\tSeries: ',
-                          style: TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.w500,
-                              fontStyle: FontStyle.italic),
-                        ),
-                        Text(
-                          '${ejercicio['series']}',
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        const Text(
-                          '\t\t\tRepeticiones: ',
-                          style: TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.w500,
-                              fontStyle: FontStyle.italic),
-                        ),
-                        Text(
-                          '${ejercicio['repeticiones']}',
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        const Text(
-                          '\t\t\tPeso: ',
-                          style: TextStyle(
-                            fontSize: 17,
-                            fontWeight: FontWeight.w500,
-                            fontStyle: FontStyle.italic,
-                          ),
-                        ),
-                        Text(
-                          '${ejercicio['peso']} kg',
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-            ],
+            ),
           ),
         );
       }
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          dia,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 27.0,
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            dia,
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 27.0),
           ),
-        ),
-        const SizedBox(height: 8.0),
-        const Row(
-          children: [
-            Text(
-              ' ⚠ No olvides calentar antes de comenzar',
-              style: TextStyle(
-                color: Color(0XFF0f7991),
-                fontWeight: FontWeight.bold,
-                fontSize: 10.0,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 8.0),
-        const Text(
-          '⏱ Los descansos son muy importantes para realizar un buen entrenamiento',
-          style: TextStyle(
-            color: Color(0XFF0f7991),
-            fontWeight: FontWeight.bold,
-            fontSize: 10.0,
-          ),
-        ),
-        const SizedBox(height: 8.0),
-        ...ejerciciosTiles,
-      ],
+          SizedBox(height: 8.0),
+          ...exerciseWidgets,
+        ],
+      ),
     );
   }
 }
