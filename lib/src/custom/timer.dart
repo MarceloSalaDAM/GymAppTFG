@@ -3,7 +3,7 @@ import 'package:flutter_background_service/flutter_background_service.dart';
 
 class BackgroundTimer {
   Timer? _timer;
-  int _secondsElapsed = 0;
+  int _millisecondsElapsed = 0;
   late StreamController<Map<String, dynamic>> _dataStreamController;
 
   Stream<Map<String, dynamic>> get dataStream => _dataStreamController.stream;
@@ -13,17 +13,32 @@ class BackgroundTimer {
   }
 
   void start() async {
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      _secondsElapsed++;
-      _sendDataToBackgroundService({'secondsElapsed': _secondsElapsed});
+    _timer = Timer.periodic(Duration(milliseconds: 100), (timer) {
+      _millisecondsElapsed += 100;
+      _sendDataToBackgroundService(_calculateTime());
     });
   }
 
   void stop() {
     _timer?.cancel();
-    _secondsElapsed = 0; // Reinicia a cero
-    _sendDataToBackgroundService({'secondsElapsed': _secondsElapsed}); // Envía el estado actualizado
+    _millisecondsElapsed = 0; // Reinicia a cero
+    _sendDataToBackgroundService(_calculateTime()); // Envía el estado actualizado
   }
+
+  Map<String, dynamic> _calculateTime() {
+    int hours = (_millisecondsElapsed ~/ 3600000); // Calcula las horas
+    int minutes = (_millisecondsElapsed ~/ 60000) % 60;
+    int seconds = (_millisecondsElapsed ~/ 1000) % 60;
+    int milliseconds = _millisecondsElapsed % 1000;
+
+    return {
+      'hours': hours ?? 0, // Si hours es nulo, establecerlo como 0
+      'minutes': minutes ?? 0, // Si minutes es nulo, establecerlo como 0
+      'seconds': seconds ?? 0, // Si seconds es nulo, establecerlo como 0
+      'milliseconds': milliseconds ?? 0, // Si milliseconds es nulo, establecerlo como 0
+    };
+  }
+
 
 
   void _sendDataToBackgroundService(Map<String, dynamic> data) {

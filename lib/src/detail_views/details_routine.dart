@@ -139,12 +139,14 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
       return widget.rutina.dias.containsKey(dia);
     }).toList();
 
-    // En el lugar donde deseas mostrar el tiempo:
-    String formatTime(int milliseconds) {
-      int minutes = (milliseconds / (1000 * 60)).floor();
-      int seconds = ((milliseconds / 1000) % 60).floor();
-      int millis = (milliseconds % 1000).floor();
-      return '$minutes:${seconds.toString().padLeft(2, '0')}:${millis.toString().padLeft(3, '0')}';
+    String formatTime(int hours, int minutes, int seconds, int milliseconds) {
+      String hoursStr = (hours % 24).toString().padLeft(2,
+          '0'); // Si quieres contar horas más allá de 24, puedes quitar el %24
+      String minutesStr = minutes.toString().padLeft(2, '0');
+      String secondsStr = seconds.toString().padLeft(2, '0');
+      String millisecondsStr = milliseconds.toString().padLeft(3, '0');
+
+      return '$hoursStr:$minutesStr:$secondsStr:$millisecondsStr';
     }
 
     return Scaffold(
@@ -253,17 +255,39 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                       builder: (context, timerModel, _) {
                         return timerModel.isTimerRunning
                             ? StreamBuilder<Map<String, dynamic>>(
-                                stream: backgroundTimer.dataStream,
-                                builder: (context, snapshot) {
-                                  if (!snapshot.hasData) return Container();
-                                  final secondsElapsed =
-                                      snapshot.data!['secondsElapsed'];
-                                  return Text(
-                                    'Seconds Elapsed: $secondsElapsed',
-                                    style: TextStyle(fontSize: 20),
-                                  );
-                                },
-                              )
+                          stream: backgroundTimer.dataStream,
+                          builder: (context, snapshot) {
+                            if (!snapshot.hasData || snapshot.data == null) {
+                              // Si no hay datos en el snapshot o son nulos, muestra un widget vacío
+                              return Container();
+                            }
+
+                            final hours = snapshot.data!['hours'];
+                            final minutes = snapshot.data!['minutes'];
+                            final seconds = snapshot.data!['seconds'];
+                            final milliseconds = snapshot.data!['milliseconds'];
+
+                            // Verificar si alguno de los valores es nulo
+                            if (hours == null ||
+                                minutes == null ||
+                                seconds == null ||
+                                milliseconds == null) {
+                              // Si alguno de los valores es nulo, maneja la situación
+                              return Text(
+                                'Time Elapsed: Data not available',
+                                style: TextStyle(fontSize: 20),
+                              );
+                            }
+
+                            final formattedTime = formatTime(hours, minutes, seconds, milliseconds);
+
+                            return Text(
+                              'Time Elapsed: $formattedTime',
+                              style: TextStyle(fontSize: 20),
+                            );
+                          },
+                        )
+
                             : Container();
                       },
                     ),

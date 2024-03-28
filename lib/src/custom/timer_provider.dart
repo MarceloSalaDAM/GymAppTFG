@@ -4,11 +4,10 @@ import 'package:provider/provider.dart';
 
 class TimerModel extends ChangeNotifier {
   bool _isTimerRunning = false;
-  int _secondsElapsed = 0;
+  int _millisecondsElapsed = 0; // Nuevo campo para los milisegundos
 
   bool get isTimerRunning => _isTimerRunning;
-
-  int get secondsElapsed => _secondsElapsed;
+  int get millisecondsElapsed => _millisecondsElapsed; // Getter para los milisegundos
 
   void startTimer() {
     _isTimerRunning = true;
@@ -18,13 +17,13 @@ class TimerModel extends ChangeNotifier {
 
   void stopTimer() {
     _isTimerRunning = false;
-    _secondsElapsed = 0; // Reinicia a cero
+    _millisecondsElapsed = 0; // Reinicia a cero
     notifyListeners();
-    backgroundTimer.stop(); // Aquí detienes el temporizador en segundo plano
+    backgroundTimer.stop();
   }
 
-  void updateSecondsElapsed(int seconds) {
-    _secondsElapsed = seconds;
+  void updateElapsed(int milliseconds) {
+    _millisecondsElapsed = milliseconds; // Actualiza los milisegundos
     notifyListeners();
   }
 }
