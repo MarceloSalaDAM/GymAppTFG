@@ -9,6 +9,13 @@ class TimerModel extends ChangeNotifier {
   bool get isTimerRunning => _isTimerRunning;
   int get millisecondsElapsed => _millisecondsElapsed; // Getter para los milisegundos
 
+  Duration get currentTime => Duration(milliseconds: _millisecondsElapsed); // Getter para el tiempo actual
+
+  int get hours => currentTime.inHours; // Getter para las horas
+  int get minutes => currentTime.inMinutes.remainder(60); // Getter para los minutos
+  int get seconds => currentTime.inSeconds.remainder(60); // Getter para los segundos
+  int get milliseconds => currentTime.inMilliseconds.remainder(1000); // Getter para los milisegundos
+
   void startTimer() {
     _isTimerRunning = true;
     notifyListeners();

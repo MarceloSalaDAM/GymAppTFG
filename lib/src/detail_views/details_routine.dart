@@ -4,7 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:provider/provider.dart';
 import '../custom/timer.dart';
 import '../custom/timer_provider.dart';
@@ -126,9 +125,20 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
     ));
   }
 
+  String formatTime(int hours, int minutes, int seconds, int milliseconds) {
+    String hoursStr = (hours % 24).toString().padLeft(
+        2, '0'); // Si quieres contar horas más allá de 24, puedes quitar el %24
+    String minutesStr = minutes.toString().padLeft(2, '0');
+    String secondsStr = seconds.toString().padLeft(2, '0');
+    String millisecondsStr = milliseconds.toString().padLeft(3, '0');
+
+    return '$hoursStr:$minutesStr:$secondsStr:$millisecondsStr';
+  }
+
   @override
   Widget build(BuildContext context) {
     final timerModel = Provider.of<TimerModel>(context);
+
     final diasOrdenados = [
       'LUNES',
       'MARTES',
@@ -142,16 +152,6 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
     final diasPresentes = diasOrdenados.where((dia) {
       return widget.rutina.dias.containsKey(dia);
     }).toList();
-
-    String formatTime(int hours, int minutes, int seconds, int milliseconds) {
-      String hoursStr = (hours % 24).toString().padLeft(2,
-          '0'); // Si quieres contar horas más allá de 24, puedes quitar el %24
-      String minutesStr = minutes.toString().padLeft(2, '0');
-      String secondsStr = seconds.toString().padLeft(2, '0');
-      String millisecondsStr = milliseconds.toString().padLeft(3, '0');
-
-      return '$hoursStr:$minutesStr:$secondsStr:$millisecondsStr';
-    }
 
     return Scaffold(
       appBar: AppBar(
@@ -333,6 +333,10 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                                         minutes == null ||
                                         seconds == null ||
                                         milliseconds == null) {
+                                      // Usar la función formatTime dentro de build
+                                      final formattedTime = formatTime(hours,
+                                          minutes, seconds, milliseconds);
+
                                       return const Text(
                                         textAlign: TextAlign.center,
                                         'Time Elapsed: Data not available',
@@ -361,6 +365,21 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                           if (timerModel.isTimerRunning)
                             ElevatedButton(
                               onPressed: () {
+                                // Obtener el modelo de temporizador
+                                final timerModel = Provider.of<TimerModel>(
+                                    context,
+                                    listen: false);
+
+                                // Obtener los valores de los cronómetros
+                                final hours = timerModel.hours;
+                                final minutes = timerModel.minutes;
+                                final seconds = timerModel.seconds;
+                                final milliseconds = timerModel.milliseconds;
+
+                                // Realizar las acciones necesarias con los valores de los cronómetros
+                                // Por ejemplo, imprimirlos en la consola
+                                print(
+                                    'Tiempo transcurrido: $hours:$minutes:$seconds:$milliseconds');
                                 timerModel.stopTimer();
                               },
                               style: ElevatedButton.styleFrom(
@@ -373,8 +392,8 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                                 padding: EdgeInsets.symmetric(
                                     vertical: 5.0, horizontal: 5.0),
                                 child: Text(
-                                  textAlign: TextAlign.center,
                                   'FINALIZAR\nSESIÓN',
+                                  textAlign: TextAlign.center,
                                   style: TextStyle(
                                     fontSize: 15.0,
                                     fontWeight: FontWeight.bold,
