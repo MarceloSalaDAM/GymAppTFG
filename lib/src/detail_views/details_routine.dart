@@ -28,6 +28,7 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
   Map<String, List<Map<String, dynamic>>> editingExercisesByDay = {};
   int currentPage = 0;
   bool isTimerRunning = false;
+  String formattedTime = '';
 
   @override
   void initState() {
@@ -110,6 +111,41 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
     } catch (e) {
       // Maneja el error según tus necesidades
       print("Error al cargar la rutina original: $e");
+    }
+  }
+
+  // Método para subir los datos de la sesión a Firebase
+  Future<void> _subirDatosASesionFirebase(String formattedTime) async {
+    try {
+      // Obtener el ID del usuario actual
+      String? userId = FirebaseAuth.instance.currentUser?.uid;
+
+      // Verificar que el ID del usuario esté disponible
+      if (userId != null) {
+        // Obtener referencia al documento del usuario
+        final userDocRef =
+            FirebaseFirestore.instance.collection('usuarios').doc(userId);
+
+        // Obtener referencia a la subcolección "sesiones" dentro del documento del usuario
+        final sessionsCollectionRef = userDocRef.collection('sesiones');
+
+        // Subir los datos a la subcolección "sesiones"
+        await sessionsCollectionRef.add({
+          'fecha': DateTime.now(),
+          'duracion': formattedTime,
+        });
+
+        // Mostrar un mensaje de éxito
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Datos de la sesión guardados en Firebase.'),
+        ));
+      } else {
+        // Manejar el caso en el que el ID del usuario no esté disponible
+        print('Error: ID de usuario no disponible.');
+      }
+    } catch (error) {
+      // Manejar cualquier error que ocurra al subir los datos a Firebase
+      print('Error al subir datos a Firebase: $error');
     }
   }
 
@@ -245,13 +281,15 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                                 onPressed: () {
                                   showDialog(
                                     context: context,
+                                    barrierDismissible: false,
                                     builder: (BuildContext context) {
                                       return const AlertDialog(
                                         title: Text(
-                                          'TU RUTINA COMIENZA',
+                                          'TU RUTINA COMIENZA EN BREVES',
+                                          textAlign: TextAlign.center,
                                           style: TextStyle(
-                                            fontSize: 30,
-                                            fontWeight: FontWeight.w900,
+                                            fontSize: 24,
+                                            fontWeight: FontWeight.bold,
                                           ),
                                         ),
                                         content: Column(
@@ -261,8 +299,7 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                                               '⚠ Calienta bien antes de comenzar',
                                               style: TextStyle(
                                                 fontWeight: FontWeight.bold,
-                                                fontStyle: FontStyle.italic,
-                                                fontSize: 20.0,
+                                                fontSize: 17.0,
                                               ),
                                             ),
                                             SizedBox(height: 8.0),
@@ -270,8 +307,7 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                                               '⏱ Descansar al menos 2 minutos entre series',
                                               style: TextStyle(
                                                 fontWeight: FontWeight.bold,
-                                                fontStyle: FontStyle.italic,
-                                                fontSize: 20.0,
+                                                fontSize: 17.0,
                                               ),
                                             ),
                                           ],
@@ -333,10 +369,6 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                                         minutes == null ||
                                         seconds == null ||
                                         milliseconds == null) {
-                                      // Usar la función formatTime dentro de build
-                                      final formattedTime = formatTime(hours,
-                                          minutes, seconds, milliseconds);
-
                                       return const Text(
                                         textAlign: TextAlign.center,
                                         'Time Elapsed: Data not available',
@@ -344,8 +376,12 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                                       );
                                     }
 
-                                    final formattedTime = formatTime(
+                                    // Actualizar formattedTime globalmente
+                                    formattedTime = formatTime(
                                         hours, minutes, seconds, milliseconds);
+
+                                    print(
+                                        '--------------->>>Time Elapsed: $formattedTime');
 
                                     return Text(
                                       textAlign: TextAlign.center,
@@ -362,72 +398,129 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          if (timerModel.isTimerRunning)
-                            ElevatedButton(
-                              onPressed: () {
-                                // Obtener el modelo de temporizador
-                                final timerModel = Provider.of<TimerModel>(
-                                    context,
-                                    listen: false);
+                          Consumer<TimerModel>(
+                            builder: (context, timerModel, _) {
+                              return !timerModel.isTimerRunning
+                                  ? Container()
+                                  : StreamBuilder<Map<String, dynamic>>(
+                                      stream: backgroundTimer.dataStream,
+                                      builder: (context, snapshot) {
+                                        if (!snapshot.hasData ||
+                                            snapshot.data == null) {
+                                          return Container();
+                                        }
+                                        final hours = snapshot.data!['hours'];
+                                        final minutes =
+                                            snapshot.data!['minutes'];
+                                        final seconds =
+                                            snapshot.data!['seconds'];
+                                        final milliseconds =
+                                            snapshot.data!['milliseconds'];
 
-                                // Obtener los valores de los cronómetros
-                                final hours = timerModel.hours;
-                                final minutes = timerModel.minutes;
-                                final seconds = timerModel.seconds;
-                                final milliseconds = timerModel.milliseconds;
+                                        if (hours == null ||
+                                            minutes == null ||
+                                            seconds == null ||
+                                            milliseconds == null) {}
 
-                                // Realizar las acciones necesarias con los valores de los cronómetros
-                                // Por ejemplo, imprimirlos en la consola
-                                print(
-                                    'Tiempo transcurrido: $hours:$minutes:$seconds:$milliseconds');
-                                timerModel.stopTimer();
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.green,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                ),
-                              ),
-                              child: const Padding(
-                                padding: EdgeInsets.symmetric(
-                                    vertical: 5.0, horizontal: 5.0),
-                                child: Text(
-                                  'FINALIZAR\nSESIÓN',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: 15.0,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          if (timerModel.isTimerRunning)
-                            ElevatedButton(
-                              onPressed: () {
-                                timerModel.stopTimer();
-                              },
-                              style: ElevatedButton.styleFrom(
-                                alignment: Alignment.center,
-                                backgroundColor: Colors.red,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                ),
-                              ),
-                              child: const Padding(
-                                padding: EdgeInsets.symmetric(
-                                    vertical: 0.0, horizontal: 0.0),
-                                child: Text(
-                                  textAlign: TextAlign.center,
-                                  'ABANDONAR\nSESIÓN',
-                                  style: TextStyle(
-                                    fontSize: 15.0,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ),
+                                        // Actualizar formattedTime globalmente
+                                        formattedTime = formatTime(hours,
+                                            minutes, seconds, milliseconds);
+                                        print(
+                                            '--------------->>>Time Elapsed: $formattedTime');
+                                        return ElevatedButton(
+                                          onPressed: () async {
+                                            timerModel.stopTimer();
+                                            print(
+                                                '--------------->>>Tiempo final: $formattedTime');
+                                            // Subir los datos de la sesión a Firebase
+                                            await _subirDatosASesionFirebase(
+                                                formattedTime);
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.green,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(10.0),
+                                            ),
+                                          ),
+                                          child: const Padding(
+                                            padding: EdgeInsets.symmetric(
+                                                vertical: 5.0, horizontal: 5.0),
+                                            child: Text(
+                                              'FINALIZAR\nSESIÓN',
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                fontSize: 15.0,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    );
+                            },
+                          ),
+                          Consumer<TimerModel>(
+                            builder: (context, timerModel, _) {
+                              return !timerModel.isTimerRunning
+                                  ? Container()
+                                  : StreamBuilder<Map<String, dynamic>>(
+                                      stream: backgroundTimer.dataStream,
+                                      builder: (context, snapshot) {
+                                        if (!snapshot.hasData ||
+                                            snapshot.data == null) {
+                                          return Container();
+                                        }
+                                        final hours = snapshot.data!['hours'];
+                                        final minutes =
+                                            snapshot.data!['minutes'];
+                                        final seconds =
+                                            snapshot.data!['seconds'];
+                                        final milliseconds =
+                                            snapshot.data!['milliseconds'];
+
+                                        if (hours == null ||
+                                            minutes == null ||
+                                            seconds == null ||
+                                            milliseconds == null) {}
+
+                                        // Actualizar formattedTime globalmente
+                                        formattedTime = formatTime(hours,
+                                            minutes, seconds, milliseconds);
+                                        print(
+                                            '--------------->>>Time Elapsed: $formattedTime');
+                                        return ElevatedButton(
+                                          onPressed: () {
+                                            timerModel.stopTimer();
+                                            print(
+                                                '--------------->>>Tiempo final: $formattedTime');
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.red,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(10.0),
+                                            ),
+                                          ),
+                                          child: const Padding(
+                                            padding: EdgeInsets.symmetric(
+                                                vertical: 5.0, horizontal: 5.0),
+                                            child: Text(
+                                              'ABANDONAR\nSESIÓN',
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                fontSize: 15.0,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    );
+                            },
+                          ),
                         ],
                       ),
                       // Espacio entre el texto y los botones
