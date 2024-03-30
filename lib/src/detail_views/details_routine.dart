@@ -1,8 +1,5 @@
-import 'dart:isolate';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../custom/timer.dart';
@@ -22,96 +19,18 @@ class DetallesRutinaView extends StatefulWidget {
 }
 
 class _DetallesRutinaViewState extends State<DetallesRutinaView> {
-  late Function() onStart;
   PageController _pageController = PageController();
-  Map<String, bool> editModeByDay = {};
-  Map<String, List<Map<String, dynamic>>> editingExercisesByDay = {};
   int currentPage = 0;
-  bool isTimerRunning = false;
   String formattedTime = '';
 
   @override
   void initState() {
     super.initState();
-    _loadOriginalData();
     _pageController.addListener(() {
       setState(() {
         currentPage = _pageController.page!.round();
       });
     });
-  }
-
-  void _guardarCambiosEnFirebase(String dia) async {
-    // Obtén el ID del usuario actual
-    String? idUser = FirebaseAuth.instance.currentUser?.uid;
-
-    // Verifica que el ID del usuario esté presente antes de proceder
-    if (idUser == null) {
-      print('Error: ID de usuario no disponible');
-      return;
-    }
-
-    // Obtenemos una referencia al documento del usuario en Firebase
-    final userDocRef =
-        FirebaseFirestore.instance.collection('usuarios').doc(idUser);
-
-    // Obtenemos una referencia a la subcolección de rutinas
-    final rutinasCollectionRef = userDocRef.collection('rutinas');
-
-    // Obtenemos una referencia al documento de la rutina en Firebase
-    final rutinaRef = rutinasCollectionRef.doc(widget.rutina.id);
-
-    // Obtenemos la información actual de la rutina desde Firebase
-    final rutinaSnapshot = await rutinaRef.get();
-    // Verificamos si el día que estamos editando existe en la base de datos
-    if (rutinaSnapshot.exists && rutinaSnapshot.data()!['dias'][dia] != null) {
-      // Actualizamos los datos del día en la base de datos
-      List<Map<String, dynamic>> updatedExercises = [];
-      for (var exercise in editingExercisesByDay[dia]!) {
-        // Si el ejercicio está siendo editado y se ha cambiado el peso
-        if (exercise['nombre'] != null && exercise['peso'] != null) {
-          updatedExercises.add({
-            'nombre': exercise['nombre'],
-            'series': exercise['series'],
-            'repeticiones': exercise['repeticiones'],
-            'peso': exercise['peso'], // Actualizamos el peso aquí
-          });
-        }
-      }
-      await rutinaRef.update({
-        'dias.$dia.ejercicios': updatedExercises,
-      });
-      // Salir del modo de edición para el día específico
-      setState(() {
-        editModeByDay[dia] = false;
-      });
-      WidgetsBinding.instance?.addPostFrameCallback((_) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('RUTINA ACTUALIZADA CORRECTAMENTE'),
-          ));
-        }
-      });
-    } else {
-      // Manejar el caso en el que el día no existe en la base de datos
-      print('El día $dia no existe en la base de datos');
-    }
-  }
-
-  void _loadOriginalData() async {
-    try {
-      Rutina rutina = await widget.rutina.obtenerRutinaActual();
-      setState(() {
-        // Asigna la rutina original y restablece el estado de edición
-        widget.rutina = rutina;
-        editModeByDay = {};
-        editingExercisesByDay = {};
-      });
-      // Código para cargar datos originales de la rutina
-    } catch (e) {
-      // Maneja el error según tus necesidades
-      print("Error al cargar la rutina original: $e");
-    }
   }
 
   // Método para subir los datos de la sesión a Firebase
@@ -136,7 +55,7 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
         });
 
         // Mostrar un mensaje de éxito
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text('Datos de la sesión guardados en Firebase.'),
         ));
       } else {
@@ -147,18 +66,6 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
       // Manejar cualquier error que ocurra al subir los datos a Firebase
       print('Error al subir datos a Firebase: $error');
     }
-  }
-
-  void _resetData() {
-    setState(() {
-      editModeByDay = {};
-      editingExercisesByDay = {};
-    });
-
-    _loadOriginalData();
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text('NO SE GUARDARON LOS CAMBIOS'),
-    ));
   }
 
   String formatTime(int hours, int minutes, int seconds, int milliseconds) {
@@ -215,7 +122,7 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                       currentPage = page;
                     });
                   },
-                  physics: editModeByDay.containsValue(true)
+                  physics: timerModel.isTimerRunning
                       ? NeverScrollableScrollPhysics()
                       : AlwaysScrollableScrollPhysics(),
                   itemCount: diasPresentes.length,
@@ -239,34 +146,38 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                   },
                 ),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(diasPresentes.length, (index) {
-                  return Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: GestureDetector(
-                      onTap: () {
-                        _pageController.animateToPage(index,
-                            duration: Duration(milliseconds: 500),
-                            curve: Curves.easeInOut);
-                      },
-                      child: CircleAvatar(
-                        backgroundColor:
-                            currentPage == index ? Colors.black : Colors.grey,
-                        radius: currentPage == index ? 15 : 10,
-                        child: Text(
-                          (index + 1).toString(),
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 11,
+              Visibility(
+                visible: !timerModel.isTimerRunning,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(diasPresentes.length, (index) {
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: GestureDetector(
+                        onTap: () {
+                          _pageController.animateToPage(index,
+                              duration: Duration(milliseconds: 500),
+                              curve: Curves.easeInOut);
+                        },
+                        child: CircleAvatar(
+                          backgroundColor:
+                              currentPage == index ? Colors.black : Colors.grey,
+                          radius: currentPage == index ? 15 : 10,
+                          child: Text(
+                            (index + 1).toString(),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 11,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  );
-                }),
+                    );
+                  }),
+                ),
               ),
+              const SizedBox(height: 20),
               SingleChildScrollView(
                 child: Container(
                   child: Column(
@@ -532,67 +443,6 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
           ),
         ),
       ),
-      persistentFooterButtons: [
-        Visibility(
-          visible: editModeByDay.containsValue(true),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              ElevatedButton(
-                onPressed: () {
-                  _resetData();
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0XFF0f7991),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                ),
-                child: const Padding(
-                  padding:
-                      EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                  child: Text(
-                    'CANCELAR',
-                    style: TextStyle(
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  print("Guardando cambios");
-                  editModeByDay.forEach((dia, isEditMode) {
-                    if (isEditMode) {
-                      _guardarCambiosEnFirebase(dia);
-                    }
-                  });
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0XFF0f7991),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                ),
-                child: const Padding(
-                  padding:
-                      EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                  child: Text(
-                    'GUARDAR',
-                    style: TextStyle(
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
     );
   }
 
