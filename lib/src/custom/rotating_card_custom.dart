@@ -58,20 +58,24 @@ class _RotatingCardState extends State<RotatingCard>
                     alignment: Alignment.center,
                     child: Card(
                       elevation: 4,
-                      color: Colors.blueGrey,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(24.0),
-                        side: const BorderSide(),
+                      child: Container(
+                        decoration: const BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [Color(0XFF0f7991), Color(0XFF4AB7D8)],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                        ),
+                        child: isFront
+                            ? FrontCard(
+                                ejercicio: widget.ejercicio,
+                                currentIndex: widget.currentIndex,
+                                totalItems: widget.totalItems,
+                              )
+                            : BackCard(
+                                ejercicio: widget.ejercicio,
+                              ),
                       ),
-                      child: isFront
-                          ? FrontCard(
-                              ejercicio: widget.ejercicio,
-                              currentIndex: widget.currentIndex,
-                              totalItems: widget.totalItems,
-                            )
-                          : BackCard(
-                              ejercicio: widget.ejercicio,
-                            ),
                     ),
                   );
                 },
@@ -123,8 +127,8 @@ class FrontCard extends StatelessWidget {
               totalItems,
               (index) => Container(
                 margin: const EdgeInsets.symmetric(horizontal: 4),
-                width: index == currentIndex - 1 ? 4 : 2,
-                height: index == currentIndex - 1 ? 4 : 2,
+                width: index == currentIndex - 1 ? 8 : 4,
+                height: index == currentIndex - 1 ? 8 : 4,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: index == currentIndex - 1 ? Colors.white : Colors.grey,
@@ -132,11 +136,11 @@ class FrontCard extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 15),
           Text(
             ejercicio.nombre ?? 'Nombre no disponible',
             style: const TextStyle(
-              fontSize: 20,
+              fontSize: 27,
               fontWeight: FontWeight.bold,
               color: Colors.black,
             ),
@@ -152,7 +156,7 @@ class FrontCard extends StatelessWidget {
               builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
                   double screenHeight = MediaQuery.of(context).size.height;
-                  double imageSize = screenHeight > 800 ? 280.0 : 230.0;
+                  double imageSize = screenHeight > 800 ? 350.0 : 300.0;
 
                   return Container(
                     width: imageSize,
@@ -189,45 +193,58 @@ class BackCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 4,
-      color: Colors.blueGrey,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(24.0),
       ),
-      child: SizedBox(
-        width: double.infinity,
-        child: SingleChildScrollView(
-          child: Container(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                _buildRotatedText(
-                  'EJECUCIÓN:',
-                  ejercicio.descripcion ?? 'Descripción no disponible',
-                ),
-                const SizedBox(height: 10),
-                IconButton(
-                  alignment: Alignment.centerRight,
-                  icon: const Icon(Icons.info_outline_rounded),
-                  color: Colors.black,
-                  onPressed: () {
-                    // Llama a la función _showCommentsDialog al presionar el ícono
-                    _showCommentsDialog(context);
-                  },
-                ),
-                const SizedBox(height: 10),
-                if (ejercicio.musculos != null &&
-                    ejercicio.musculos!.isNotEmpty)
+      child: Container(
+
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0XFF0f7991), Color(0XFF4AB7D8)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+
+        ),
+        child: SizedBox(
+          width: double.infinity,
+          child: SingleChildScrollView(
+            child: Container(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
                   _buildRotatedText(
-                    'MÚSCULOS TRABAJADOS:',
-                    ejercicio.musculos!.map((musculo) => '• $musculo\n').join(),
+                    'EJECUCIÓN:',
+                    ejercicio.descripcion ?? 'Descripción no disponible',
                   ),
-                const SizedBox(height: 10),
-                _buildRotatedText(
-                  'TIPO DE EJERCICIO:',
-                  ejercicio.tipo ?? 'Tipo no disponible',
-                ),
-              ],
+                  const SizedBox(height: 10),
+                  IconButton(
+                    alignment: Alignment.centerRight,
+                    icon: const Icon(Icons.info_outline_rounded,
+                        size: 30, color: Colors.white),
+                    color: Colors.black,
+                    onPressed: () {
+                      // Llama a la función _showCommentsDialog al presionar el ícono
+                      _showCommentsDialog(context);
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                  if (ejercicio.musculos != null &&
+                      ejercicio.musculos!.isNotEmpty)
+                    _buildRotatedText(
+                      'MÚSCULOS TRABAJADOS:',
+                      ejercicio.musculos!
+                          .map((musculo) => '• $musculo\n')
+                          .join(),
+                    ),
+                  const SizedBox(height: 10),
+                  _buildRotatedText(
+                    'TIPO DE EJERCICIO:',
+                    ejercicio.tipo ?? 'Tipo no disponible',
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -243,8 +260,8 @@ class BackCard extends StatelessWidget {
           transform: Matrix4.rotationY(3.1415927),
           child: Text(
             title,
-            style: TextStyle(
-              fontSize: 20,
+            style: const TextStyle(
+              fontSize: 24,
               fontWeight: FontWeight.bold,
               color: Colors.black,
             ),
@@ -259,11 +276,10 @@ class BackCard extends StatelessWidget {
             child: Text(
               text,
               style: const TextStyle(
-                fontSize: 16,
-                fontStyle: FontStyle.italic,
+                fontSize: 18,
                 color: Colors.white,
               ),
-              textAlign: TextAlign.center,
+              textAlign: TextAlign.start,
             ),
           ),
         ),
@@ -361,6 +377,7 @@ class BackCard extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 18.0,
                     fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
                 ),
               ),

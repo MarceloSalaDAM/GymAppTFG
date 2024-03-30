@@ -71,72 +71,86 @@ class _ExerciseListScreenState extends State<ExerciseListScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const Text(
-                      "FILTRAR POR GRUPO MUSCULAR",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 30,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                    // Contenedor para el texto y el DropdownButtonFormField
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: Colors.black),
+                        color: Colors.grey, // Borde del contenedor
                       ),
-                    ),
-                    const SizedBox(height: 25),
-                    DropdownButtonFormField<String>(
-                      value: selectedGroup,
-                      decoration: const InputDecoration(
-                        filled: true,
-                        fillColor: Colors.black,
-                      ),
-                      style: const TextStyle(color: Colors.white, fontSize: 15),
-                      icon: const Icon(Icons.arrow_drop_down,
-                          color: Colors.white),
-                      dropdownColor: Colors.black,
-                      onChanged: (value) {
-                        setState(() {
-                          selectedGroup = value!;
-                          _pageController.jumpToPage(
-                              0); // Sin necesidad de mantener en el estado local
-                        });
-                      },
-                      items: obtenerGrupos(widget.ejercicios).map((grupo) {
-                        return DropdownMenuItem<String>(
-                          value: grupo,
-                          child: Text(
-                            grupo,
-                            style: const TextStyle(color: Colors.white),
+                      padding: const EdgeInsets.all(10),
+                      child: Column(
+                        children: [
+                          const Text(
+                            "FILTRAR POR GRUPO MUSCULAR",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
                           ),
-                        );
-                      }).toList(),
+                          const SizedBox(height: 10),
+                          DropdownButtonFormField<String>(
+                            value: selectedGroup,
+                            decoration: const InputDecoration(
+                              filled: true,
+                              fillColor: Colors.white,
+                            ),
+                            style: const TextStyle(
+                                color: Colors.black,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold),
+                            icon: const Icon(Icons.arrow_drop_down,
+                                color: Colors.black),
+                            dropdownColor: Colors.white,
+                            onChanged: (value) {
+                              setState(() {
+                                selectedGroup = value!;
+                                _pageController.jumpToPage(
+                                    0); // Sin necesidad de mantener en el estado local
+                              });
+                            },
+                            items:
+                                obtenerGrupos(widget.ejercicios).map((grupo) {
+                              return DropdownMenuItem<String>(
+                                value: grupo,
+                                child: Text(
+                                  grupo,
+                                  style: const TextStyle(color: Colors.black),
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ],
+                      ),
                     ),
-                    const SizedBox(height: 10),
-                    Center(
-                      child: Container(
-                        height: MediaQuery.of(context).size.height > 800
-                            ? 450
-                            : 500,
-                        child: PageView.builder(
-                          controller: _pageController,
-                          itemCount: widget.ejercicios
-                              .where((ejercicio) =>
-                                  ejercicio.grupo == selectedGroup)
-                              .length,
-                          itemBuilder: (BuildContext context, int index) {
-                            return Container(
-                              margin: const EdgeInsets.symmetric(vertical: 10),
-                              child: RotatingCard(
-                                ejercicio: widget.ejercicios
-                                    .where((ejercicio) =>
-                                        ejercicio.grupo == selectedGroup)
-                                    .toList()[index],
-                                currentIndex: index + 1,
-                                totalItems: widget.ejercicios
-                                    .where((ejercicio) =>
-                                        ejercicio.grupo == selectedGroup)
-                                    .length,
-                              ),
-                            );
-                          },
-                        ),
+                    // Contenedor para las tarjetas de información
+                    Container(
+                      height:
+                          MediaQuery.of(context).size.height > 800 ? 450 : 500,
+                      child: PageView.builder(
+                        controller: _pageController,
+                        itemCount: widget.ejercicios
+                            .where(
+                                (ejercicio) => ejercicio.grupo == selectedGroup)
+                            .length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return Container(
+                            margin: const EdgeInsets.symmetric(vertical: 10),
+                            child: RotatingCard(
+                              ejercicio: widget.ejercicios
+                                  .where((ejercicio) =>
+                                      ejercicio.grupo == selectedGroup)
+                                  .toList()[index],
+                              currentIndex: index + 1,
+                              totalItems: widget.ejercicios
+                                  .where((ejercicio) =>
+                                      ejercicio.grupo == selectedGroup)
+                                  .length,
+                            ),
+                          );
+                        },
                       ),
                     ),
                   ],
