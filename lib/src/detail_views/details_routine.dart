@@ -389,33 +389,9 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                                   : StreamBuilder<Map<String, dynamic>>(
                                       stream: backgroundTimer.dataStream,
                                       builder: (context, snapshot) {
-                                        if (!snapshot.hasData ||
-                                            snapshot.data == null) {
-                                          return Container();
-                                        }
-                                        final hours = snapshot.data!['hours'];
-                                        final minutes =
-                                            snapshot.data!['minutes'];
-                                        final seconds =
-                                            snapshot.data!['seconds'];
-                                        final milliseconds =
-                                            snapshot.data!['milliseconds'];
-
-                                        if (hours == null ||
-                                            minutes == null ||
-                                            seconds == null ||
-                                            milliseconds == null) {}
-
-                                        // Actualizar formattedTime globalmente
-                                        formattedTime = formatTime(hours,
-                                            minutes, seconds, milliseconds);
-                                        print(
-                                            '--------------->>>Time Elapsed: $formattedTime');
                                         return ElevatedButton(
                                           onPressed: () {
                                             timerModel.stopTimer();
-                                            print(
-                                                '--------------->>>Tiempo final: $formattedTime');
                                           },
                                           style: ElevatedButton.styleFrom(
                                             backgroundColor: Colors.red,

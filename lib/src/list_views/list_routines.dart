@@ -105,37 +105,60 @@ class _RutinasUsuarioViewState extends State<RutinasUsuarioView> {
 
   Widget _buildRutinaTile(Rutina rutina, int index) {
     return Card(
-      color: Colors.blueGrey,
-      shape: const RoundedRectangleBorder(
-        side: BorderSide(),
+      elevation: 8.0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20.0),
       ),
-      elevation: 4.0,
-      margin: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
-      child: ExpansionTile(
-        title: Text(
-          rutina.nombreRutina ?? 'SIN NOMBRE',
-          style: const TextStyle(
-              fontSize: 25, fontWeight: FontWeight.w900, color: Colors.white),
+      margin: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20.0),
+          gradient: const LinearGradient(
+            colors: [Color(0XFF0f7991), Color(0XFF4AB7D8)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
         ),
-        children: [
-          ListTile(
-            title: const Text(
-              'Descripción:',
-              style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white),
-            ),
-            subtitle: Text(
-              '${rutina.descripcionRutina}',
+        child: ExpansionTile(
+          title: Padding(
+            padding: EdgeInsets.all(10.0),
+            child: Text(
+              rutina.nombreRutina ?? 'SIN NOMBRE',
               style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black),
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
             ),
           ),
-          _buildDiasList(rutina.dias, rutina),
-        ],
+          children: [
+            ListTile(
+              title: const Padding(
+                padding: EdgeInsets.only(left: 10.0),
+                child: Text(
+                  'Descripción:',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              subtitle: Padding(
+                padding: EdgeInsets.only(left: 10.0),
+                child: Text(
+                  '${rutina.descripcionRutina}',
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+            _buildDiasList(rutina.dias, rutina),
+          ],
+        ),
       ),
     );
   }
