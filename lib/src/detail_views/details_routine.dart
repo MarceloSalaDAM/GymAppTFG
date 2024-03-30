@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -104,7 +106,6 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
     final diasPresentes = diasOrdenados.where((dia) {
       return widget.rutina.dias.containsKey(dia);
     }).toList();
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0XFF0f7991),
@@ -118,9 +119,8 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
       ),
       body: Center(
         child: Container(
-          height: 2000,
-          margin: EdgeInsets.fromLTRB(10, 20, 10, 20),
-          padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+          margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
+          padding: EdgeInsets.fromLTRB(10, 20, 10, 0),
           child: Column(
             children: [
               Expanded(
@@ -141,13 +141,14 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                     final ejerciciosDia = dias[diaEnMayusculas];
 
                     return Container(
-                      margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                      padding: EdgeInsets.fromLTRB(15, 20, 15, 20),
+                      margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                      padding: const EdgeInsets.fromLTRB(15, 20, 15, 20),
                       decoration: BoxDecoration(
+                        color: const Color( 0XFFF5F5DC),
                         border: Border.all(color: Colors.black, width: 4),
                         borderRadius: BorderRadius.circular(18),
                       ),
-                      constraints: BoxConstraints(maxHeight: 800),
+                      constraints: const BoxConstraints(maxHeight: 800),
                       child: SingleChildScrollView(
                         child: _buildDia(diaEnMayusculas, ejerciciosDia),
                       ),
@@ -186,9 +187,10 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                   }),
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 10),
               SingleChildScrollView(
                 child: Container(
+                  margin: EdgeInsets.fromLTRB(0, 0, 0, 20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -433,75 +435,177 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
   }
 
   Widget _buildDia(String dia, Map<String, dynamic> ejerciciosDia) {
-    List<Widget> exerciseWidgets = [];
-
+    List<Widget> exerciseTables = [];
     if (ejerciciosDia['ejercicios'] != null) {
       for (var ejercicio in ejerciciosDia['ejercicios']) {
-        exerciseWidgets.add(
-          Card(
-            elevation: 3,
-            margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-            child: Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Column(
+        String nombreEjercicio = ejercicio['nombre'];
+        List<String> nombreEjercicioWords = nombreEjercicio.split(' ');
+        List<Widget> nombreEjercicioWidgets = [];
+        int index = 0;
+
+        while (index < nombreEjercicioWords.length) {
+          List<String> currentLineWords = nombreEjercicioWords
+              .skip(index)
+              .take(3)
+              .toList(); // Tomar las siguientes tres palabras
+          nombreEjercicioWidgets.add(Text(
+            currentLineWords.join(' '),
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 19, // Tamaño de fuente más grande para el título
+              color: Colors.black,
+            ),
+          )); // Unirlas en una sola línea
+          index += 3;
+        }
+        Widget exerciseTable = DataTable(
+          horizontalMargin: 5,
+          columnSpacing: 0.0,
+          dataRowMaxHeight: 60,
+          columns: [
+            DataColumn(
+              label: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    ejercicio['nombre'],
-                    style:
-                        TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(height: 8.0),
-                  Row(
-                    children: [
-                      Expanded(
-                        flex: 1,
-                        child: Text(
-                          'Series: ${ejercicio['series']}',
-                          style: TextStyle(fontSize: 16.0),
-                        ),
-                      ),
-                      Expanded(
-                        flex: 1,
-                        child: Text(
-                          'Reps: ${ejercicio['repeticiones']}',
-                          style: TextStyle(fontSize: 16.0),
-                        ),
-                      ),
-                      Expanded(
-                        flex: 1,
-                        child: Text(
-                          'Peso: ${ejercicio['peso']}',
-                          style: TextStyle(fontSize: 16.0),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: nombreEjercicioWidgets,
               ),
             ),
+            const DataColumn(
+              label: Text(''), // Texto vacío en la segunda celda
+            ),
+          ],
+          rows: [
+            DataRow(cells: [
+              const DataCell(
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Peso (kg)',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18, // Tamaño de fuente para los valores
+                        color: Colors.black, // Color de los valores
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              DataCell(
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      '${ejercicio['peso']}',
+                      style: const TextStyle(
+                        fontSize: 18, // Tamaño de fuente para los valores
+                        color: Colors.black, // Color de los valores
+                      ),
+                      textAlign:
+                          TextAlign.right, // Alinear el valor a la derecha
+                    ),
+                  ],
+                ),
+              ),
+            ]),
+            DataRow(cells: [
+              const DataCell(
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Series',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18, // Tamaño de fuente para los valores
+                        color: Colors.black, // Color de los valores
+                      ),
+                      textAlign:
+                          TextAlign.right, // Alinear el valor a la derecha
+                    ),
+                  ],
+                ),
+              ),
+              DataCell(
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      '${ejercicio['series']}',
+                      style: const TextStyle(
+                        fontSize: 18, // Tamaño de fuente para los valores
+                        color: Colors.black, // Color de los valores
+                      ),
+                      textAlign:
+                          TextAlign.right, // Alinear el valor a la derecha
+                    ),
+                  ],
+                ),
+              ),
+            ]),
+            DataRow(cells: [
+              const DataCell(Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Repeticiones',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18, // Tamaño de fuente para los valores
+                      color: Colors.black, // Color de los valores
+                    ),
+                    textAlign: TextAlign.right, // Alinear el valor a la derecha
+                  ),
+                ],
+              )),
+              DataCell(Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      '${ejercicio['repeticiones']}',
+                      style: const TextStyle(
+                        fontSize: 18, // Tamaño de fuente para los valores
+                        color: Colors.black, // Color de los valores
+                      ),
+                      textAlign:
+                          TextAlign.right, // Alinear el valor a la derecha
+                    ),
+                  ])),
+            ]),
+          ],
+        );
+        exerciseTables.add(
+          Container(
+            margin: EdgeInsets.only(bottom: 26.0), // Espacio entre las tablas
+            child: exerciseTable,
           ),
         );
       }
     }
-// Obtener el grupo del día
-    String grupo =
-        ejerciciosDia['grupo'] ?? ''; // Valor por defecto si no hay grupo
-    // También puedes manejar si 'grupo' no está presente en todos los días o si es null
+
     return SingleChildScrollView(
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
             dia,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 27.0),
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 40.0,
+                decoration: TextDecoration.underline),
           ),
-          SizedBox(height: 8.0),
-          Text(
-            '$grupo', // Mostrar el grupo del día
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
+          const SizedBox(height: 8.0),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: exerciseTables,
           ),
-          ...exerciseWidgets,
         ],
       ),
     );
