@@ -33,8 +33,8 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
     });
   }
 
-  // Método para subir los datos de la sesión a Firebase
-  Future<void> _subirDatosASesionFirebase(String formattedTime) async {
+  Future<void> _subirDatosASesionFirebase(
+      String formattedTime, String diaEnMayusculas) async {
     try {
       // Obtener el ID del usuario actual
       String? userId = FirebaseAuth.instance.currentUser?.uid;
@@ -48,10 +48,18 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
         // Obtener referencia a la subcolección "sesiones" dentro del documento del usuario
         final sessionsCollectionRef = userDocRef.collection('sesiones');
 
+        // Obtener el grupo correspondiente al día
+        String grupo = widget.rutina.dias[diaEnMayusculas]['grupo'] ??
+            ''; // Valor por defecto si no hay grupo
+        // También puedes manejar si 'grupo' no está presente en todos los días o si es null
+
         // Subir los datos a la subcolección "sesiones"
         await sessionsCollectionRef.add({
           'fecha': DateTime.now(),
           'duracion': formattedTime,
+          'grupo': grupo, // Agregar el grupo correspondiente al día
+          'dia': diaEnMayusculas,
+          // Guardar el día correspondiente
         });
 
         // Mostrar un mensaje de éxito
@@ -81,7 +89,8 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
   @override
   Widget build(BuildContext context) {
     final timerModel = Provider.of<TimerModel>(context);
-
+    print('Rutina: ${widget.rutina}');
+    print('Grupo: ${widget.rutina.grupo}');
     final diasOrdenados = [
       'LUNES',
       'MARTES',
@@ -345,7 +354,8 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                                                 '--------------->>>Tiempo final: $formattedTime');
                                             // Subir los datos de la sesión a Firebase
                                             await _subirDatosASesionFirebase(
-                                                formattedTime);
+                                                formattedTime,
+                                                diasPresentes[currentPage]);
                                           },
                                           style: ElevatedButton.styleFrom(
                                             backgroundColor: Colors.green,
@@ -498,7 +508,10 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
         );
       }
     }
-
+// Obtener el grupo del día
+    String grupo =
+        ejerciciosDia['grupo'] ?? ''; // Valor por defecto si no hay grupo
+    // También puedes manejar si 'grupo' no está presente en todos los días o si es null
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -508,6 +521,10 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 27.0),
           ),
           SizedBox(height: 8.0),
+          Text(
+            '$grupo', // Mostrar el grupo del día
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
+          ),
           ...exerciseWidgets,
         ],
       ),
