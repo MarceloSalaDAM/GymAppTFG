@@ -144,7 +144,11 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                       margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                       padding: const EdgeInsets.fromLTRB(15, 20, 15, 20),
                       decoration: BoxDecoration(
-                        color: const Color( 0XFFF5F5DC),
+                        gradient: const LinearGradient(
+                          colors: [Color(0XFF0f7991), Color(0XFF4AB7D8)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
                         border: Border.all(color: Colors.black, width: 4),
                         borderRadius: BorderRadius.circular(18),
                       ),
@@ -453,7 +457,7 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
             style: const TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 19, // Tamaño de fuente más grande para el título
-              color: Colors.black,
+              color: Colors.white,
             ),
           )); // Unirlas en una sola línea
           index += 3;
@@ -501,7 +505,7 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                       '${ejercicio['peso']}',
                       style: const TextStyle(
                         fontSize: 18, // Tamaño de fuente para los valores
-                        color: Colors.black, // Color de los valores
+                        color: Colors.white,
                       ),
                       textAlign:
                           TextAlign.right, // Alinear el valor a la derecha
@@ -538,7 +542,7 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                       '${ejercicio['series']}',
                       style: const TextStyle(
                         fontSize: 18, // Tamaño de fuente para los valores
-                        color: Colors.black, // Color de los valores
+                        color: Colors.white,
                       ),
                       textAlign:
                           TextAlign.right, // Alinear el valor a la derecha
@@ -571,7 +575,7 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                       '${ejercicio['repeticiones']}',
                       style: const TextStyle(
                         fontSize: 18, // Tamaño de fuente para los valores
-                        color: Colors.black, // Color de los valores
+                        color: Colors.white, // Color de los valores
                       ),
                       textAlign:
                           TextAlign.right, // Alinear el valor a la derecha
@@ -597,9 +601,11 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
             dia,
             textAlign: TextAlign.center,
             style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 40.0,
-                decoration: TextDecoration.underline),
+              fontWeight: FontWeight.bold,
+              fontSize: 40.0,
+              decoration: TextDecoration.underline,
+              color: Colors.white,
+            ),
           ),
           const SizedBox(height: 8.0),
           Column(

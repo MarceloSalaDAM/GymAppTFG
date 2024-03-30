@@ -94,7 +94,6 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
         });
       }
 
-
       // Agregar nombre y descripción directamente al mapa
       datosPrimeraParteRutina['nombre'] = nombre;
       datosPrimeraParteRutina['descripcion'] = descripcion;
@@ -143,6 +142,7 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
     _pageController.dispose();
     super.dispose();
   }
+
 // Función para verificar si un ejercicio está seleccionado para un día específico
   bool isSelectedExerciseForDay(Ejercicios ejercicio, String dia) {
     final ejercicioNombre = ejercicio.nombre; // Obtener el nombre del ejercicio
@@ -152,7 +152,8 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
 // Función para alternar la selección de un ejercicio para un día específico
   void toggleSelectedExerciseForDay(Ejercicios ejercicio, String dia) {
     setState(() {
-      final ejercicioNombre = ejercicio.nombre; // Obtener el nombre del ejercicio
+      final ejercicioNombre =
+          ejercicio.nombre; // Obtener el nombre del ejercicio
       if (isSelectedExerciseForDay(ejercicio, dia)) {
         selectedGroupsMap[dia]?.remove(ejercicioNombre);
       } else {
@@ -160,9 +161,6 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
       }
     });
   }
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -298,7 +296,7 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                           Container(
                             height: MediaQuery.of(context).size.height > 800
                                 ? 340
-                                : 220,
+                                : 175,
                             child: ListView.builder(
                               shrinkWrap: true,
                               itemCount: selectedDiasSemana.length,
@@ -462,28 +460,30 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                                         },
                                         child: ExpansionTile(
                                           title: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
                                             children: [
                                               Row(
                                                 children: [
                                                   Checkbox(
-                                                    value: isSelectedExerciseForDay(ejercicio, dia),
+                                                    value:
+                                                        isSelectedExerciseForDay(
+                                                            ejercicio, dia),
                                                     onChanged: (value) {
                                                       setState(() {
-                                                        toggleSelectedExerciseForDay(ejercicio, dia);
+                                                        toggleSelectedExerciseForDay(
+                                                            ejercicio, dia);
                                                       });
                                                     },
                                                   ),
-
-
-
                                                   const SizedBox(width: 8.0),
                                                   Flexible(
                                                     child: Text(
                                                       ejercicio.nombre,
                                                       style: const TextStyle(
                                                         fontSize: 15,
-                                                        fontWeight: FontWeight.bold,
+                                                        fontWeight:
+                                                            FontWeight.bold,
                                                         color: Colors.black,
                                                       ),
                                                     ),
@@ -498,69 +498,114 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                                           ),
                                           children: [
                                             Padding(
-                                              padding: const EdgeInsets.all(8.0),
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
                                               child: Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
                                                 children: [
                                                   const Padding(
-                                                    padding: EdgeInsets.symmetric(vertical: 8.0),
+                                                    padding:
+                                                        EdgeInsets.symmetric(
+                                                            vertical: 8.0),
                                                     child: Text('Peso (kg)'),
                                                   ),
                                                   TextFormField(
-                                                    initialValue: (ejercicioValues['peso'] ?? 0.0).toString(),
-                                                    keyboardType: TextInputType.number,
+                                                    initialValue:
+                                                        (ejercicioValues[
+                                                                    'peso'] ??
+                                                                0.0)
+                                                            .toString(),
+                                                    keyboardType:
+                                                        TextInputType.number,
                                                     onChanged: (value) {
                                                       setState(() {
-                                                        ejercicioValues['peso'] = double.tryParse(value) ?? 0.0;
-                                                        actualizarValores(dia, ejercicio.nombre, ejercicioValues);
+                                                        ejercicioValues[
+                                                                'peso'] =
+                                                            double.tryParse(
+                                                                    value) ??
+                                                                0.0;
+                                                        actualizarValores(
+                                                            dia,
+                                                            ejercicio.nombre,
+                                                            ejercicioValues);
                                                       });
                                                     },
-                                                    decoration: const InputDecoration(
+                                                    decoration:
+                                                        const InputDecoration(
                                                       labelText: 'Peso (kg)',
-                                                      border: OutlineInputBorder(),
+                                                      border:
+                                                          OutlineInputBorder(),
                                                     ),
                                                   ),
                                                   const SizedBox(height: 8.0),
                                                   // DropdownButton para Repeticiones
                                                   DropdownButtonFormField<int>(
-                                                    value: ejercicioValues['repeticiones'],
+                                                    value: ejercicioValues[
+                                                        'repeticiones'],
                                                     onChanged: (value) {
                                                       setState(() {
-                                                        ejercicioValues['repeticiones'] = value;
-                                                        actualizarValores(dia, ejercicio.nombre, ejercicioValues);
+                                                        ejercicioValues[
+                                                                'repeticiones'] =
+                                                            value;
+                                                        actualizarValores(
+                                                            dia,
+                                                            ejercicio.nombre,
+                                                            ejercicioValues);
                                                       });
                                                     },
-                                                    items: List.generate(30, (index) => index + 1)
-                                                        .map<DropdownMenuItem<int>>((int value) {
-                                                      return DropdownMenuItem<int>(
+                                                    items: List.generate(
+                                                        30,
+                                                        (index) =>
+                                                            index + 1).map<
+                                                        DropdownMenuItem<
+                                                            int>>((int value) {
+                                                      return DropdownMenuItem<
+                                                          int>(
                                                         value: value,
-                                                        child: Text(value.toString()),
+                                                        child: Text(
+                                                            value.toString()),
                                                       );
                                                     }).toList(),
-                                                    decoration: const InputDecoration(
+                                                    decoration:
+                                                        const InputDecoration(
                                                       labelText: 'Repeticiones',
-                                                      border: OutlineInputBorder(),
+                                                      border:
+                                                          OutlineInputBorder(),
                                                     ),
                                                   ),
                                                   // DropdownButton para Series
                                                   DropdownButtonFormField<int>(
-                                                    value: ejercicioValues['series'],
+                                                    value: ejercicioValues[
+                                                        'series'],
                                                     onChanged: (value) {
                                                       setState(() {
-                                                        ejercicioValues['series'] = value;
-                                                        actualizarValores(dia, ejercicio.nombre, ejercicioValues);
+                                                        ejercicioValues[
+                                                            'series'] = value;
+                                                        actualizarValores(
+                                                            dia,
+                                                            ejercicio.nombre,
+                                                            ejercicioValues);
                                                       });
                                                     },
-                                                    items: List.generate(10, (index) => index + 1)
-                                                        .map<DropdownMenuItem<int>>((int value) {
-                                                      return DropdownMenuItem<int>(
+                                                    items: List.generate(
+                                                        10,
+                                                        (index) =>
+                                                            index + 1).map<
+                                                        DropdownMenuItem<
+                                                            int>>((int value) {
+                                                      return DropdownMenuItem<
+                                                          int>(
                                                         value: value,
-                                                        child: Text(value.toString()),
+                                                        child: Text(
+                                                            value.toString()),
                                                       );
                                                     }).toList(),
-                                                    decoration: const InputDecoration(
+                                                    decoration:
+                                                        const InputDecoration(
                                                       labelText: 'Series',
-                                                      border: OutlineInputBorder(),
+                                                      border:
+                                                          OutlineInputBorder(),
                                                     ),
                                                   ),
                                                   const SizedBox(height: 8.0),
@@ -569,7 +614,6 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                                             ),
                                           ],
                                         ),
-
                                       ),
                                     );
                                   }).toList(),
@@ -607,10 +651,14 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                   icon: const Icon(
                     Icons.arrow_circle_right_rounded,
                     size: 30,
+                    color: Colors.white,
                   ),
                   label: const Text(
                     "CONTINUAR",
-                    style: TextStyle(fontSize: 18),
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.white,
+                    ),
                   ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0XFF0f7991),
@@ -642,10 +690,14 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                   icon: const Icon(
                     Icons.save_outlined,
                     size: 30,
+                    color: Colors.white,
                   ),
                   label: const Text(
                     "GUARDAR RUTINA",
-                    style: TextStyle(fontSize: 18),
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.white,
+                    ),
                   ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0XFF0f7991),
@@ -689,30 +741,33 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
             borderRadius: BorderRadius.circular(16.0),
           ),
           title: Text('Guardar Rutina'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                onChanged: (value) {
-                  nombre = value;
-                },
-                decoration: InputDecoration(
-                  labelText: 'Nombre de la rutina',
-                  border: OutlineInputBorder(),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  onChanged: (value) {
+                    nombre = value;
+                  },
+                  decoration: InputDecoration(
+                    labelText: 'Nombre de la rutina',
+                    border: OutlineInputBorder(),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 10),
-              TextField(
-                onChanged: (value) {
-                  descripcion = value;
-                },
-                decoration: InputDecoration(
-                  labelText: 'Descripción de la rutina',
-                  border: OutlineInputBorder(),
+                const SizedBox(height: 10),
+                TextField(
+                  onChanged: (value) {
+                    descripcion = value;
+                  },
+                  decoration: InputDecoration(
+                    labelText: 'Descripción de la rutina',
+                    border: OutlineInputBorder(),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
+          contentPadding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0), // Ajuste del padding
           actions: <Widget>[
             ElevatedButton(
               onPressed: () {
@@ -732,6 +787,7 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                   style: TextStyle(
                     fontSize: 18.0,
                     fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
                 ),
               ),
@@ -753,6 +809,7 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                   style: TextStyle(
                     fontSize: 18.0,
                     fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
                 ),
               ),
@@ -762,4 +819,5 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
       },
     );
   }
+
 }
