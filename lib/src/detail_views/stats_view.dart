@@ -253,26 +253,33 @@ class _StatisticsViewState extends State<StatisticsView> {
 
   Widget _buildObjetivosList() {
     if (_objetivos.isNotEmpty) {
-      return ListView.builder(
-        itemCount: _objetivos.length,
-        itemBuilder: (context, index) {
-          final objetivo = _objetivos[index];
-          return ListTile(
-            title: Text(objetivo.titulo),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (objetivo.descripcion != null)
-                  Text('Descripción: ${objetivo.descripcion}'),
-                if (objetivo.beneficios != null)
-                  Text('Beneficios: ${objetivo.beneficios}'),
-              ],
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text("TU OBJETIVO ACTUAL ES:"),
+          Expanded(
+            child: ListView.builder(
+              itemCount: _objetivos.length,
+              itemBuilder: (context, index) {
+                final objetivo = _objetivos[index];
+                return ListTile(
+                  title: Text(objetivo.titulo),
+                );
+              },
             ),
-            leading: objetivo.imagen != null
-                ? Image.network(objetivo.imagen!)
-                : Icon(Icons.error),
-          );
-        },
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ObjetivosGeneralesScreen(),
+                ),
+              );
+            },
+            child: Text('Añadir Objetivo'),
+          ),
+        ],
       );
     } else {
       return Column(
@@ -338,7 +345,7 @@ class _StatisticsViewState extends State<StatisticsView> {
       final docSnapshot = await _firestore
           .collection("usuarios")
           .doc(_currentUser.uid)
-          .collection("misobjetivos")
+          .collection("mis_objetivos")
           .get();
 
       // Verificar si existe la subcolección "misobjetivos"
@@ -368,8 +375,6 @@ class _StatisticsViewState extends State<StatisticsView> {
       print('Error al cargar objetivos: $error');
     }
   }
-
-
 
   void _applyFilter() {
     switch (_filtroSeleccionado) {
