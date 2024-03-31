@@ -3,7 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 import '../firebase_objects/objetivos_firebase.dart';
-import '../firebase_objects/sesiones_firebase.dart'; // Asegúrate de importar la clase Sesion desde su ubicación correcta
+import '../firebase_objects/sesiones_firebase.dart';
+import 'objetivos_view.dart'; // Asegúrate de importar la clase Sesion desde su ubicación correcta
 
 class StatisticsView extends StatefulWidget {
   const StatisticsView({Key? key}) : super(key: key);
@@ -251,27 +252,54 @@ class _StatisticsViewState extends State<StatisticsView> {
   }
 
   Widget _buildObjetivosList() {
-    return ListView.builder(
-      itemCount: _objetivos.length,
-      itemBuilder: (context, index) {
-        final objetivo = _objetivos[index];
-        return ListTile(
-          title: Text(objetivo.titulo),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (objetivo.descripcion != null)
-                Text('Descripción: ${objetivo.descripcion}'),
-              if (objetivo.beneficios != null)
-                Text('Beneficios: ${objetivo.beneficios}'),
-            ],
+    if (_objetivos.isNotEmpty) {
+      return ListView.builder(
+        itemCount: _objetivos.length,
+        itemBuilder: (context, index) {
+          final objetivo = _objetivos[index];
+          return ListTile(
+            title: Text(objetivo.titulo),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (objetivo.descripcion != null)
+                  Text('Descripción: ${objetivo.descripcion}'),
+                if (objetivo.beneficios != null)
+                  Text('Beneficios: ${objetivo.beneficios}'),
+              ],
+            ),
+            leading: objetivo.imagen != null
+                ? Image.network(objetivo.imagen!)
+                : Icon(Icons.error),
+          );
+        },
+      );
+    } else {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            'Todavía no tienes objetivos.',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
           ),
-          leading: objetivo.imagen != null
-              ? Image.network(objetivo.imagen!)
-              : Icon(Icons.error),
-        );
-      },
-    );
+          SizedBox(height: 20),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ObjetivosGeneralesScreen(),
+                ),
+              );
+            },
+            child: Text('Añadir'),
+          ),
+        ],
+      );
+    }
   }
 
   Future<void> _loadUserData() async {
@@ -304,16 +332,44 @@ class _StatisticsViewState extends State<StatisticsView> {
     }
   }
 
+  // En el método _loadObjetivos():
   Future<void> _loadObjetivos() async {
     try {
-      List<Objetivos> objetivos = await Objetivos.getEjerciciosFromFirebase();
-      setState(() {
-        _objetivos = objetivos;
-      });
+      final docSnapshot = await _firestore
+          .collection("usuarios")
+          .doc(_currentUser.uid)
+          .collection("misobjetivos")
+          .get();
+
+      // Verificar si existe la subcolección "misobjetivos"
+      if (docSnapshot.docs.isNotEmpty) {
+        List<Objetivos> objetivos = docSnapshot.docs.map((doc) {
+          final data = doc.data();
+          return Objetivos(
+            // Ajusta las claves según la estructura de tu documento en Firestore
+            titulo: data['titulo'] ?? '',
+            descripcion: data['descripcion'] ?? '',
+            beneficios: data['beneficios'] ?? '',
+            imagen: data['imagen'] ?? '',
+          );
+        }).toList();
+        setState(() {
+          _objetivos = objetivos;
+          // Si existen objetivos, actualizamos _selectedContent con la lista de objetivos
+          _selectedContent = _buildObjetivosList();
+        });
+      } else {
+        // Si no existe la subcolección "misobjetivos", mostramos un mensaje fijo
+        setState(() {
+          _selectedContent = _buildObjetivosList();
+        });
+      }
     } catch (error) {
       print('Error al cargar objetivos: $error');
     }
   }
+
+
 
   void _applyFilter() {
     switch (_filtroSeleccionado) {

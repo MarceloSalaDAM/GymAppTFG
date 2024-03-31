@@ -19,6 +19,7 @@ import 'package:gym_app_tfg/src/login_views/splash_view.dart';
 import 'create_views/add_routine_view.dart';
 import 'custom/background_timer_provider.dart';
 import 'custom/timer.dart';
+import 'detail_views/objetivos_view.dart';
 import 'detail_views/stats_view.dart';
 import 'list_views/list_routines_pred.dart';
 
@@ -74,6 +75,7 @@ class App extends StatelessWidget {
             );
           },
           '/AddRoutinePred': (context) => SelectTrainingLevelView(),
+          '/DetailsObjetivos': (context) => ObjetivosGeneralesScreen(),
           '/ListRoutinePred': (context) => const RutinasPredView(
                 nivelSeleccionado: '',
               ),
