@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
-
+import '../firebase_objects/objetivos_firebase.dart';
 import '../firebase_objects/sesiones_firebase.dart'; // Asegúrate de importar la clase Sesion desde su ubicación correcta
 
 class StatisticsView extends StatefulWidget {
@@ -42,6 +42,7 @@ class _StatisticsViewState extends State<StatisticsView> {
 
   late Widget _selectedContent;
   List<Sesion> _sesiones = []; // Lista de sesiones descargadas
+  List<Objetivos> _objetivos = []; // Lista de objetivos descargados
   String _filtroSeleccionado =
       'Fecha más reciente'; // Valor predeterminado del filtro
 
@@ -56,118 +57,7 @@ class _StatisticsViewState extends State<StatisticsView> {
     _selectedContent = const Text('Seleccione una opción');
     _loadUserData(); // Cargar datos del usuario al inicio
     _loadSesiones(); // Cargar sesiones al inicio
-  }
-
-  Widget _buildObjetivosList() {
-    return ListView(
-      children: [
-        _buildExpansionCard(
-          title: 'Perder peso',
-          content:
-              'Descripción: '
-              '\nBeneficios: ',
-          imagePath: 'assets/fondotarjeta1.jpg', // Ruta de la imagen
-        ),
-        _buildExpansionCard(
-          title: 'Ganar peso',
-          content:
-              'Descripción: \n'
-              'Beneficios: ',
-          imagePath: 'assets/fondotarjeta1.jpg', // Ruta de la imagen
-        ),
-        _buildExpansionCard(
-          title: '',
-          content:
-              'Descripción: \nBeneficios: ',
-          imagePath: 'assets/fondotarjeta1.jpg', // Ruta de la imagen
-        ),
-        _buildExpansionCard(
-          title: 'Tonificar',
-          content:
-              'Descripción: .\nBeneficios:',
-          imagePath: 'assets/fondotarjeta1.jpg', // Ruta de la imagen
-        ),
-        _buildExpansionCard(
-          title: 'Aumentar fuerza',
-          content:
-              'Descripción: \nBeneficios: ',
-          imagePath: 'assets/fondotarjeta1.jpg', // Ruta de la imagen
-        ),
-        _buildExpansionCard(
-          title: 'Aumentar resistencia',
-          content:
-              'Descripción: \nBeneficios: ',
-          imagePath: 'assets/fondotarjeta1.jpg', // Ruta de la imagen
-        ),
-        // Agrega más objetivos si es necesario
-      ],
-    );
-  }
-
-  Widget _buildExpansionCard({
-    required String title,
-    required String content,
-    required String imagePath,
-  }) {
-    return Card(
-      elevation: 3,
-      margin: EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-      child: Container(
-        child: ExpansionTile(
-          leading: SizedBox(
-            width: 100, // Ancho específico para la imagen
-            height: 200,
-            child: imagePath != null
-                ? Image.asset(
-                    imagePath,
-                    fit: BoxFit.cover,
-                  )
-                : Placeholder(), // Placeholder o cualquier otro widget predeterminado
-          ),
-          title: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: Text(
-              title ?? 'Title not available',
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 20,
-              ),
-            ),
-          ),
-          children: [
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-              child: Text(
-                content ?? 'Content not available',
-                style: const TextStyle(fontSize: 18),
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                elevation: 3,
-                backgroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                    side: BorderSide(color: Colors.black)),
-              ),
-              child: const Padding(
-                padding: EdgeInsets.symmetric(vertical: 1.0, horizontal: 1.0),
-                child: Text(
-                  'SELECCIONAR',
-                  style: TextStyle(
-                    fontSize: 15.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+    _loadObjetivos(); // Cargar objetivos al inicio
   }
 
   @override
@@ -360,6 +250,30 @@ class _StatisticsViewState extends State<StatisticsView> {
     );
   }
 
+  Widget _buildObjetivosList() {
+    return ListView.builder(
+      itemCount: _objetivos.length,
+      itemBuilder: (context, index) {
+        final objetivo = _objetivos[index];
+        return ListTile(
+          title: Text(objetivo.titulo),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (objetivo.descripcion != null)
+                Text('Descripción: ${objetivo.descripcion}'),
+              if (objetivo.beneficios != null)
+                Text('Beneficios: ${objetivo.beneficios}'),
+            ],
+          ),
+          leading: objetivo.imagen != null
+              ? Image.network(objetivo.imagen!)
+              : Icon(Icons.error),
+        );
+      },
+    );
+  }
+
   Future<void> _loadUserData() async {
     final docSnap =
         await _firestore.collection("usuarios").doc(_currentUser.uid).get();
@@ -387,6 +301,17 @@ class _StatisticsViewState extends State<StatisticsView> {
       });
     } catch (error) {
       print('Error al cargar sesiones: $error');
+    }
+  }
+
+  Future<void> _loadObjetivos() async {
+    try {
+      List<Objetivos> objetivos = await Objetivos.getEjerciciosFromFirebase();
+      setState(() {
+        _objetivos = objetivos;
+      });
+    } catch (error) {
+      print('Error al cargar objetivos: $error');
     }
   }
 
