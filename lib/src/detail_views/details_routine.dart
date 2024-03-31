@@ -60,7 +60,6 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
           'fecha': DateTime.now(),
           'duracion': formattedTime,
           'grupo': grupo, // Agregar el grupo correspondiente al día
-          'dia': diaEnMayusculas,
           // Guardar el día correspondiente
         });
 

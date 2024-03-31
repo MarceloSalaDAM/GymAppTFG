@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl/intl.dart';
+
+import '../firebase_objects/sesiones_firebase.dart'; // Asegúrate de importar la clase Sesion desde su ubicación correcta
 
 class StatisticsView extends StatefulWidget {
-  const StatisticsView({super.key});
+  const StatisticsView({Key? key}) : super(key: key);
 
   @override
   _StatisticsViewState createState() => _StatisticsViewState();
@@ -23,19 +26,24 @@ class _StatisticsViewState extends State<StatisticsView> {
     'Mis records',
     'Mi progreso',
     'Notificaciones',
-    'Título 6',
+    'Mis sesiones',
   ];
 
   final Map<String, Widget> _contentMap = {
     'Calcular IMC': const Text('Contenido para Calcular IMC'),
-    'Mis objetivos': const Text('Contenido para Mis objetivos'),
+    'Mis objetivos': Container(),
+    // Contenido para Mis objetivos, se actualizará dinámicamente
     'Mis records': const Text('Contenido para Mis records'),
     'Mi progreso': const Text('Mi progreso'),
     'Notificaciones': const Text('Contenido para Notificaciones'),
-    'Título 6': const Text('Contenido para Título 6'),
+    'Mis sesiones': Container(),
+    // Contenido para Mis sesiones, se actualiza dinámicamente
   };
 
   late Widget _selectedContent;
+  List<Sesion> _sesiones = []; // Lista de sesiones descargadas
+  String _filtroSeleccionado =
+      'Fecha más reciente'; // Valor predeterminado del filtro
 
   @override
   void initState() {
@@ -46,6 +54,120 @@ class _StatisticsViewState extends State<StatisticsView> {
     _selectedGenero = '';
     _selectedPeso = '';
     _selectedContent = const Text('Seleccione una opción');
+    _loadUserData(); // Cargar datos del usuario al inicio
+    _loadSesiones(); // Cargar sesiones al inicio
+  }
+
+  Widget _buildObjetivosList() {
+    return ListView(
+      children: [
+        _buildExpansionCard(
+          title: 'Perder peso',
+          content:
+              'Descripción: '
+              '\nBeneficios: ',
+          imagePath: 'assets/fondotarjeta1.jpg', // Ruta de la imagen
+        ),
+        _buildExpansionCard(
+          title: 'Ganar peso',
+          content:
+              'Descripción: \n'
+              'Beneficios: ',
+          imagePath: 'assets/fondotarjeta1.jpg', // Ruta de la imagen
+        ),
+        _buildExpansionCard(
+          title: '',
+          content:
+              'Descripción: \nBeneficios: ',
+          imagePath: 'assets/fondotarjeta1.jpg', // Ruta de la imagen
+        ),
+        _buildExpansionCard(
+          title: 'Tonificar',
+          content:
+              'Descripción: .\nBeneficios:',
+          imagePath: 'assets/fondotarjeta1.jpg', // Ruta de la imagen
+        ),
+        _buildExpansionCard(
+          title: 'Aumentar fuerza',
+          content:
+              'Descripción: \nBeneficios: ',
+          imagePath: 'assets/fondotarjeta1.jpg', // Ruta de la imagen
+        ),
+        _buildExpansionCard(
+          title: 'Aumentar resistencia',
+          content:
+              'Descripción: \nBeneficios: ',
+          imagePath: 'assets/fondotarjeta1.jpg', // Ruta de la imagen
+        ),
+        // Agrega más objetivos si es necesario
+      ],
+    );
+  }
+
+  Widget _buildExpansionCard({
+    required String title,
+    required String content,
+    required String imagePath,
+  }) {
+    return Card(
+      elevation: 3,
+      margin: EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+      child: Container(
+        child: ExpansionTile(
+          leading: SizedBox(
+            width: 100, // Ancho específico para la imagen
+            height: 200,
+            child: imagePath != null
+                ? Image.asset(
+                    imagePath,
+                    fit: BoxFit.cover,
+                  )
+                : Placeholder(), // Placeholder o cualquier otro widget predeterminado
+          ),
+          title: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Text(
+              title ?? 'Title not available',
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+              ),
+            ),
+          ),
+          children: [
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              child: Text(
+                content ?? 'Content not available',
+                style: const TextStyle(fontSize: 18),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {},
+              style: ElevatedButton.styleFrom(
+                elevation: 3,
+                backgroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    side: BorderSide(color: Colors.black)),
+              ),
+              child: const Padding(
+                padding: EdgeInsets.symmetric(vertical: 1.0, horizontal: 1.0),
+                child: Text(
+                  'SELECCIONAR',
+                  style: TextStyle(
+                    fontSize: 15.0,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -56,13 +178,13 @@ class _StatisticsViewState extends State<StatisticsView> {
         children: [
           Container(
             padding: const EdgeInsets.all(10),
-            margin: const EdgeInsets.all(10),
+            margin: const EdgeInsets.all(5),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
                   height: 150,
-                  padding: const EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(5),
                   child: GridView.count(
                     crossAxisCount: 2,
                     childAspectRatio: 4,
@@ -74,9 +196,9 @@ class _StatisticsViewState extends State<StatisticsView> {
           ),
           Expanded(
             child: Container(
-              margin: const EdgeInsets.all(10),
+              margin: const EdgeInsets.fromLTRB(15, 0, 15, 20),
               color: Colors.grey[300],
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(10),
               child: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 300),
                 child: _selectedContent,
@@ -95,6 +217,13 @@ class _StatisticsViewState extends State<StatisticsView> {
           if (title == 'Calcular IMC') {
             await _loadUserData();
             _showCalculationResults();
+          } else if (title == 'Mis sesiones') {
+            _loadSesiones(); // Llama al método para cargar las sesiones del usuario actual
+          } else if (title == 'Mis objetivos') {
+            setState(() {
+              _selectedContent =
+                  _buildObjetivosList(); // Actualizar _selectedContent con la lista de objetivos
+            });
           } else {
             setState(() {
               _selectedContent =
@@ -103,21 +232,132 @@ class _StatisticsViewState extends State<StatisticsView> {
           }
         },
         child: Card(
-          color: Colors.blue[100],
-          elevation: 3,
-          child: Center(
-            child: Text(
-              title,
-              style: const TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0XFF0f7991), Color(0XFF4AB7D8)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius:
+                  BorderRadius.circular(10), // Ajusta según tu preferencia
+            ),
+            child: Center(
+              child: Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
               ),
             ),
           ),
         ),
       );
     }).toList();
+  }
+
+  Widget _buildSesionesList() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _buildFilterBar(),
+        const SizedBox(height: 10),
+        Expanded(
+          child: ListView.builder(
+            itemCount: _sesiones.length,
+            itemBuilder: (BuildContext context, int index) {
+              final sesion = _sesiones[index];
+              return Card(
+                elevation: 3,
+                margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Hora: ${DateFormat.Hm().format(sesion.fecha!)}',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Fecha: ${DateFormat.yMMMd().format(sesion.fecha!)}',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Duración: ${sesion.duracion ?? ""}',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Grupo muscular: ${sesion.grupo ?? ""}',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFilterBar() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      color: Colors.blueGrey[100],
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'Filtrar por:',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          DropdownButton<String>(
+            value: _filtroSeleccionado,
+            onChanged: (String? newValue) {
+              setState(() {
+                _filtroSeleccionado = newValue!;
+                _applyFilter();
+              });
+            },
+            items: <String>[
+              'Fecha más reciente',
+              'Fecha más antigua',
+              'Sesión más larga',
+              'Sesión más corta',
+              // Agregamos el filtro para la sesión más corta
+              'Grupo',
+            ].map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value),
+              );
+            }).toList(),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _loadUserData() async {
@@ -134,6 +374,45 @@ class _StatisticsViewState extends State<StatisticsView> {
         _selectedPeso = userData['peso'] ?? '';
       });
     }
+  }
+
+  Future<void> _loadSesiones() async {
+    try {
+      List<Sesion> sesiones = await Sesion.descargarSesionesUsuarioActual();
+      setState(() {
+        _sesiones = sesiones;
+        _applyFilter(); // Aplicar el filtro inicial
+        _selectedContent =
+            _buildSesionesList(); // Actualizar el contenido con las sesiones y el filtro
+      });
+    } catch (error) {
+      print('Error al cargar sesiones: $error');
+    }
+  }
+
+  void _applyFilter() {
+    switch (_filtroSeleccionado) {
+      case 'Fecha más reciente':
+        _sesiones.sort((a, b) => b.fecha!.compareTo(a.fecha!));
+        break;
+      case 'Fecha más antigua':
+        _sesiones.sort((a, b) => a.fecha!.compareTo(b.fecha!));
+        break;
+      case 'Sesión más larga':
+        _sesiones
+            .sort((a, b) => (b.duracion ?? '').compareTo(a.duracion ?? ''));
+        break;
+      case 'Sesión más corta':
+        _sesiones
+            .sort((a, b) => (a.duracion ?? '').compareTo(b.duracion ?? ''));
+        break;
+      case 'Grupo':
+        _sesiones.sort((a, b) => (a.grupo ?? '').compareTo(b.grupo ?? ''));
+        break;
+    }
+    setState(() {
+      _selectedContent = _buildSesionesList();
+    });
   }
 
   void _showCalculationResults() {
