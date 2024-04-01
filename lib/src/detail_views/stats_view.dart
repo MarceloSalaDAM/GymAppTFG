@@ -256,14 +256,25 @@ class _StatisticsViewState extends State<StatisticsView> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text("TU OBJETIVO ACTUAL ES:"),
+          const Text(
+              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 24),
+              textAlign: TextAlign.center,
+              "TU OBJETIVO ACTUAL ES:"),
           Expanded(
             child: ListView.builder(
               itemCount: _objetivos.length,
               itemBuilder: (context, index) {
                 final objetivo = _objetivos[index];
                 return ListTile(
-                  title: Text(objetivo.titulo),
+                  title: Text(
+                    objetivo.titulo,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue, // Color del texto
+                      // Otros estilos que desees aplicar
+                    ),
+                  ),
                 );
               },
             ),
@@ -277,7 +288,23 @@ class _StatisticsViewState extends State<StatisticsView> {
                 ),
               );
             },
-            child: Text('Añadir Objetivo'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+            ),
+            child: const Padding(
+              padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
+              child: Text(
+                'CAMBIAR OBJETIVO',
+                style: TextStyle(
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+            ),
           ),
         ],
       );
@@ -285,7 +312,7 @@ class _StatisticsViewState extends State<StatisticsView> {
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(
+          const Text(
             'Todavía no tienes objetivos.',
             style: TextStyle(
               fontSize: 18,
