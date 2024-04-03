@@ -23,20 +23,16 @@ class _StatisticsViewState extends State<StatisticsView> {
 
   final List<String> _titles = [
     'Calcular IMC',
-    'Mis objetivos',
-    'Mis records',
     'Mi progreso',
-    'Notificaciones',
+    'Mis records',
     'Mis sesiones',
   ];
 
   final Map<String, Widget> _contentMap = {
     'Calcular IMC': const Text('Contenido para Calcular IMC'),
-    'Mis objetivos': Container(),
+    'Mi progreso': Container(),
     // Contenido para Mis objetivos, se actualizará dinámicamente
     'Mis records': const Text('Contenido para Mis records'),
-    'Mi progreso': const Text('Mi progreso'),
-    'Notificaciones': const Text('Contenido para Notificaciones'),
     'Mis sesiones': Container(),
     // Contenido para Mis sesiones, se actualiza dinámicamente
   };
@@ -74,7 +70,7 @@ class _StatisticsViewState extends State<StatisticsView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  height: 150,
+                  height: 110,
                   padding: const EdgeInsets.all(5),
                   child: GridView.count(
                     crossAxisCount: 2,
@@ -110,7 +106,7 @@ class _StatisticsViewState extends State<StatisticsView> {
             _showCalculationResults();
           } else if (title == 'Mis sesiones') {
             _loadSesiones(); // Llama al método para cargar las sesiones del usuario actual
-          } else if (title == 'Mis objetivos') {
+          } else if (title == 'Mi progreso') {
             setState(() {
               _selectedContent =
                   _buildObjetivosList(); // Actualizar _selectedContent con la lista de objetivos
@@ -217,7 +213,7 @@ class _StatisticsViewState extends State<StatisticsView> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
+          const Text(
             'Filtrar por:',
             style: TextStyle(
               fontSize: 16,

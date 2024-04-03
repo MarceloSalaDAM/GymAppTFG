@@ -17,6 +17,7 @@ import 'package:gym_app_tfg/src/login_views/on_boarding.dart';
 import 'package:gym_app_tfg/src/login_views/register_view.dart';
 import 'package:gym_app_tfg/src/login_views/splash_view.dart';
 import 'create_views/add_routine_view.dart';
+import 'create_views/edit_routine.dart';
 import 'custom/background_timer_provider.dart';
 import 'custom/timer.dart';
 import 'detail_views/objetivos_view.dart';
@@ -75,6 +76,10 @@ class App extends StatelessWidget {
             );
           },
           '/AddRoutinePred': (context) => SelectTrainingLevelView(),
+          '/EditRoutine': (context) => EjerciciosDiaView(
+                dia: '',
+                ejerciciosDia: {}, rutinaId: '',
+              ),
           '/DetailsObjetivos': (context) => ObjetivosGeneralesScreen(),
           '/ListRoutinePred': (context) => const RutinasPredView(
                 nivelSeleccionado: '',

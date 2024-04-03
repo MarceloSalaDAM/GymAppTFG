@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../create_views/edit_routine.dart';
 import '../custom/timer.dart';
 import '../custom/timer_provider.dart';
 import '../firebase_objects/rutinas_firebase.dart';
@@ -24,6 +25,8 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
   PageController _pageController = PageController();
   int currentPage = 0;
   String formattedTime = '';
+  late List<String>
+      diasPresentes; // Variable de instancia para almacenar diasPresentes
 
   @override
   void initState() {
@@ -102,7 +105,7 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
       'DOMINGO'
     ];
 
-    final diasPresentes = diasOrdenados.where((dia) {
+    diasPresentes = diasOrdenados.where((dia) {
       return widget.rutina.dias.containsKey(dia);
     }).toList();
     return Scaffold(
@@ -596,15 +599,41 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            dia,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 40.0,
-              decoration: TextDecoration.underline,
-              color: Colors.white,
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                dia,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 40.0,
+                  decoration: TextDecoration.underline,
+                  color: Colors.white,
+                ),
+              ),
+              IconButton(
+                iconSize: 30,
+                icon: Icon(Icons.edit),
+                color: Colors.white,
+                onPressed: () {
+                  final diaSeleccionado = diasPresentes[
+                      currentPage]; // Obtener el día correspondiente al índice actual
+                  final ejerciciosDiaSeleccionado =
+                      widget.rutina.dias[diaSeleccionado];
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => EjerciciosDiaView(
+                        dia: diaSeleccionado,
+                        ejerciciosDia: ejerciciosDiaSeleccionado,
+                        rutinaId: widget.rutina.id ?? '',
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ],
           ),
           const SizedBox(height: 8.0),
           Column(

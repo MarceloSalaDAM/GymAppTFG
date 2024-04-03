@@ -11,7 +11,8 @@ class ObjetivosGeneralesScreen extends StatefulWidget {
 
 class _ObjetivosGeneralesScreenState extends State<ObjetivosGeneralesScreen> {
   late Future<List<Objetivos>> _objetivosFuture;
-  late DocumentReference _misObjetivosRef; // Referencia al documento MisObjetivos
+  late DocumentReference
+      _misObjetivosRef; // Referencia al documento MisObjetivos
   late Objetivos _objetivoSeleccionado; // Objetivo actualmente seleccionado
 
   @override
@@ -43,7 +44,7 @@ class _ObjetivosGeneralesScreenState extends State<ObjetivosGeneralesScreen> {
 
       // Mostrar un mensaje de éxito
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('Objetivo seleccionado correctamente'),
         ),
       );
@@ -51,7 +52,7 @@ class _ObjetivosGeneralesScreenState extends State<ObjetivosGeneralesScreen> {
       // Manejar cualquier error que pueda ocurrir
       print('Error al guardar el objetivo: $error');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('Error al guardar el objetivo'),
         ),
       );
@@ -105,11 +106,11 @@ class _ObjetivosGeneralesScreenState extends State<ObjetivosGeneralesScreen> {
                           child: ExpansionTile(
                             leading: objetivo.imagen != null
                                 ? Image.network(
-                              objetivo.imagen!,
-                              width: 150,
-                              height: 200,
-                              fit: BoxFit.fitWidth,
-                            )
+                                    objetivo.imagen!,
+                                    width: 150,
+                                    height: 200,
+                                    fit: BoxFit.fitWidth,
+                                  )
                                 : SizedBox.shrink(),
                             title: Text(
                               objetivo.titulo,
@@ -137,6 +138,7 @@ class _ObjetivosGeneralesScreenState extends State<ObjetivosGeneralesScreen> {
                               ElevatedButton(
                                 onPressed: () {
                                   guardarObjetivoSeleccionado(objetivo);
+                                  Navigator.of(context).pop();
                                 },
                                 style: ElevatedButton.styleFrom(
                                   elevation: 3,
