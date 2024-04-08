@@ -8,12 +8,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class EjerciciosDiaView extends StatefulWidget {
   final String dia;
   final String rutinaId;
-  final StreamController<void> _streamController = StreamController<void>();
   final Map<String, dynamic> ejerciciosDia;
 
   EjerciciosDiaView({
     required this.dia,
-    required this.rutinaId, required this.ejerciciosDia,
+    required this.rutinaId,
+    required this.ejerciciosDia,
   });
 
   @override
@@ -28,28 +28,58 @@ class _EjerciciosDiaViewState extends State<EjerciciosDiaView> {
   Set<int> _ejerciciosEliminados = {};
   String selectedSeries = '1';
   String selectedRepeticiones = '1';
+  bool _loading = true; // Nuevo estado de carga inicial
 
   @override
   void initState() {
     super.initState();
-    // Inicializa los controladores con los valores reales de los ejercicios
-    for (int index = 0;
-    index < (widget.ejerciciosDia['ejercicios'] ?? []).length;
-    index++) {
-      final peso = widget.ejerciciosDia['ejercicios'][index]['peso'] ?? '';
-      final series = widget.ejerciciosDia['ejercicios'][index]['series'] ?? '';
-      final repeticiones =
-          widget.ejerciciosDia['ejercicios'][index]['repeticiones'] ?? '';
-      _pesoControllers[index] = TextEditingController(text: '$peso');
-      _seriesControllers[index] = TextEditingController(text: '$series');
-      _repeticionesControllers[index] =
-          TextEditingController(text: '$repeticiones');
-    }
+    _loadEjercicios();
+  }
+
+  Future<void> _loadEjercicios() async {
+    setState(() {
+      _loading = true; // Comenzar la carga
+    });
+
+    // Simular una carga mínima de 3 segundos con un Timer
+    Timer(Duration(seconds: 3), () async {
+      try {
+        final user = FirebaseAuth.instance.currentUser;
+        if (user != null) {
+          final userDoc =
+          FirebaseFirestore.instance.collection('usuarios').doc(user.uid);
+          final doc =
+          await userDoc.collection('rutinas').doc(widget.rutinaId).get();
+          final ejerciciosDia = doc.data()?['dias'][widget.dia]['ejercicios'];
+
+          // Inicializar controladores
+          for (int index = 0; index < (ejerciciosDia ?? []).length; index++) {
+            final peso = ejerciciosDia[index]['peso'] ?? '';
+            final series = ejerciciosDia[index]['series'] ?? '';
+            final repeticiones = ejerciciosDia[index]['repeticiones'] ?? '';
+            _pesoControllers[index] = TextEditingController(text: '$peso');
+            _seriesControllers[index] = TextEditingController(text: '$series');
+            _repeticionesControllers[index] =
+                TextEditingController(text: '$repeticiones');
+          }
+
+          setState(() {
+            _loading = false; // Finalizar la carga
+            widget.ejerciciosDia['ejercicios'] = ejerciciosDia;
+          });
+        }
+      } catch (error) {
+        print('Error al cargar los ejercicios: $error');
+        setState(() {
+          _loading = false; // Finalizar la carga con error
+        });
+      }
+    });
   }
 
   @override
   void dispose() {
-    // Limpia los controladores cuando el widget se elimina
+    // Limpiar los controladores cuando el widget se elimine
     _pesoControllers.forEach((index, controller) {
       controller.dispose();
     });
@@ -59,38 +89,34 @@ class _EjerciciosDiaViewState extends State<EjerciciosDiaView> {
     _repeticionesControllers.forEach((index, controller) {
       controller.dispose();
     });
+
     super.dispose();
   }
 
   Future<void> _eliminarEjercicio(String rutinaId, int index) async {
     try {
-      // Accede al documento del usuario logueado
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
         final userDoc =
         FirebaseFirestore.instance.collection('usuarios').doc(user.uid);
-        // Elimina el ejercicio del día en la subcolección de rutinas del usuario
         await userDoc.collection('rutinas').doc(rutinaId).update({
           'dias.${widget.dia}.ejercicios': FieldValue.arrayRemove(
               [widget.ejerciciosDia['ejercicios'][index]])
         });
         setState(() {
-          // Solo eliminamos el ejercicio correspondiente al índice proporcionado
           widget.ejerciciosDia['ejercicios'].removeAt(index);
         });
         print('Ejercicio eliminado exitosamente de la rutina del usuario.');
       } else {
         print('Error: Usuario no logueado.');
       }
-      widget._streamController.add(null);
     } catch (error) {
       print('Error al eliminar el ejercicio de la rutina del usuario: $error');
     }
   }
 
   void _agregarEjercicio() {
-    // Implementa la lógica para añadir ejercicio aquí
-    // Esta parte se completará más adelante
+    // Implementar la lógica para añadir ejercicio aquí
   }
 
   void _crearEjercicio() {
@@ -318,13 +344,15 @@ class _EjerciciosDiaViewState extends State<EjerciciosDiaView> {
           ),
         );
       },
-    );
+    ).then((_) {
+      // Después de cerrar el diálogo, cargar los ejercicios nuevamente
+      _loadEjercicios();
+    });
   }
 
-  Future<void> _guardarEjercicio(
+
+  void _guardarEjercicio(
       String nombre, String series, String peso, String repeticiones) async {
-    // Aquí se debe guardar el ejercicio en Firebase
-    // Puedes usar FirebaseFirestore para añadir el nuevo ejercicio a la colección correspondiente
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       final userDoc =
@@ -338,8 +366,12 @@ class _EjerciciosDiaViewState extends State<EjerciciosDiaView> {
             'repeticiones': repeticiones,
           }
         ])
+      }).then((_) {
+        // Recargar los ejercicios después de guardar
+        _loadEjercicios();
+      }).catchError((error) {
+        print('Error al guardar el ejercicio: $error');
       });
-      widget._streamController.add(null);
     }
   }
 
@@ -349,89 +381,78 @@ class _EjerciciosDiaViewState extends State<EjerciciosDiaView> {
       appBar: AppBar(
         title: Text('${widget.dia} Ejercicios'),
       ),
-      body: Column(
+      body: _loading
+          ? Center(
+        child: CircularProgressIndicator(), // Indicador de carga inicial
+      )
+          : Column(
         children: [
           Expanded(
-            child: StreamBuilder<void>(
-              stream: widget._streamController.stream,
-              builder: (context, snapshot) {
-                return ListView.builder(
-                  itemCount: (widget.ejerciciosDia['ejercicios'] ?? []).length,
-                  itemBuilder: (context, index) {
-                    final isExpanded = _expandedState[index] ?? false;
+            child: ListView.builder(
+              itemCount: (widget.ejerciciosDia['ejercicios'] ?? []).length,
+              itemBuilder: (context, index) {
+                final isExpanded = _expandedState[index] ?? false;
 
-                    // Verifica si el índice está en la lista de ejercicios eliminados
-                    if (_ejerciciosEliminados.contains(index)) {
-                      return SizedBox.shrink();
-                    }
+                if (_ejerciciosEliminados.contains(index)) {
+                  return SizedBox.shrink();
+                }
 
-                    return Card(
-                      child: ExpansionTile(
-                        onExpansionChanged: (expanded) {
-                          setState(() {
-                            _expandedState[index] = expanded;
-                          });
-                        },
-                        title: Text(
-                          widget.ejerciciosDia['ejercicios'][index]['nombre'],
-                          style: const TextStyle(fontWeight: FontWeight.bold),
+                return Card(
+                  child: ExpansionTile(
+                    onExpansionChanged: (expanded) {
+                      setState(() {
+                        _expandedState[index] = expanded;
+                      });
+                    },
+                    title: Text(
+                      widget.ejerciciosDia['ejercicios'][index]['nombre'],
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    initiallyExpanded: isExpanded,
+                    children: isExpanded
+                        ? [
+                      ListTile(
+                        title: TextField(
+                          decoration: InputDecoration(labelText: 'Peso (kg)'),
+                          controller: _pesoControllers[index],
+                          onChanged: (value) {},
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly
+                          ],
                         ),
-                        initiallyExpanded: isExpanded,
-                        children: isExpanded
-                            ? [
-                          ListTile(
-                            title: TextField(
-                              decoration:
-                              InputDecoration(labelText: 'Peso (kg)'),
-                              controller: _pesoControllers[index],
-                              onChanged: (value) {
-                                // Manejar los cambios en el campo de peso aquí
-                              },
-                              keyboardType: TextInputType.number,
-                              inputFormatters: [
-                                FilteringTextInputFormatter.digitsOnly
-                              ],
-                            ),
-                          ),
-                          ListTile(
-                            title: TextField(
-                              decoration:
-                              InputDecoration(labelText: 'Series'),
-                              controller: _seriesControllers[index],
-                              onChanged: (value) {
-                                // Manejar los cambios en el campo de series aquí
-                              },
-                              keyboardType: TextInputType.number,
-                              inputFormatters: [
-                                FilteringTextInputFormatter.digitsOnly
-                              ],
-                            ),
-                          ),
-                          ListTile(
-                            title: TextField(
-                              decoration: InputDecoration(
-                                  labelText: 'Repeticiones'),
-                              controller: _repeticionesControllers[index],
-                              onChanged: (value) {
-                                // Manejar los cambios en el campo de repeticiones aquí
-                              },
-                              keyboardType: TextInputType.number,
-                              inputFormatters: [
-                                FilteringTextInputFormatter.digitsOnly
-                              ],
-                            ),
-                          ),
-                          IconButton(
-                            icon: Icon(Icons.delete),
-                            onPressed: () {
-                              _eliminarEjercicio(widget.rutinaId, index);
-                            },
-                          ),
-                        ]
-                            : [],
                       ),
-                    );
-                  },
+                      ListTile(
+                        title: TextField(
+                          decoration: InputDecoration(labelText: 'Series'),
+                          controller: _seriesControllers[index],
+                          onChanged: (value) {},
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly
+                          ],
+                        ),
+                      ),
+                      ListTile(
+                        title: TextField(
+                          decoration: InputDecoration(labelText: 'Repeticiones'),
+                          controller: _repeticionesControllers[index],
+                          onChanged: (value) {},
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly
+                          ],
+                        ),
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.delete),
+                        onPressed: () {
+                          _eliminarEjercicio(widget.rutinaId, index);
+                        },
+                      ),
+                    ]
+                        : [],
+                  ),
                 );
               },
             ),
@@ -440,7 +461,7 @@ class _EjerciciosDiaViewState extends State<EjerciciosDiaView> {
       ),
       bottomNavigationBar: BottomAppBar(
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             IconButton(
               icon: Icon(Icons.add),
