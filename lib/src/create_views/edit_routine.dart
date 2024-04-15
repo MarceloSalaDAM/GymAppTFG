@@ -42,14 +42,14 @@ class _EjerciciosDiaViewState extends State<EjerciciosDiaView> {
     });
 
     // Simular una carga mínima de 3 segundos con un Timer
-    Timer(Duration(seconds: 3), () async {
+    Timer(Duration(seconds: 1), () async {
       try {
         final user = FirebaseAuth.instance.currentUser;
         if (user != null) {
           final userDoc =
-          FirebaseFirestore.instance.collection('usuarios').doc(user.uid);
+              FirebaseFirestore.instance.collection('usuarios').doc(user.uid);
           final doc =
-          await userDoc.collection('rutinas').doc(widget.rutinaId).get();
+              await userDoc.collection('rutinas').doc(widget.rutinaId).get();
           final ejerciciosDia = doc.data()?['dias'][widget.dia]['ejercicios'];
 
           // Inicializar controladores
@@ -98,7 +98,7 @@ class _EjerciciosDiaViewState extends State<EjerciciosDiaView> {
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
         final userDoc =
-        FirebaseFirestore.instance.collection('usuarios').doc(user.uid);
+            FirebaseFirestore.instance.collection('usuarios').doc(user.uid);
         await userDoc.collection('rutinas').doc(rutinaId).update({
           'dias.${widget.dia}.ejercicios': FieldValue.arrayRemove(
               [widget.ejerciciosDia['ejercicios'][index]])
@@ -195,7 +195,7 @@ class _EjerciciosDiaViewState extends State<EjerciciosDiaView> {
                             '${index + 1}',
                             style: TextStyle(
                                 fontSize:
-                                18.0), // Cambia el tamaño de fuente aquí
+                                    18.0), // Cambia el tamaño de fuente aquí
                           ),
                         );
                       }),
@@ -227,7 +227,7 @@ class _EjerciciosDiaViewState extends State<EjerciciosDiaView> {
                         border: OutlineInputBorder(),
                         labelStyle: TextStyle(
                             fontSize:
-                            22.0), // Cambia el tamaño de fuente de la etiqueta aquí
+                                22.0), // Cambia el tamaño de fuente de la etiqueta aquí
                       ),
                     ),
                     const Divider(height: 50.0),
@@ -282,10 +282,10 @@ class _EjerciciosDiaViewState extends State<EjerciciosDiaView> {
                                         },
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor:
-                                          const Color(0XFF0f7991),
+                                              const Color(0XFF0f7991),
                                           shape: RoundedRectangleBorder(
                                             borderRadius:
-                                            BorderRadius.circular(10.0),
+                                                BorderRadius.circular(10.0),
                                           ),
                                         ),
                                         child: const Padding(
@@ -350,13 +350,12 @@ class _EjerciciosDiaViewState extends State<EjerciciosDiaView> {
     });
   }
 
-
   void _guardarEjercicio(
       String nombre, String series, String peso, String repeticiones) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       final userDoc =
-      FirebaseFirestore.instance.collection('usuarios').doc(user.uid);
+          FirebaseFirestore.instance.collection('usuarios').doc(user.uid);
       userDoc.collection('rutinas').doc(widget.rutinaId).update({
         'dias.${widget.dia}.ejercicios': FieldValue.arrayUnion([
           {
@@ -379,100 +378,159 @@ class _EjerciciosDiaViewState extends State<EjerciciosDiaView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('${widget.dia} Ejercicios'),
+        backgroundColor: const Color(0XFF0f7991),
+        title: Text(
+          'EDITAR ${widget.dia}',
+          style: const TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
       body: _loading
           ? Center(
-        child: CircularProgressIndicator(), // Indicador de carga inicial
-      )
+              child: CircularProgressIndicator(), // Indicador de carga inicial
+            )
           : Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: (widget.ejerciciosDia['ejercicios'] ?? []).length,
-              itemBuilder: (context, index) {
-                final isExpanded = _expandedState[index] ?? false;
+              children: [
+                Expanded(
+                  child: ListView.builder(
+                    itemCount:
+                        (widget.ejerciciosDia['ejercicios'] ?? []).length,
+                    itemBuilder: (context, index) {
+                      final isExpanded = _expandedState[index] ?? false;
 
-                if (_ejerciciosEliminados.contains(index)) {
-                  return SizedBox.shrink();
-                }
+                      if (_ejerciciosEliminados.contains(index)) {
+                        return const SizedBox.shrink();
+                      }
 
-                return Card(
-                  child: ExpansionTile(
-                    onExpansionChanged: (expanded) {
-                      setState(() {
-                        _expandedState[index] = expanded;
-                      });
+                      return Card(
+                        child: ExpansionTile(
+                          onExpansionChanged: (expanded) {
+                            setState(() {
+                              _expandedState[index] = expanded;
+                            });
+                          },
+                          title: Text(
+                            widget.ejerciciosDia['ejercicios'][index]['nombre'],
+                            style: const TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 18),
+                          ),
+                          initiallyExpanded: isExpanded,
+                          children: isExpanded
+                              ? [
+                                  ListTile(
+                                    title: TextField(
+                                      decoration: const InputDecoration(
+                                        labelText: 'Peso (kg)',
+                                        labelStyle: TextStyle(
+                                            fontSize: 24,
+                                            fontWeight: FontWeight
+                                                .bold), // Estilo para el texto del label
+                                      ),
+                                      style: TextStyle(fontSize: 20),
+                                      controller: _pesoControllers[index],
+                                      onChanged: (value) {},
+                                      keyboardType: TextInputType.number,
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.digitsOnly
+                                      ],
+                                    ),
+                                  ),
+                                  ListTile(
+                                    title: TextField(
+                                      decoration: const InputDecoration(
+                                        labelText: 'Series',
+                                        labelStyle: TextStyle(
+                                            fontSize: 24,
+                                            fontWeight: FontWeight
+                                                .bold), // Estilo para el texto del label
+                                      ),
+                                      style: TextStyle(fontSize: 20),
+                                      controller: _seriesControllers[index],
+                                      onChanged: (value) {},
+                                      keyboardType: TextInputType.number,
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.digitsOnly
+                                      ],
+                                    ),
+                                  ),
+                                  ListTile(
+                                    title: TextField(
+                                      decoration: const InputDecoration(
+                                        labelText: 'Repeticiones',
+                                        labelStyle: TextStyle(
+                                            fontSize: 24,
+                                            fontWeight: FontWeight
+                                                .bold), // Estilo para el texto del label
+                                      ),
+                                      style: TextStyle(fontSize: 20),
+                                      controller:
+                                          _repeticionesControllers[index],
+                                      onChanged: (value) {},
+                                      keyboardType: TextInputType.number,
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.digitsOnly
+                                      ],
+                                    ),
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      IconButton(
+                                        icon: const Icon(Icons.save_as, size: 30),
+                                        onPressed: () {},
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(Icons.delete, size: 30),
+                                        onPressed: () {
+                                          _eliminarEjercicio(
+                                              widget.rutinaId, index);
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ]
+                              : [],
+                        ),
+                      );
                     },
-                    title: Text(
-                      widget.ejerciciosDia['ejercicios'][index]['nombre'],
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    initiallyExpanded: isExpanded,
-                    children: isExpanded
-                        ? [
-                      ListTile(
-                        title: TextField(
-                          decoration: InputDecoration(labelText: 'Peso (kg)'),
-                          controller: _pesoControllers[index],
-                          onChanged: (value) {},
-                          keyboardType: TextInputType.number,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly
-                          ],
-                        ),
-                      ),
-                      ListTile(
-                        title: TextField(
-                          decoration: InputDecoration(labelText: 'Series'),
-                          controller: _seriesControllers[index],
-                          onChanged: (value) {},
-                          keyboardType: TextInputType.number,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly
-                          ],
-                        ),
-                      ),
-                      ListTile(
-                        title: TextField(
-                          decoration: InputDecoration(labelText: 'Repeticiones'),
-                          controller: _repeticionesControllers[index],
-                          onChanged: (value) {},
-                          keyboardType: TextInputType.number,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly
-                          ],
-                        ),
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.delete),
-                        onPressed: () {
-                          _eliminarEjercicio(widget.rutinaId, index);
-                        },
-                      ),
-                    ]
-                        : [],
                   ),
-                );
-              },
+                ),
+              ],
+            ),
+      bottomNavigationBar: Stack(
+        children: [
+          const BottomAppBar(
+            color: Colors.transparent,
+            // Establece el color transparente para que no cubra el fondo
+            elevation: 0, // Elimina la sombra del BottomAppBar
+          ),
+          Container(
+            height: kBottomNavigationBarHeight,
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0XFF0f7991), Color(0XFF4AB7D8)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                IconButton(
+                  icon: Icon(Icons.add),
+                  onPressed: _agregarEjercicio,
+                ),
+                IconButton(
+                  icon: Icon(Icons.create),
+                  onPressed: _crearEjercicio,
+                ),
+              ],
             ),
           ),
         ],
-      ),
-      bottomNavigationBar: BottomAppBar(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            IconButton(
-              icon: Icon(Icons.add),
-              onPressed: _agregarEjercicio,
-            ),
-            IconButton(
-              icon: Icon(Icons.create),
-              onPressed: _crearEjercicio,
-            ),
-          ],
-        ),
       ),
     );
   }
