@@ -444,7 +444,7 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
     List<Widget> exerciseTables = [];
     if (ejerciciosDia['ejercicios'] != null) {
       for (var ejercicio in ejerciciosDia['ejercicios']) {
-        String nombreEjercicio = ejercicio['nombre'];
+        String nombreEjercicio = ejercicio['nombre'] ?? '';
         List<String> nombreEjercicioWords = nombreEjercicio.split(' ');
         List<Widget> nombreEjercicioWidgets = [];
         int index = 0;

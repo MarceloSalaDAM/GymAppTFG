@@ -115,6 +115,58 @@ class _EjerciciosDiaViewState extends State<EjerciciosDiaView> {
     }
   }
 
+  Future<void> _actualizarEjercicios() async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        final userDoc =
+        FirebaseFirestore.instance.collection('usuarios').doc(user.uid);
+        final rutinaRef = userDoc.collection('rutinas').doc(widget.rutinaId);
+
+        // Obtener el documento de la rutina
+        final doc = await rutinaRef.get();
+        final dias = doc.data()?['dias'];
+
+        // Verificar si el día existe en el documento
+        if (dias != null && dias.containsKey(widget.dia)) {
+          final ejerciciosDia = dias[widget.dia]['ejercicios'];
+
+          // Crear una lista para almacenar los ejercicios actualizados
+          List<Map<String, dynamic>> ejerciciosActualizados = [];
+
+          // Recorrer los ejercicios y actualizar los valores
+          for (int index = 0; index < (ejerciciosDia ?? []).length; index++) {
+            // Obtener los nuevos valores de los controladores si están disponibles
+            final peso = _pesoControllers[index]?.text ?? '';
+            final series = _seriesControllers[index]?.text ?? '';
+            final repeticiones = _repeticionesControllers[index]?.text ?? '';
+
+            // Agregar los datos actualizados a la lista
+            ejerciciosActualizados.add({
+              'peso': peso,
+              'series': series,
+              'repeticiones': repeticiones,
+            });
+          }
+
+          // Actualizar los valores en Firestore
+          await rutinaRef.update({
+            'dias.${widget.dia}.ejercicios': ejerciciosActualizados,
+          });
+
+          print('Ejercicios actualizados exitosamente en Firestore.');
+        } else {
+          print('Error: El día especificado no existe en la rutina.');
+        }
+      } else {
+        print('Error: Usuario no logueado.');
+      }
+    } catch (error) {
+      print('Error al actualizar los ejercicios: $error');
+    }
+  }
+
+
   void _agregarEjercicio() {
     // Implementar la lógica para añadir ejercicio aquí
   }
@@ -479,11 +531,8 @@ class _EjerciciosDiaViewState extends State<EjerciciosDiaView> {
                                         MainAxisAlignment.spaceEvenly,
                                     children: [
                                       IconButton(
-                                        icon: const Icon(Icons.save_as, size: 30),
-                                        onPressed: () {},
-                                      ),
-                                      IconButton(
-                                        icon: const Icon(Icons.delete, size: 30),
+                                        icon:
+                                            const Icon(Icons.delete, size: 30),
                                         onPressed: () {
                                           _eliminarEjercicio(
                                               widget.rutinaId, index);
@@ -520,11 +569,20 @@ class _EjerciciosDiaViewState extends State<EjerciciosDiaView> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 IconButton(
-                  icon: Icon(Icons.add),
+                  icon:
+                      const Icon(Icons.save_as, size: 30, color: Colors.white),
+                  onPressed: () {
+                    _actualizarEjercicios();
+
+                    _loadEjercicios();
+                  },
+                ),
+                IconButton(
+                  icon: Icon(Icons.add, size: 30, color: Colors.white),
                   onPressed: _agregarEjercicio,
                 ),
                 IconButton(
-                  icon: Icon(Icons.create),
+                  icon: Icon(Icons.create, size: 30, color: Colors.white),
                   onPressed: _crearEjercicio,
                 ),
               ],
