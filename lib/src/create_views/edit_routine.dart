@@ -429,22 +429,33 @@ class _EjerciciosDiaViewState extends State<EjerciciosDiaView> {
                               TextEditingController();
 
                       return Card(
+                        elevation: 3.0,
+                        margin: EdgeInsets.fromLTRB(20, 10, 20, 10),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15.0),
+                          side: BorderSide(color: Colors.grey[400]!, width: 1.0),
+                        ),
                         child: Padding(
-                          padding: const EdgeInsets.all(16),
+                          padding: const EdgeInsets.all(20),
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Text(
                                 '${widget.ejerciciosDia['ejercicios'][index]['nombre']}',
+                                textAlign: TextAlign.center,
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 18,
+                                  fontSize: 22,
                                 ),
                               ),
                               const SizedBox(height: 8),
                               TextField(
+                                style: TextStyle(fontSize: 20),
                                 decoration: const InputDecoration(
-                                    labelText: 'Peso (kg)'),
+                                    labelText: 'Peso (kg)',
+                                    labelStyle: TextStyle(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold)),
                                 controller: pesoController,
                                 keyboardType: TextInputType.number,
                                 inputFormatters: [
@@ -453,8 +464,12 @@ class _EjerciciosDiaViewState extends State<EjerciciosDiaView> {
                               ),
                               const SizedBox(height: 8),
                               TextField(
-                                decoration:
-                                    const InputDecoration(labelText: 'Series'),
+                                style: TextStyle(fontSize: 20),
+                                decoration: const InputDecoration(
+                                    labelText: 'Series',
+                                    labelStyle: TextStyle(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold)),
                                 controller: seriesController,
                                 keyboardType: TextInputType.number,
                                 inputFormatters: [
@@ -463,8 +478,12 @@ class _EjerciciosDiaViewState extends State<EjerciciosDiaView> {
                               ),
                               const SizedBox(height: 8),
                               TextField(
+                                style: TextStyle(fontSize: 20),
                                 decoration: const InputDecoration(
-                                    labelText: 'Repeticiones'),
+                                    labelText: 'Repeticiones',
+                                    labelStyle: TextStyle(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold)),
                                 controller: repeticionesController,
                                 keyboardType: TextInputType.number,
                                 inputFormatters: [
@@ -474,17 +493,19 @@ class _EjerciciosDiaViewState extends State<EjerciciosDiaView> {
                               const SizedBox(height: 8),
                               Row(
                                 mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                    MainAxisAlignment.spaceEvenly,
                                 children: [
                                   IconButton(
-                                    icon: const Icon(Icons.delete),
+                                    icon: const Icon(Icons.delete,
+                                        size: 30, color: Colors.black),
                                     onPressed: () {
                                       _eliminarEjercicio(
                                           widget.rutinaId, index);
                                     },
                                   ),
                                   IconButton(
-                                    icon: const Icon(Icons.save),
+                                    icon: const Icon(Icons.save,
+                                        size: 30, color: Colors.black),
                                     onPressed: () {
                                       final int currentIndex = index;
                                       final peso = pesoController.text;
