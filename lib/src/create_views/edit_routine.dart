@@ -420,121 +420,88 @@ class _EjerciciosDiaViewState extends State<EjerciciosDiaView> {
                     itemCount:
                         (widget.ejerciciosDia['ejercicios'] ?? []).length,
                     itemBuilder: (context, index) {
-                      final isExpanded = _expandedState[index] ?? false;
-
-                      if (_ejerciciosEliminados.contains(index)) {
-                        return const SizedBox.shrink();
-                      }
+                      final pesoController =
+                          _pesoControllers[index] ?? TextEditingController();
+                      final seriesController =
+                          _seriesControllers[index] ?? TextEditingController();
+                      final repeticionesController =
+                          _repeticionesControllers[index] ??
+                              TextEditingController();
 
                       return Card(
-                        child: ExpansionTile(
-                          onExpansionChanged: (expanded) {
-                            setState(() {
-                              _expandedState[index] = expanded;
-                            });
-                          },
-                          title: Text(
-                            widget.ejerciciosDia['ejercicios'][index]['nombre'],
-                            style: const TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 18),
-                          ),
-                          initiallyExpanded: isExpanded,
-                          children: isExpanded
-                              ? [
-                                  ListTile(
-                                    title: TextField(
-                                      decoration: const InputDecoration(
-                                        labelText: 'Peso (kg)',
-                                        labelStyle: TextStyle(
-                                            fontSize: 24,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                      style: TextStyle(fontSize: 20),
-                                      controller: _pesoControllers[index],
-                                      onChanged: (value) {},
-                                      keyboardType: TextInputType.number,
-                                      inputFormatters: [
-                                        FilteringTextInputFormatter.digitsOnly
-                                      ],
-                                    ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '${widget.ejerciciosDia['ejercicios'][index]['nombre']}',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              TextField(
+                                decoration: const InputDecoration(
+                                    labelText: 'Peso (kg)'),
+                                controller: pesoController,
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              TextField(
+                                decoration:
+                                    const InputDecoration(labelText: 'Series'),
+                                controller: seriesController,
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              TextField(
+                                decoration: const InputDecoration(
+                                    labelText: 'Repeticiones'),
+                                controller: repeticionesController,
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  IconButton(
+                                    icon: const Icon(Icons.delete),
+                                    onPressed: () {
+                                      _eliminarEjercicio(
+                                          widget.rutinaId, index);
+                                    },
                                   ),
-                                  ListTile(
-                                    title: TextField(
-                                      decoration: const InputDecoration(
-                                        labelText: 'Series',
-                                        labelStyle: TextStyle(
-                                            fontSize: 24,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                      style: TextStyle(fontSize: 20),
-                                      controller: _seriesControllers[index],
-                                      onChanged: (value) {},
-                                      keyboardType: TextInputType.number,
-                                      inputFormatters: [
-                                        FilteringTextInputFormatter.digitsOnly
-                                      ],
-                                    ),
-                                  ),
-                                  ListTile(
-                                    title: TextField(
-                                      decoration: const InputDecoration(
-                                        labelText: 'Repeticiones',
-                                        labelStyle: TextStyle(
-                                            fontSize: 24,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                      style: TextStyle(fontSize: 20),
-                                      controller:
-                                          _repeticionesControllers[index],
-                                      onChanged: (value) {},
-                                      keyboardType: TextInputType.number,
-                                      inputFormatters: [
-                                        FilteringTextInputFormatter.digitsOnly
-                                      ],
-                                    ),
-                                  ),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      IconButton(
-                                        icon: const Icon(Icons.delete,
-                                            size: 30, color: Colors.black),
-                                        onPressed: () {
-                                          _eliminarEjercicio(
-                                              widget.rutinaId, index);
-                                        },
-                                      ),
-                                      IconButton(
-                                        icon: const Icon(Icons.save_as,
-                                            size: 30, color: Colors.black),
-                                        onPressed: () {
-                                          final int currentIndex =
-                                              index; // Asegurarse de que esta variable esté definida en el contexto correcto
-                                          final peso =
-                                              _pesoControllers[currentIndex]
-                                                      ?.text ??
-                                                  '';
-                                          final series =
-                                              _seriesControllers[currentIndex]
-                                                      ?.text ??
-                                                  '';
-                                          final repeticiones =
-                                              _repeticionesControllers[
-                                                          currentIndex]
-                                                      ?.text ??
-                                                  '';
+                                  IconButton(
+                                    icon: const Icon(Icons.save),
+                                    onPressed: () {
+                                      final int currentIndex = index;
+                                      final peso = pesoController.text;
+                                      final series = seriesController.text;
+                                      final repeticiones =
+                                          repeticionesController.text;
 
-                                          print(
-                                              'Peso: $peso, Series: $series, Repeticiones: $repeticiones');
-                                          _actualizarEjercicio(series, peso,
-                                              repeticiones, currentIndex);
-                                        },
-                                      ),
-                                    ],
+                                      print(
+                                          'Peso: $peso, Series: $series, Repeticiones: $repeticiones');
+                                      _actualizarEjercicio(series, peso,
+                                          repeticiones, currentIndex);
+                                    },
                                   ),
-                                ]
-                              : [],
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       );
                     },
