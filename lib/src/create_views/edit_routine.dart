@@ -28,7 +28,7 @@ class _EjerciciosDiaViewState extends State<EjerciciosDiaView> {
   Set<int> _ejerciciosEliminados = {};
   String selectedSeries = '1';
   String selectedRepeticiones = '1';
-  bool _loading = true; // Nuevo estado de carga inicial
+  bool _loading = true;
 
   @override
   void initState() {
@@ -36,12 +36,26 @@ class _EjerciciosDiaViewState extends State<EjerciciosDiaView> {
     _loadEjercicios();
   }
 
+  void _initializeControllers(List<dynamic> ejerciciosDia) {
+    _pesoControllers.clear();
+    _seriesControllers.clear();
+    _repeticionesControllers.clear();
+    for (int index = 0; index < (ejerciciosDia ?? []).length; index++) {
+      final peso = ejerciciosDia[index]['peso'] ?? '';
+      final series = ejerciciosDia[index]['series'] ?? '';
+      final repeticiones = ejerciciosDia[index]['repeticiones'] ?? '';
+      _pesoControllers[index] = TextEditingController(text: '$peso');
+      _seriesControllers[index] = TextEditingController(text: '$series');
+      _repeticionesControllers[index] =
+          TextEditingController(text: '$repeticiones');
+    }
+  }
+
   Future<void> _loadEjercicios() async {
     setState(() {
-      _loading = true; // Comenzar la carga
+      _loading = true;
     });
 
-    // Simular una carga mínima de 3 segundos con un Timer
     Timer(Duration(seconds: 1), () async {
       try {
         final user = FirebaseAuth.instance.currentUser;
@@ -52,26 +66,17 @@ class _EjerciciosDiaViewState extends State<EjerciciosDiaView> {
               await userDoc.collection('rutinas').doc(widget.rutinaId).get();
           final ejerciciosDia = doc.data()?['dias'][widget.dia]['ejercicios'];
 
-          // Inicializar controladores
-          for (int index = 0; index < (ejerciciosDia ?? []).length; index++) {
-            final peso = ejerciciosDia[index]['peso'] ?? '';
-            final series = ejerciciosDia[index]['series'] ?? '';
-            final repeticiones = ejerciciosDia[index]['repeticiones'] ?? '';
-            _pesoControllers[index] = TextEditingController(text: '$peso');
-            _seriesControllers[index] = TextEditingController(text: '$series');
-            _repeticionesControllers[index] =
-                TextEditingController(text: '$repeticiones');
-          }
+          _initializeControllers(ejerciciosDia);
 
           setState(() {
-            _loading = false; // Finalizar la carga
+            _loading = false;
             widget.ejerciciosDia['ejercicios'] = ejerciciosDia;
           });
         }
       } catch (error) {
         print('Error al cargar los ejercicios: $error');
         setState(() {
-          _loading = false; // Finalizar la carga con error
+          _loading = false;
         });
       }
     });
@@ -79,7 +84,6 @@ class _EjerciciosDiaViewState extends State<EjerciciosDiaView> {
 
   @override
   void dispose() {
-    // Limpiar los controladores cuando el widget se elimine
     _pesoControllers.forEach((index, controller) {
       controller.dispose();
     });
@@ -115,57 +119,33 @@ class _EjerciciosDiaViewState extends State<EjerciciosDiaView> {
     }
   }
 
-  Future<void> _actualizarEjercicios() async {
-    try {
-      final user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        final userDoc =
-        FirebaseFirestore.instance.collection('usuarios').doc(user.uid);
-        final rutinaRef = userDoc.collection('rutinas').doc(widget.rutinaId);
+  void _actualizarEjercicio(
+    String series,
+    String peso,
+    String repeticiones,
+    int index,
+  ) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final userDoc =
+          FirebaseFirestore.instance.collection('usuarios').doc(user.uid);
+      final rutinaId = widget.rutinaId;
+      final dia = widget.dia;
+      final ejercicios = List.from(widget.ejerciciosDia['ejercicios']);
+      final ejercicio = ejercicios[index];
+      ejercicio['series'] = series;
+      ejercicio['peso'] = peso;
+      ejercicio['repeticiones'] = repeticiones;
 
-        // Obtener el documento de la rutina
-        final doc = await rutinaRef.get();
-        final dias = doc.data()?['dias'];
-
-        // Verificar si el día existe en el documento
-        if (dias != null && dias.containsKey(widget.dia)) {
-          final ejerciciosDia = dias[widget.dia]['ejercicios'];
-
-          // Crear una lista para almacenar los ejercicios actualizados
-          List<Map<String, dynamic>> ejerciciosActualizados = [];
-
-          // Recorrer los ejercicios y actualizar los valores
-          for (int index = 0; index < (ejerciciosDia ?? []).length; index++) {
-            // Obtener los nuevos valores de los controladores si están disponibles
-            final peso = _pesoControllers[index]?.text ?? '';
-            final series = _seriesControllers[index]?.text ?? '';
-            final repeticiones = _repeticionesControllers[index]?.text ?? '';
-
-            // Agregar los datos actualizados a la lista
-            ejerciciosActualizados.add({
-              'peso': peso,
-              'series': series,
-              'repeticiones': repeticiones,
-            });
-          }
-
-          // Actualizar los valores en Firestore
-          await rutinaRef.update({
-            'dias.${widget.dia}.ejercicios': ejerciciosActualizados,
-          });
-
-          print('Ejercicios actualizados exitosamente en Firestore.');
-        } else {
-          print('Error: El día especificado no existe en la rutina.');
-        }
-      } else {
-        print('Error: Usuario no logueado.');
-      }
-    } catch (error) {
-      print('Error al actualizar los ejercicios: $error');
+      userDoc.collection('rutinas').doc(rutinaId).update({
+        'dias.$dia.ejercicios': ejercicios,
+      }).then((_) {
+        _loadEjercicios();
+      }).catchError((error) {
+        print('Error al actualizar el ejercicio: $error');
+      });
     }
   }
-
 
   void _agregarEjercicio() {
     // Implementar la lógica para añadir ejercicio aquí
@@ -177,7 +157,6 @@ class _EjerciciosDiaViewState extends State<EjerciciosDiaView> {
       builder: (BuildContext context) {
         String nombre = '';
         String peso = '';
-        // Define los controladores de texto
         final nombreController = TextEditingController();
         final pesoController = TextEditingController();
 
@@ -195,8 +174,8 @@ class _EjerciciosDiaViewState extends State<EjerciciosDiaView> {
               borderRadius: BorderRadius.circular(16.0),
               color: Colors.white,
               border: Border.all(
-                color: Colors.black, // Color del borde
-                width: 3.0, // Ancho del borde
+                color: Colors.black,
+                width: 3.0,
               ),
             ),
             child: SingleChildScrollView(
@@ -245,9 +224,7 @@ class _EjerciciosDiaViewState extends State<EjerciciosDiaView> {
                           value: (index + 1).toString(),
                           child: Text(
                             '${index + 1}',
-                            style: TextStyle(
-                                fontSize:
-                                    18.0), // Cambia el tamaño de fuente aquí
+                            style: TextStyle(fontSize: 18.0),
                           ),
                         );
                       }),
@@ -277,9 +254,7 @@ class _EjerciciosDiaViewState extends State<EjerciciosDiaView> {
                       decoration: const InputDecoration(
                         labelText: 'Repeticiones',
                         border: OutlineInputBorder(),
-                        labelStyle: TextStyle(
-                            fontSize:
-                                22.0), // Cambia el tamaño de fuente de la etiqueta aquí
+                        labelStyle: TextStyle(fontSize: 22.0),
                       ),
                     ),
                     const Divider(height: 50.0),
@@ -311,10 +286,8 @@ class _EjerciciosDiaViewState extends State<EjerciciosDiaView> {
                         ),
                         ElevatedButton(
                           onPressed: () {
-                            // Valida todos los campos de texto antes de guardar el ejercicio
                             if (nombreController.text.isEmpty ||
                                 pesoController.text.isEmpty) {
-                              // Si algún campo está vacío, muestra un AlertDialog con un mensaje de error
                               showDialog(
                                 context: context,
                                 builder: (BuildContext context) {
@@ -358,7 +331,6 @@ class _EjerciciosDiaViewState extends State<EjerciciosDiaView> {
                                 },
                               );
                             } else {
-                              // Si todos los campos están completos, guarda el ejercicio y cierra el diálogo
                               _guardarEjercicio(
                                 nombreController.text,
                                 selectedSeries,
@@ -397,7 +369,6 @@ class _EjerciciosDiaViewState extends State<EjerciciosDiaView> {
         );
       },
     ).then((_) {
-      // Después de cerrar el diálogo, cargar los ejercicios nuevamente
       _loadEjercicios();
     });
   }
@@ -418,7 +389,6 @@ class _EjerciciosDiaViewState extends State<EjerciciosDiaView> {
           }
         ])
       }).then((_) {
-        // Recargar los ejercicios después de guardar
         _loadEjercicios();
       }).catchError((error) {
         print('Error al guardar el ejercicio: $error');
@@ -441,7 +411,7 @@ class _EjerciciosDiaViewState extends State<EjerciciosDiaView> {
       ),
       body: _loading
           ? Center(
-              child: CircularProgressIndicator(), // Indicador de carga inicial
+              child: CircularProgressIndicator(),
             )
           : Column(
               children: [
@@ -477,8 +447,7 @@ class _EjerciciosDiaViewState extends State<EjerciciosDiaView> {
                                         labelText: 'Peso (kg)',
                                         labelStyle: TextStyle(
                                             fontSize: 24,
-                                            fontWeight: FontWeight
-                                                .bold), // Estilo para el texto del label
+                                            fontWeight: FontWeight.bold),
                                       ),
                                       style: TextStyle(fontSize: 20),
                                       controller: _pesoControllers[index],
@@ -495,8 +464,7 @@ class _EjerciciosDiaViewState extends State<EjerciciosDiaView> {
                                         labelText: 'Series',
                                         labelStyle: TextStyle(
                                             fontSize: 24,
-                                            fontWeight: FontWeight
-                                                .bold), // Estilo para el texto del label
+                                            fontWeight: FontWeight.bold),
                                       ),
                                       style: TextStyle(fontSize: 20),
                                       controller: _seriesControllers[index],
@@ -513,8 +481,7 @@ class _EjerciciosDiaViewState extends State<EjerciciosDiaView> {
                                         labelText: 'Repeticiones',
                                         labelStyle: TextStyle(
                                             fontSize: 24,
-                                            fontWeight: FontWeight
-                                                .bold), // Estilo para el texto del label
+                                            fontWeight: FontWeight.bold),
                                       ),
                                       style: TextStyle(fontSize: 20),
                                       controller:
@@ -531,11 +498,37 @@ class _EjerciciosDiaViewState extends State<EjerciciosDiaView> {
                                         MainAxisAlignment.spaceEvenly,
                                     children: [
                                       IconButton(
-                                        icon:
-                                            const Icon(Icons.delete, size: 30),
+                                        icon: const Icon(Icons.delete,
+                                            size: 30, color: Colors.black),
                                         onPressed: () {
                                           _eliminarEjercicio(
                                               widget.rutinaId, index);
+                                        },
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(Icons.save_as,
+                                            size: 30, color: Colors.black),
+                                        onPressed: () {
+                                          final int currentIndex =
+                                              index; // Asegurarse de que esta variable esté definida en el contexto correcto
+                                          final peso =
+                                              _pesoControllers[currentIndex]
+                                                      ?.text ??
+                                                  '';
+                                          final series =
+                                              _seriesControllers[currentIndex]
+                                                      ?.text ??
+                                                  '';
+                                          final repeticiones =
+                                              _repeticionesControllers[
+                                                          currentIndex]
+                                                      ?.text ??
+                                                  '';
+
+                                          print(
+                                              'Peso: $peso, Series: $series, Repeticiones: $repeticiones');
+                                          _actualizarEjercicio(series, peso,
+                                              repeticiones, currentIndex);
                                         },
                                       ),
                                     ],
@@ -553,8 +546,7 @@ class _EjerciciosDiaViewState extends State<EjerciciosDiaView> {
         children: [
           const BottomAppBar(
             color: Colors.transparent,
-            // Establece el color transparente para que no cubra el fondo
-            elevation: 0, // Elimina la sombra del BottomAppBar
+            elevation: 0,
           ),
           Container(
             height: kBottomNavigationBarHeight,
@@ -568,15 +560,6 @@ class _EjerciciosDiaViewState extends State<EjerciciosDiaView> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                IconButton(
-                  icon:
-                      const Icon(Icons.save_as, size: 30, color: Colors.white),
-                  onPressed: () {
-                    _actualizarEjercicios();
-
-                    _loadEjercicios();
-                  },
-                ),
                 IconButton(
                   icon: Icon(Icons.add, size: 30, color: Colors.white),
                   onPressed: _agregarEjercicio,
