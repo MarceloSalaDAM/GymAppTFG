@@ -20,7 +20,7 @@ class _MainViewAppState extends State<MainViewApp> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String userName = ''; // Variable para almacenar el nombre del usuario
   List<Ejercicios> ejercicios = []; // Lista para almacenar los ejercicios
-  bool _showSubFABs = false;
+  final bool _showSubFABs = false;
 
   @override
   void initState() {
@@ -96,7 +96,7 @@ class _MainViewAppState extends State<MainViewApp> {
                 : null,
         flexibleSpace: Container(
           decoration: const BoxDecoration(
-            color: const Color(0XFF0f7991),
+            color: Color(0XFF0f7991),
           ),
         ),
       ),
@@ -110,7 +110,7 @@ class _MainViewAppState extends State<MainViewApp> {
               child: _currentIndex == 1
                   ? MainListView(ejercicios: ejercicios)
                   : _currentIndex == 0
-                      ? StatisticsView()
+                      ? const StatisticsView()
                       : _currentIndex == 2
                           ? const DetailsProfileView()
                           : Container(),

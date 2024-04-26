@@ -5,12 +5,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../detail_views/details_routine.dart';
+import '../firebase_objects/rutinas_firebase.dart';
+
 class EjerciciosDiaView extends StatefulWidget {
   final String dia;
   final String rutinaId;
   final Map<String, dynamic> ejerciciosDia;
 
-  EjerciciosDiaView({
+  const EjerciciosDiaView({
+    super.key,
     required this.dia,
     required this.rutinaId,
     required this.ejerciciosDia,
@@ -21,11 +25,11 @@ class EjerciciosDiaView extends StatefulWidget {
 }
 
 class _EjerciciosDiaViewState extends State<EjerciciosDiaView> {
-  Map<int, bool> _expandedState = {};
-  Map<int, TextEditingController> _pesoControllers = {};
-  Map<int, TextEditingController> _seriesControllers = {};
-  Map<int, TextEditingController> _repeticionesControllers = {};
-  Set<int> _ejerciciosEliminados = {};
+  final Map<int, bool> _expandedState = {};
+  final Map<int, TextEditingController> _pesoControllers = {};
+  final Map<int, TextEditingController> _seriesControllers = {};
+  final Map<int, TextEditingController> _repeticionesControllers = {};
+  final Set<int> _ejerciciosEliminados = {};
   String selectedSeries = '1';
   String selectedRepeticiones = '1';
   bool _loading = true;
@@ -56,7 +60,7 @@ class _EjerciciosDiaViewState extends State<EjerciciosDiaView> {
       _loading = true;
     });
 
-    Timer(Duration(seconds: 1), () async {
+    Timer(const Duration(seconds: 1), () async {
       try {
         final user = FirebaseAuth.instance.currentUser;
         if (user != null) {
@@ -169,7 +173,7 @@ class _EjerciciosDiaViewState extends State<EjerciciosDiaView> {
           child: Container(
             height: 700,
             width: 450,
-            padding: EdgeInsets.all(30.0),
+            padding: const EdgeInsets.all(30.0),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16.0),
               color: Colors.white,
@@ -205,7 +209,7 @@ class _EjerciciosDiaViewState extends State<EjerciciosDiaView> {
                     const SizedBox(height: 18.0),
                     TextField(
                       controller: pesoController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'Peso',
                         labelStyle: TextStyle(fontSize: 19.0),
                       ),
@@ -224,7 +228,7 @@ class _EjerciciosDiaViewState extends State<EjerciciosDiaView> {
                           value: (index + 1).toString(),
                           child: Text(
                             '${index + 1}',
-                            style: TextStyle(fontSize: 18.0),
+                            style: const TextStyle(fontSize: 18.0),
                           ),
                         );
                       }),
@@ -247,7 +251,7 @@ class _EjerciciosDiaViewState extends State<EjerciciosDiaView> {
                           value: (index + 1).toString(),
                           child: Text(
                             '${index + 1}',
-                            style: TextStyle(fontSize: 18.0),
+                            style: const TextStyle(fontSize: 18.0),
                           ),
                         );
                       }),
@@ -408,9 +412,15 @@ class _EjerciciosDiaViewState extends State<EjerciciosDiaView> {
             fontWeight: FontWeight.bold,
           ),
         ),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back), // Icono de retroceso
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
       ),
       body: _loading
-          ? Center(
+          ? const Center(
               child: CircularProgressIndicator(),
             )
           : Column(
@@ -430,10 +440,11 @@ class _EjerciciosDiaViewState extends State<EjerciciosDiaView> {
 
                       return Card(
                         elevation: 3.0,
-                        margin: EdgeInsets.fromLTRB(20, 10, 20, 10),
+                        margin: const EdgeInsets.fromLTRB(20, 10, 20, 10),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(15.0),
-                          side: BorderSide(color: Colors.grey[400]!, width: 1.0),
+                          side:
+                              BorderSide(color: Colors.grey[400]!, width: 1.0),
                         ),
                         child: Padding(
                           padding: const EdgeInsets.all(20),
@@ -450,7 +461,7 @@ class _EjerciciosDiaViewState extends State<EjerciciosDiaView> {
                               ),
                               const SizedBox(height: 8),
                               TextField(
-                                style: TextStyle(fontSize: 20),
+                                style: const TextStyle(fontSize: 20),
                                 decoration: const InputDecoration(
                                     labelText: 'Peso (kg)',
                                     labelStyle: TextStyle(
@@ -464,7 +475,7 @@ class _EjerciciosDiaViewState extends State<EjerciciosDiaView> {
                               ),
                               const SizedBox(height: 8),
                               TextField(
-                                style: TextStyle(fontSize: 20),
+                                style: const TextStyle(fontSize: 20),
                                 decoration: const InputDecoration(
                                     labelText: 'Series',
                                     labelStyle: TextStyle(
@@ -478,7 +489,7 @@ class _EjerciciosDiaViewState extends State<EjerciciosDiaView> {
                               ),
                               const SizedBox(height: 8),
                               TextField(
-                                style: TextStyle(fontSize: 20),
+                                style: const TextStyle(fontSize: 20),
                                 decoration: const InputDecoration(
                                     labelText: 'Repeticiones',
                                     labelStyle: TextStyle(
@@ -549,11 +560,11 @@ class _EjerciciosDiaViewState extends State<EjerciciosDiaView> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 IconButton(
-                  icon: Icon(Icons.add, size: 30, color: Colors.white),
+                  icon: const Icon(Icons.add, size: 30, color: Colors.white),
                   onPressed: _agregarEjercicio,
                 ),
                 IconButton(
-                  icon: Icon(Icons.create, size: 30, color: Colors.white),
+                  icon: const Icon(Icons.create, size: 30, color: Colors.white),
                   onPressed: _crearEjercicio,
                 ),
               ],

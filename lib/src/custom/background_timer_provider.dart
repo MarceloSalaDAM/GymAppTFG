@@ -4,7 +4,7 @@ import 'package:gym_app_tfg/src/custom/timer.dart';
 class BackgroundTimerProvider extends InheritedWidget {
   final BackgroundTimer backgroundTimer;
 
-  BackgroundTimerProvider({
+  const BackgroundTimerProvider({super.key, 
     required this.backgroundTimer,
     required Widget child,
   }) : super(child: child);

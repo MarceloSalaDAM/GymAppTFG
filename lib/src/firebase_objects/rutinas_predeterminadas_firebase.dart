@@ -86,7 +86,7 @@ class RutinaPredeterminada {
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(
-              builder: (context) => MainViewApp(),
+              builder: (context) => const MainViewApp(),
             ),
             (route) => false,
           );
@@ -98,7 +98,7 @@ class RutinaPredeterminada {
       }
     } catch (e) {
       print("Error al guardar la rutina: $e");
-      throw e;
+      rethrow;
     }
   }
 

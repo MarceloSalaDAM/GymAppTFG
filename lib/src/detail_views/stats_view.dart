@@ -280,7 +280,7 @@ class _StatisticsViewState extends State<StatisticsView> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ObjetivosGeneralesScreen(),
+                  builder: (context) => const ObjetivosGeneralesScreen(),
                 ),
               );
             },
@@ -315,17 +315,17 @@ class _StatisticsViewState extends State<StatisticsView> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           ElevatedButton(
             onPressed: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ObjetivosGeneralesScreen(),
+                  builder: (context) => const ObjetivosGeneralesScreen(),
                 ),
               );
             },
-            child: Text('Añadir'),
+            child: const Text('Añadir'),
           ),
         ],
       );

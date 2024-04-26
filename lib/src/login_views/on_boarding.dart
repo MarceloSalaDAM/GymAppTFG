@@ -1,5 +1,4 @@
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -99,7 +98,7 @@ class _OnBoardingViewState extends State<OnBoardingView> {
         title: const Text("DATOS"),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
-            color: const Color(0XFF0f7991),
+            color: Color(0XFF0f7991),
           ),
         ),
       ),

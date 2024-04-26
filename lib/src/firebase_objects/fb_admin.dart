@@ -3,7 +3,7 @@ import 'package:gym_app_tfg/src/firebase_objects/usuarios_firebase.dart';
 
 class FbAdmin {
 
-  FbAdmin() {}
+  FbAdmin();
 
   Future<Usuarios?> descargarPerfil(String? idPerfil) async {
     FirebaseFirestore db = FirebaseFirestore.instance;

@@ -4,14 +4,16 @@ import '../list_views/list_routines_pred.dart';
 class SelectTrainingLevelView extends StatelessWidget {
   String nivelSeleccionadoGlobal = "";
 
+  SelectTrainingLevelView({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0XFF0f7991),
-        title: Text(
+        title: const Text(
           'SELECCIONA TU NIVEL',
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
           ),
@@ -23,12 +25,12 @@ class SelectTrainingLevelView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Padding(
-              padding: EdgeInsets.fromLTRB(20, 20, 20, 20),
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
+                  const Text(
                     '¡Bienvenido a EasyFit! Queremos personalizar tu experiencia según tu nivel actual. Por favor, elige uno de los siguientes niveles:',
                     style: TextStyle(
                       fontSize: 19.0,
@@ -36,7 +38,7 @@ class SelectTrainingLevelView extends StatelessWidget {
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  SizedBox(height: 16.0),
+                  const SizedBox(height: 16.0),
                   buildLevelTextAndButton(
                     'PRINCIPIANTE:',
                     'Si estás comenzando tu viaje fitness, este nivel es perfecto para ti. Aquí encontrarás rutinas diseñadas para construir una base sólida y desarrollar hábitos saludables.',
@@ -46,7 +48,7 @@ class SelectTrainingLevelView extends StatelessWidget {
                       actualizarNivelSeleccionado("Principiante", context);
                     },
                   ),
-                  Divider(height: 16.0),
+                  const Divider(height: 16.0),
                   buildLevelTextAndButton(
                     'INTERMEDIO:',
                     'Para aquellos que ya han avanzado en su viaje, el nivel intermedio ofrece desafíos más intensos. Prepárate para mejorar tu resistencia y fuerza con entrenamientos específicos.',
@@ -66,7 +68,7 @@ class SelectTrainingLevelView extends StatelessWidget {
                       actualizarNivelSeleccionado("Avanzado", context);
                     },
                   ),
-                  SizedBox(height: 16.0),
+                  const SizedBox(height: 16.0),
                 ],
               ),
             ),
@@ -99,14 +101,14 @@ class SelectTrainingLevelView extends StatelessWidget {
       children: [
         Text(
           title,
-          style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
         ),
-        SizedBox(height: 8.0),
+        const SizedBox(height: 8.0),
         Text(
           description,
-          style: TextStyle(fontSize: 16.0),
+          style: const TextStyle(fontSize: 16.0),
         ),
-        SizedBox(height: 16.0),
+        const SizedBox(height: 16.0),
         ElevatedButton(
           onPressed: onPressed,
           style: ElevatedButton.styleFrom(
@@ -116,10 +118,10 @@ class SelectTrainingLevelView extends StatelessWidget {
             ),
           ),
           child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
             child: Text(
               buttonText,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 18.0,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,

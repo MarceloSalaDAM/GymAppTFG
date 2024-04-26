@@ -53,13 +53,13 @@ class Rutina {
             .collection("rutinas")
             .doc(id)
             .delete();
-        print("DATOS-------->> " + id! + "   " + idUser!);
+        print("DATOS-------->> ${id!}   ${idUser!}");
       } else {
         print("ID de la rutina es null. No se puede eliminar.");
       }
     } catch (e) {
       print("Error al eliminar la rutina: $e");
-      throw e; // Puedes manejar el error según tus necesidades
+      rethrow; // Puedes manejar el error según tus necesidades
     }
   }
 
@@ -86,7 +86,7 @@ class Rutina {
       }
     } catch (e) {
       print("Error al obtener la rutina: $e");
-      throw e; // Puedes manejar el error según tus necesidades
+      rethrow; // Puedes manejar el error según tus necesidades
     }
   }
 }

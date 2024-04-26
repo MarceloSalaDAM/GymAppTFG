@@ -4,6 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../firebase_objects/objetivos_firebase.dart';
 
 class ObjetivosGeneralesScreen extends StatefulWidget {
+  const ObjetivosGeneralesScreen({super.key});
+
   @override
   _ObjetivosGeneralesScreenState createState() =>
       _ObjetivosGeneralesScreenState();
@@ -111,7 +113,7 @@ class _ObjetivosGeneralesScreenState extends State<ObjetivosGeneralesScreen> {
                                     height: 200,
                                     fit: BoxFit.fitWidth,
                                   )
-                                : SizedBox.shrink(),
+                                : const SizedBox.shrink(),
                             title: Text(
                               objetivo.titulo,
                               style: const TextStyle(
@@ -145,7 +147,7 @@ class _ObjetivosGeneralesScreenState extends State<ObjetivosGeneralesScreen> {
                                   backgroundColor: Colors.white,
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(10.0),
-                                      side: BorderSide(color: Colors.black)),
+                                      side: const BorderSide(color: Colors.black)),
                                 ),
                                 child: const Padding(
                                   padding: EdgeInsets.symmetric(
@@ -167,7 +169,7 @@ class _ObjetivosGeneralesScreenState extends State<ObjetivosGeneralesScreen> {
                     },
                   );
                 } else {
-                  return Center(child: Text('No hay datos disponibles'));
+                  return const Center(child: Text('No hay datos disponibles'));
                 }
               },
             ),

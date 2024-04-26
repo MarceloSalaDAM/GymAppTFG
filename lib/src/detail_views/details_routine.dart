@@ -1,4 +1,3 @@
-import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -15,50 +14,34 @@ final BackgroundTimer backgroundTimer = BackgroundTimer();
 class DetallesRutinaView extends StatefulWidget {
   Rutina rutina;
 
-  DetallesRutinaView({required this.rutina});
+  DetallesRutinaView({super.key, required this.rutina});
 
   @override
   _DetallesRutinaViewState createState() => _DetallesRutinaViewState();
 }
 
 class _DetallesRutinaViewState extends State<DetallesRutinaView> {
-  PageController _pageController = PageController();
+  final PageController _pageController = PageController();
   int currentPage = 0;
   String formattedTime = '';
   late List<String>
-      diasPresentes; // Variable de instancia para almacenar diasPresentes
+  diasPresentes; // Variable de instancia para almacenar diasPresentes
   bool showLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _pageController.addListener(() {
-      setState(() {
-        currentPage = _pageController.page!.round();
-      });
-    });
-    Future.delayed(Duration(seconds: 2), () {
+    Future.delayed(const Duration(seconds: 2), () {
       if (mounted && showLoading) {
         setState(() {
           showLoading = false;
         });
       }
     });
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-
-    // Escuchar los cambios en la ruta actual
-    ModalRoute.of(context)!.addScopedWillPopCallback(() async {
-      if (showLoading) {
-        // Si showLoading es verdadero, actualizar el estado
-        setState(() {
-          showLoading = false;
-        });
-      }
-      return true; // Permitir retroceder
+    _pageController.addListener(() {
+      setState(() {
+        currentPage = _pageController.page!.round();
+      });
     });
   }
 
@@ -72,7 +55,7 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
       if (userId != null) {
         // Obtener referencia al documento del usuario
         final userDocRef =
-            FirebaseFirestore.instance.collection('usuarios').doc(userId);
+        FirebaseFirestore.instance.collection('usuarios').doc(userId);
 
         // Obtener referencia a la subcolección "sesiones" dentro del documento del usuario
         final sessionsCollectionRef = userDocRef.collection('sesiones');
@@ -150,8 +133,8 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
             visible: !showLoading,
             child: Center(
               child: Container(
-                margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
-                padding: EdgeInsets.fromLTRB(10, 20, 10, 0),
+                margin: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+                padding: const EdgeInsets.fromLTRB(10, 20, 10, 0),
                 child: Column(
                   children: [
                     Expanded(
@@ -163,8 +146,8 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                           });
                         },
                         physics: timerModel.isTimerRunning
-                            ? NeverScrollableScrollPhysics()
-                            : AlwaysScrollableScrollPhysics(),
+                            ? const NeverScrollableScrollPhysics()
+                            : const AlwaysScrollableScrollPhysics(),
                         itemCount: diasPresentes.length,
                         itemBuilder: (context, index) {
                           final diaEnMayusculas = diasPresentes[index];
@@ -206,7 +189,7 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                             child: GestureDetector(
                               onTap: () {
                                 _pageController.animateToPage(index,
-                                    duration: Duration(milliseconds: 500),
+                                    duration: const Duration(milliseconds: 500),
                                     curve: Curves.easeInOut);
                               },
                               child: CircleAvatar(
@@ -230,7 +213,7 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                     const SizedBox(height: 10),
                     SingleChildScrollView(
                       child: Container(
-                        margin: EdgeInsets.fromLTRB(0, 0, 0, 20),
+                        margin: const EdgeInsets.fromLTRB(0, 0, 0, 20),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
@@ -280,7 +263,7 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                                           // Lógica a ejecutar después de cerrar el AlertDialog
                                           timerModel.startTimer();
                                         });
-                                        Future.delayed(Duration(seconds: 3), () {
+                                        Future.delayed(const Duration(seconds: 3), () {
                                           if (mounted) {
                                             Navigator.of(context).pop();
                                           }
@@ -356,7 +339,7 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                                 );
                               },
                             ),
-                            SizedBox(height: 10),
+                            const SizedBox(height: 10),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
@@ -474,7 +457,7 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
           ),
           Visibility(
             visible: showLoading,
-            child: Center(
+            child: const Center(
               child: CircularProgressIndicator(),
             ),
           ),
@@ -554,7 +537,7 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                         color: Colors.white,
                       ),
                       textAlign:
-                          TextAlign.right, // Alinear el valor a la derecha
+                      TextAlign.right, // Alinear el valor a la derecha
                     ),
                   ],
                 ),
@@ -574,7 +557,7 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                         color: Colors.black, // Color de los valores
                       ),
                       textAlign:
-                          TextAlign.right, // Alinear el valor a la derecha
+                      TextAlign.right, // Alinear el valor a la derecha
                     ),
                   ],
                 ),
@@ -591,7 +574,7 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                         color: Colors.white,
                       ),
                       textAlign:
-                          TextAlign.right, // Alinear el valor a la derecha
+                      TextAlign.right, // Alinear el valor a la derecha
                     ),
                   ],
                 ),
@@ -624,7 +607,7 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
                         color: Colors.white, // Color de los valores
                       ),
                       textAlign:
-                          TextAlign.right, // Alinear el valor a la derecha
+                      TextAlign.right, // Alinear el valor a la derecha
                     ),
                   ])),
             ]),
@@ -632,7 +615,7 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
         );
         exerciseTables.add(
           Container(
-            margin: EdgeInsets.only(bottom: 26.0), // Espacio entre las tablas
+            margin: const EdgeInsets.only(bottom: 26.0), // Espacio entre las tablas
             child: exerciseTable,
           ),
         );
@@ -658,13 +641,13 @@ class _DetallesRutinaViewState extends State<DetallesRutinaView> {
               ),
               IconButton(
                 iconSize: 30,
-                icon: Icon(Icons.edit),
+                icon: const Icon(Icons.edit),
                 color: Colors.white,
                 onPressed: () {
                   final diaSeleccionado = diasPresentes[
-                      currentPage]; // Obtener el día correspondiente al índice actual
+                  currentPage]; // Obtener el día correspondiente al índice actual
                   final ejerciciosDiaSeleccionado =
-                      widget.rutina.dias[diaSeleccionado];
+                  widget.rutina.dias[diaSeleccionado];
                   Navigator.push(
                     context,
                     MaterialPageRoute(

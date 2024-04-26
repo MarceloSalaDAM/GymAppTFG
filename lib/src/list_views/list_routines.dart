@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../firebase_objects/rutinas_firebase.dart';
 import '../detail_views/details_routine.dart';
@@ -27,7 +26,7 @@ class _RutinasUsuarioViewState extends State<RutinasUsuarioView> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration(milliseconds: 500), () {
+    Future.delayed(const Duration(milliseconds: 500), () {
       loadUserData();
     });
   }
@@ -121,7 +120,7 @@ class _RutinasUsuarioViewState extends State<RutinasUsuarioView> {
         ),
         child: ExpansionTile(
           title: Padding(
-            padding: EdgeInsets.all(10.0),
+            padding: const EdgeInsets.all(10.0),
             child: Text(
               rutina.nombreRutina ?? 'SIN NOMBRE',
               style: const TextStyle(
@@ -145,7 +144,7 @@ class _RutinasUsuarioViewState extends State<RutinasUsuarioView> {
                 ),
               ),
               subtitle: Padding(
-                padding: EdgeInsets.only(left: 10.0),
+                padding: const EdgeInsets.only(left: 10.0),
                 child: Text(
                   '${rutina.descripcionRutina}',
                   style: const TextStyle(
@@ -176,7 +175,7 @@ class _RutinasUsuarioViewState extends State<RutinasUsuarioView> {
       'DOMINGO'
     ];
 
-    diasOrdenados.forEach((nombreDia) {
+    for (var nombreDia in diasOrdenados) {
       if (dias.containsKey(nombreDia)) {
         List<Widget> ejerciciosTiles = [];
 
@@ -184,7 +183,7 @@ class _RutinasUsuarioViewState extends State<RutinasUsuarioView> {
           ejerciciosTiles.add(
             Text(
               '${dias[nombreDia]['grupo']}',
-              style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
+              style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
             ),
           );
         }
@@ -195,7 +194,7 @@ class _RutinasUsuarioViewState extends State<RutinasUsuarioView> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Container(
+                SizedBox(
                   width: double.infinity,
                   child: Text(
                     nombreDia,
@@ -215,7 +214,7 @@ class _RutinasUsuarioViewState extends State<RutinasUsuarioView> {
           ),
         );
       }
-    });
+    }
 
     return Column(
       children: [
@@ -292,7 +291,7 @@ class _RutinasUsuarioViewState extends State<RutinasUsuarioView> {
     pdf.addPage(
       pw.MultiPage(
         pageFormat: PdfPageFormat.a4,
-        margin: pw.EdgeInsets.all(20),
+        margin: const pw.EdgeInsets.all(20),
         build: (pw.Context context) {
           final List<pw.Widget> content = [];
 
@@ -329,7 +328,7 @@ class _RutinasUsuarioViewState extends State<RutinasUsuarioView> {
               alignment: pw.Alignment.topLeft,
               child: pw.Text(
                 rutina.descripcionRutina ?? '',
-                style: pw.TextStyle(
+                style: const pw.TextStyle(
                   fontSize: 28,
                   color: PdfColors.black,
                 ),
@@ -361,8 +360,8 @@ class _RutinasUsuarioViewState extends State<RutinasUsuarioView> {
                     pw.Container(
                       alignment: pw.Alignment.topLeft,
                       child: pw.Text(
-                        '${dia}${rutina.dias[dia]['grupo'] != null ? ': ${rutina.dias[dia]['grupo']}' : ''}',
-                        style: pw.TextStyle(
+                        '$dia${rutina.dias[dia]['grupo'] != null ? ': ${rutina.dias[dia]['grupo']}' : ''}',
+                        style: const pw.TextStyle(
                           fontSize: 25,
                           color: PdfColors.black,
                         ),
@@ -374,7 +373,7 @@ class _RutinasUsuarioViewState extends State<RutinasUsuarioView> {
                       border: pw.TableBorder.all(),
                       cellAlignment: pw.Alignment.centerLeft,
                       headerAlignment: pw.Alignment.centerLeft,
-                      cellStyle: pw.TextStyle(fontSize: 16),
+                      cellStyle: const pw.TextStyle(fontSize: 16),
                       headerStyle: pw.TextStyle(
                         fontSize: 19,
                         fontWeight: pw.FontWeight.bold,
@@ -485,7 +484,7 @@ class _RutinasUsuarioViewState extends State<RutinasUsuarioView> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 8.0), // Ajusta el espacio entre los botones
+                  const SizedBox(height: 8.0), // Ajusta el espacio entre los botones
                   ElevatedButton(
                     onPressed: () async {
                       try {

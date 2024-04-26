@@ -194,7 +194,7 @@ class AlertDialogManager {
 
                     Navigator.pushAndRemoveUntil(
                       context,
-                      MaterialPageRoute(builder: (context) => LoginViewApp()),
+                      MaterialPageRoute(builder: (context) => const LoginViewApp()),
                       (route) => false,
                     );
                   },

@@ -42,7 +42,7 @@ class Ejercicios {
 
   Map<String, dynamic> toFirestore() {
     return {
-      if (nombre != null) "nombre": nombre,
+      "nombre": nombre,
       if (descripcion != null) "descripcion": descripcion,
       if (grupo != null) "grupo": grupo,
       if (tipo != null) "tipo": tipo,

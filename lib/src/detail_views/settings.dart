@@ -34,7 +34,7 @@ class SettingsMenu {
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
-          DrawerHeader(
+          const DrawerHeader(
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [Colors.blue, Colors.green],
@@ -51,7 +51,7 @@ class SettingsMenu {
             ),
           ),
           ListTile(
-            title: Text('Cerrar Sesión'),
+            title: const Text('Cerrar Sesión'),
             onTap: () {
               Navigator.pop(context);
               onSelected('signout');

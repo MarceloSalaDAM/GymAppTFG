@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:flutter_background_service/flutter_background_service.dart';
 
 class BackgroundTimer {
   Timer? _timer;
@@ -13,7 +12,7 @@ class BackgroundTimer {
   }
 
   void start() async {
-    _timer = Timer.periodic(Duration(milliseconds: 100), (timer) {
+    _timer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
       _millisecondsElapsed += 100;
       _sendDataToBackgroundService(_calculateTime());
     });

@@ -39,7 +39,7 @@ class _DetailsProfileViewState extends State<DetailsProfileView> {
   void initState() {
     super.initState();
     nombreController = TextEditingController();
-    Future.delayed(Duration(seconds: 1), () {
+    Future.delayed(const Duration(seconds: 1), () {
       loadUserData();
     });
   }
@@ -71,9 +71,15 @@ class _DetailsProfileViewState extends State<DetailsProfileView> {
         _initialEstatura = selectedEstatura;
         _initialPeso = selectedPeso;
         // Establecer la fecha y hora de la última modificación
-        Timestamp ultimaModTimestamp = userData['ultimaMod'];
-        DateTime ultimaModDateTime = ultimaModTimestamp.toDate();
-        _ultimaModFija = DateFormat('dd/MM/yyyy HH:mm').format(ultimaModDateTime);
+        Timestamp? ultimaModTimestamp = userData['ultimaMod'];
+        DateTime? ultimaModDateTime;
+
+        if (ultimaModTimestamp != null) {
+          ultimaModDateTime = ultimaModTimestamp.toDate();
+          _ultimaModFija = DateFormat('dd/MM/yyyy HH:mm').format(ultimaModDateTime);
+        } else {
+          _ultimaModFija = ' ';
+        }
 
         // Establecer _isLoading en false después de cargar los datos
         _isLoading = false;
@@ -363,7 +369,7 @@ class _DetailsProfileViewState extends State<DetailsProfileView> {
                 width: double.infinity,
                 height: 150,
                 decoration: const BoxDecoration(
-                  color: const Color(0XFFDADADA),
+                  color: Color(0XFFDADADA),
                   border: Border(
                     bottom: BorderSide(color: Colors.black, width: 2),
                     top: BorderSide(color: Colors.black, width: 2),

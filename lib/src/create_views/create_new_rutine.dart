@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import '../custom/alert_dialogs.dart';
 import '../firebase_objects/ejercicios_firebase.dart';
 import '../list_views/exercise_list_view.dart';
@@ -102,7 +101,7 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
       rutinasCollection.add(datosPrimeraParteRutina);
 
       print(
-          "DATOS RECOPLIADOS--------->>>" + datosPrimeraParteRutina.toString());
+          "DATOS RECOPLIADOS--------->>>$datosPrimeraParteRutina");
 
       // Mostrar mensaje de éxito
       ScaffoldMessenger.of(context).showSnackBar(
@@ -293,7 +292,7 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           // Lista de días seleccionados
-                          Container(
+                          SizedBox(
                             height: MediaQuery.of(context).size.height > 800
                                 ? 340
                                 : 175,
@@ -440,24 +439,18 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                                                 ejercicio.nombre ==
                                                 ejercicioSeleccionado,
                                           ); // Reemplaza esto con la lógica real
-                                          if (ejercicioElegido != null) {
-                                            // Navega a la pantalla de ExerciseListScreen con el ejercicio seleccionado
-                                            Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    ExerciseListScreen(
-                                                  ejercicios: [
-                                                    ejercicioElegido
-                                                  ],
-                                                ),
+                                          // Navega a la pantalla de ExerciseListScreen con el ejercicio seleccionado
+                                          Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  ExerciseListScreen(
+                                                ejercicios: [
+                                                  ejercicioElegido
+                                                ],
                                               ),
-                                            );
-                                          } else {
-                                            // Manejar el caso en que no se encuentre el ejercicio
-                                            print(
-                                                'No se encontró el ejercicio seleccionado: $ejercicioSeleccionado');
-                                          }
-                                        },
+                                            ),
+                                          );
+                                                                                },
                                         child: ExpansionTile(
                                           title: Column(
                                             crossAxisAlignment:
@@ -740,7 +733,7 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16.0),
           ),
-          title: Text('Guardar Rutina'),
+          title: const Text('Guardar Rutina'),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -749,7 +742,7 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                   onChanged: (value) {
                     nombre = value;
                   },
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Nombre de la rutina',
                     border: OutlineInputBorder(),
                   ),
@@ -759,7 +752,7 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                   onChanged: (value) {
                     descripcion = value;
                   },
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Descripción de la rutina',
                     border: OutlineInputBorder(),
                   ),
@@ -767,7 +760,7 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
               ],
             ),
           ),
-          contentPadding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0), // Ajuste del padding
+          contentPadding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0), // Ajuste del padding
           actions: <Widget>[
             ElevatedButton(
               onPressed: () {

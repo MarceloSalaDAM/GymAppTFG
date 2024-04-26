@@ -23,19 +23,19 @@ class IPApp extends StatelessWidget {
       decoration: InputDecoration(
         helperText: textoGuia,
         labelText: titulo,
-        labelStyle: TextStyle(
+        labelStyle: const TextStyle(
           color: Colors.black,
           fontSize: 18,
           fontWeight: FontWeight.bold,
         ),
         enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.black),
+          borderSide: const BorderSide(color: Colors.black),
 
           borderRadius:
               BorderRadius.circular(7.0), // Cambia el color del borde a rojo
         ),
         focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.black),
+          borderSide: const BorderSide(color: Colors.black),
           borderRadius:
               BorderRadius.circular(7.0), // Cambia el color del borde a rojo
         ),

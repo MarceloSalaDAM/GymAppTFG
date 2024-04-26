@@ -28,7 +28,7 @@ class Objetivos {
 
   Map<String, dynamic> toFirestore() {
     return {
-      if (titulo != null) "titulo": titulo,
+      "titulo": titulo,
       if (descripcion != null) "descripcion": descripcion,
       if (beneficios != null) "beneficios": beneficios,
       if (imagen != null) "imagen": imagen,

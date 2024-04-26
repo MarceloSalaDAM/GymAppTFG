@@ -99,7 +99,7 @@ class LoginViewApp extends StatelessWidget {
                         children: [
                           Container(
                             height: 110,
-                            margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                            margin: const EdgeInsets.fromLTRB(0, 0, 0, 10),
                             decoration: BoxDecoration(
                               border: Border.all(
                                 color: Colors.black,

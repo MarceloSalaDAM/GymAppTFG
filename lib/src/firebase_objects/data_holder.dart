@@ -9,7 +9,7 @@ class DataHolderExamen {
   los elementos del dicho perfil*/
 
   static final DataHolderExamen _dataHolderExamen =
-      new DataHolderExamen._internal();
+      DataHolderExamen._internal();
 
   String sCOLLECTIONS_BICHOS_NAME = "bichos";
 

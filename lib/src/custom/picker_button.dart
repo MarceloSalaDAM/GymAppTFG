@@ -6,7 +6,7 @@ class PickerButton<T> extends StatelessWidget {
   final T valorSeleccionado;
   final void Function(T?)? onChanged;
 
-  PickerButton({
+  const PickerButton({super.key, 
     required this.titulo,
     required this.opciones,
     required this.valorSeleccionado,

@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -60,7 +59,7 @@ class App extends StatelessWidget {
           '/OnBoarding': (context) => const OnBoardingView(),
           '/Splash': (context) => const SplashView(),
           '/DetailsProfile': (context) => const DetailsProfileView(),
-          '/Stats': (context) => StatisticsView(),
+          '/Stats': (context) => const StatisticsView(),
           '/ExerciseList': (context) =>
               const ExerciseListScreen(ejercicios: []),
           '/CreateRoutine': (context) => const CrearRutinaView(ejercicios: []),
@@ -76,11 +75,11 @@ class App extends StatelessWidget {
             );
           },
           '/AddRoutinePred': (context) => SelectTrainingLevelView(),
-          '/EditRoutine': (context) => EjerciciosDiaView(
+          '/EditRoutine': (context) => const EjerciciosDiaView(
                 dia: '',
                 ejerciciosDia: {}, rutinaId: '',
               ),
-          '/DetailsObjetivos': (context) => ObjetivosGeneralesScreen(),
+          '/DetailsObjetivos': (context) => const ObjetivosGeneralesScreen(),
           '/ListRoutinePred': (context) => const RutinasPredView(
                 nivelSeleccionado: '',
               ),

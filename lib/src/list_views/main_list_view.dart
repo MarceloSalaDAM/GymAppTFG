@@ -38,7 +38,7 @@ class _MainListViewState extends State<MainListView> {
                   ),
                   child: Container(
                     decoration: BoxDecoration(
-                      image: DecorationImage(
+                      image: const DecorationImage(
                         image: AssetImage("assets/fondotarjeta1.jpg"),
                         fit: BoxFit.cover,
                       ),
@@ -103,7 +103,7 @@ class _MainListViewState extends State<MainListView> {
                   ),
                   child: Container(
                     decoration: BoxDecoration(
-                      image: DecorationImage(
+                      image: const DecorationImage(
                         image: AssetImage("assets/fondotarjeta2.jpg"),
                         fit: BoxFit.cover,
                       ),
@@ -168,7 +168,7 @@ class _MainListViewState extends State<MainListView> {
                   ),
                   child: Container(
                     decoration: BoxDecoration(
-                      image: DecorationImage(
+                      image: const DecorationImage(
                         image: AssetImage("assets/fondotarjeta3.jpg"),
                         fit: BoxFit.cover,
                       ),
@@ -240,7 +240,7 @@ class _MainListViewState extends State<MainListView> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => RutinasUsuarioView(),
+        builder: (context) => const RutinasUsuarioView(),
       ),
     );
   }

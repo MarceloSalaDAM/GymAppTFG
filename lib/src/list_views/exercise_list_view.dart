@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:gym_app_tfg/src/custom/rotating_card_custom.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../firebase_objects/ejercicios_firebase.dart';
 
@@ -22,7 +20,7 @@ class _ExerciseListScreenState extends State<ExerciseListScreen> {
   Ejercicios? ejercicioActual;
 
   List<String> obtenerGrupos(List<Ejercicios> ejercicios) {
-    Set<String> grupos = Set<String>();
+    Set<String> grupos = <String>{};
     for (var ejercicio in ejercicios) {
       if (ejercicio.grupo != null) {
         grupos.add(ejercicio.grupo!);
@@ -61,7 +59,7 @@ class _ExerciseListScreenState extends State<ExerciseListScreen> {
       body: SingleChildScrollView(
         child: ListView(
           shrinkWrap: true,
-          physics: NeverScrollableScrollPhysics(),
+          physics: const NeverScrollableScrollPhysics(),
           children: [
             Center(
               child: Container(
@@ -126,7 +124,7 @@ class _ExerciseListScreenState extends State<ExerciseListScreen> {
                       ),
                     ),
                     // Contenedor para las tarjetas de información
-                    Container(
+                    SizedBox(
                       height:
                           MediaQuery.of(context).size.height > 800 ? 450 : 500,
                       child: PageView.builder(
@@ -172,7 +170,7 @@ class _ExerciseListScreenState extends State<ExerciseListScreen> {
               ),
               IconButton(
                 onPressed: () {},
-                icon: Icon(Icons.favorite_border),
+                icon: const Icon(Icons.favorite_border),
               ),
               const SizedBox(
                 width: 10,
@@ -181,7 +179,7 @@ class _ExerciseListScreenState extends State<ExerciseListScreen> {
                 onPressed: () {
                   // Acción del segundo botón
                 },
-                icon: Icon(Icons.add_sharp),
+                icon: const Icon(Icons.add_sharp),
               ),
             ],
           ),

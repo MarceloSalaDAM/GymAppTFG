@@ -96,7 +96,7 @@ class RegisterView extends StatelessWidget {
                         children: [
                           Container(
                             height: 110,
-                            margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                            margin: const EdgeInsets.fromLTRB(0, 0, 0, 10),
                             decoration: BoxDecoration(
                               border: Border.all(
                                 color: Colors.black,
@@ -137,10 +137,10 @@ class RegisterView extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(10.0),
                                   ),
                                 ),
-                                icon: Icon(Icons.arrow_back,
+                                icon: const Icon(Icons.arrow_back,
                                     size: 30, color: Colors.white),
                                 // Añade el ícono de retroceso
-                                label: Padding(
+                                label: const Padding(
                                   padding: EdgeInsets.symmetric(
                                       vertical: 8.0, horizontal: 1.0),
                                   child: Text(

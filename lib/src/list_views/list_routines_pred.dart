@@ -52,9 +52,9 @@ class _RutinasPredViewState extends State<RutinasPredView> {
         if (snapshot.docs.isNotEmpty) {
           print(
               "Documentos cargados exitosamente para el nivel ${widget.nivelSeleccionado}:");
-          snapshot.docs.forEach((doc) {
+          for (var doc in snapshot.docs) {
             print("ID: ${doc.id}, Datos: ${doc.data()}");
-          });
+          }
 
           setState(() {
             // Filtrar rutinas por nivel
@@ -65,9 +65,9 @@ class _RutinasPredViewState extends State<RutinasPredView> {
           });
 
           print("Rutinas filtradas para el nivel ${widget.nivelSeleccionado}:");
-          rutinasPred.forEach((rutina) {
+          for (var rutina in rutinasPred) {
             print("ID: ${rutina.idPred}, Nombre: ${rutina.nombreRutinaPred}");
-          });
+          }
         } else {
           print("La colección 'rutinas_predeterminadas' está vacía.");
         }
@@ -157,7 +157,7 @@ class _RutinasPredViewState extends State<RutinasPredView> {
       'DOMINGO'
     ];
 
-    diasOrdenados.forEach((nombreDia) {
+    for (var nombreDia in diasOrdenados) {
       if (dias.containsKey(nombreDia)) {
         List<Widget> ejerciciosTiles = [];
 
@@ -167,7 +167,7 @@ class _RutinasPredViewState extends State<RutinasPredView> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Container(
+                SizedBox(
                   width: double.infinity,
                   child: Text(
                     nombreDia,
@@ -184,7 +184,7 @@ class _RutinasPredViewState extends State<RutinasPredView> {
                 if (dias[nombreDia]['grupo'] != null)
                   Text(
                     '${dias[nombreDia]['grupo']}',
-                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
+                    style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
                   ),
                 const SizedBox(height: 5),
                 ...ejerciciosTiles,
@@ -193,7 +193,7 @@ class _RutinasPredViewState extends State<RutinasPredView> {
           ),
         );
       }
-    });
+    }
 
     return Column(
       children: [

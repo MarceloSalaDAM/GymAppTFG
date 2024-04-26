@@ -7,7 +7,7 @@ class RotatingCard extends StatefulWidget {
   final int currentIndex;
   final int totalItems;
 
-  RotatingCard({
+  const RotatingCard({super.key, 
     required this.ejercicio,
     required this.currentIndex,
     required this.totalItems,
@@ -30,7 +30,7 @@ class _RotatingCardState extends State<RotatingCard>
 
     _animationController = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: 500),
     );
 
     _animation =
@@ -44,7 +44,7 @@ class _RotatingCardState extends State<RotatingCard>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             GestureDetector(
               onTap: _toggleCard,
               child: AnimatedBuilder(
@@ -108,7 +108,7 @@ class FrontCard extends StatelessWidget {
   final int currentIndex;
   final int totalItems;
 
-  FrontCard({
+  const FrontCard({super.key, 
     required this.ejercicio,
     required this.currentIndex,
     required this.totalItems,
@@ -185,7 +185,7 @@ class FrontCard extends StatelessWidget {
 class BackCard extends StatelessWidget {
   final Ejercicios ejercicio;
 
-  BackCard({
+  const BackCard({super.key, 
     required this.ejercicio,
   });
 
